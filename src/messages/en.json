@@ -1,0 +1,53 @@
+{
+    "nav": {
+        "home": "Home",
+        "profile": "Profile",
+        "tech": "Tech",
+        "projects": "Projects",
+        "blog": "Blog",
+        "admin": "Admin"
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "notFound": "Page not found",
+        "readMore": "Read more",
+        "viewAll": "View all"
+    },
+    "theme": {
+        "light": "Light mode",
+        "dark": "Dark mode",
+        "system": "System"
+    },
+    "home": {
+        "hero": {
+            "greeting": "Hi, I'm",
+            "name": "a Developer",
+            "tagline": "Full-stack Developer & Creator",
+            "cta": {
+                "profile": "View Profile",
+                "projects": "View Projects"
+            }
+        },
+        "sections": {
+            "profile": "Profile",
+            "profileDesc": "Career, education, awards, and more",
+            "technology": "Technology",
+            "technologyDesc": "Projects, tech stack, learning experience",
+            "posts": "Blog",
+            "postsDesc": "Technical blog and articles"
+        }
+    },
+    "profile": {
+        "nav": {
+            "summary": "Summary",
+            "hobbies": "Hobbies & Interests",
+            "work": "Work Experience",
+            "education": "Education",
+            "clubs": "Clubs & Activities",
+            "experiences": "Experiences",
+            "certifications": "Certifications",
+            "awards": "Awards"
+        }
+    }
+}

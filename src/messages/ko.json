@@ -1,0 +1,53 @@
+{
+    "nav": {
+        "home": "홈",
+        "profile": "프로필",
+        "tech": "기술",
+        "projects": "프로젝트",
+        "blog": "블로그",
+        "admin": "관리자"
+    },
+    "common": {
+        "loading": "로딩 중...",
+        "error": "오류가 발생했습니다",
+        "notFound": "페이지를 찾을 수 없습니다",
+        "readMore": "더 보기",
+        "viewAll": "전체 보기"
+    },
+    "theme": {
+        "light": "라이트 모드",
+        "dark": "다크 모드",
+        "system": "시스템 설정"
+    },
+    "home": {
+        "hero": {
+            "greeting": "안녕하세요, 저는",
+            "name": "개발자입니다",
+            "tagline": "풀스택 개발자 & 크리에이터",
+            "cta": {
+                "profile": "프로필 보기",
+                "projects": "프로젝트 보기"
+            }
+        },
+        "sections": {
+            "profile": "프로필",
+            "profileDesc": "경력, 학력, 수상 경력 등",
+            "technology": "기술",
+            "technologyDesc": "프로젝트, 기술 스택, 학습 경험",
+            "posts": "블로그",
+            "postsDesc": "기술 블로그 및 글"
+        }
+    },
+    "profile": {
+        "nav": {
+            "summary": "요약",
+            "hobbies": "취미 & 관심사",
+            "work": "경력",
+            "education": "학력",
+            "clubs": "동아리 & 활동",
+            "experiences": "기타 경험",
+            "certifications": "자격증",
+            "awards": "수상 경력"
+        }
+    }
+}

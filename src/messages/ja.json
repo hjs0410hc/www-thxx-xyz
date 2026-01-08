@@ -1,0 +1,53 @@
+{
+    "nav": {
+        "home": "ホーム",
+        "profile": "プロフィール",
+        "tech": "技術",
+        "projects": "プロジェクト",
+        "blog": "ブログ",
+        "admin": "管理者"
+    },
+    "common": {
+        "loading": "読み込み中...",
+        "error": "エラーが発生しました",
+        "notFound": "ページが見つかりません",
+        "readMore": "続きを読む",
+        "viewAll": "すべて表示"
+    },
+    "theme": {
+        "light": "ライトモード",
+        "dark": "ダークモード",
+        "system": "システム設定"
+    },
+    "home": {
+        "hero": {
+            "greeting": "こんにちは、私は",
+            "name": "開発者です",
+            "tagline": "フルスタック開発者 & クリエイター",
+            "cta": {
+                "profile": "プロフィールを見る",
+                "projects": "プロジェクトを見る"
+            }
+        },
+        "sections": {
+            "profile": "プロフィール",
+            "profileDesc": "経歴、学歴、受賞歴など",
+            "technology": "技術",
+            "technologyDesc": "プロジェクト、技術スタック、学習経験",
+            "posts": "ブログ",
+            "postsDesc": "技術ブログと記事"
+        }
+    },
+    "profile": {
+        "nav": {
+            "summary": "概要",
+            "hobbies": "趣味 & 興味",
+            "work": "職歴",
+            "education": "学歴",
+            "clubs": "クラブ & 活動",
+            "experiences": "経験",
+            "certifications": "資格",
+            "awards": "受賞歴"
+        }
+    }
+}
