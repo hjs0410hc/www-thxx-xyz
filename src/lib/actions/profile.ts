@@ -97,6 +97,25 @@ export async function deleteSocialLink(id: string) {
     return { success: true };
 }
 
+export async function updateSocialLink(id: string, formData: FormData) {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+        .from('social_links')
+        .update({
+            platform: formData.get('platform') as string,
+            url: formData.get('url') as string,
+        })
+        .eq('id', id);
+
+    if (error) {
+        return { error: error.message };
+    }
+
+    revalidatePath('/admin/profile');
+    return { success: true };
+}
+
 export async function addLanguage(formData: FormData) {
     const supabase = await createClient();
 
@@ -116,6 +135,25 @@ export async function addLanguage(formData: FormData) {
             language: formData.get('language') as string,
             proficiency_level: formData.get('proficiency_level') as string,
         }]);
+
+    if (error) {
+        return { error: error.message };
+    }
+
+    revalidatePath('/admin/profile');
+    return { success: true };
+}
+
+export async function updateLanguage(id: string, formData: FormData) {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+        .from('languages')
+        .update({
+            language: formData.get('language') as string,
+            proficiency_level: formData.get('proficiency_level') as string,
+        })
+        .eq('id', id);
 
     if (error) {
         return { error: error.message };

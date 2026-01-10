@@ -52,7 +52,7 @@ export default async function AdminHobbiesPage() {
                         <div className="space-y-4">
                             {hobbies.map((hobby) => (
                                 <div key={hobby.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/ko/profile/hobbies/${hobby.slug}`} className="flex-1">
+                                    <Link href={`/admin/profile/hobbies/${hobby.id}/edit`} className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
                                             <h3 className="font-semibold hover:text-primary">{hobby.name}</h3>
                                             <span className="text-xs text-muted-foreground">/{hobby.slug}</span>

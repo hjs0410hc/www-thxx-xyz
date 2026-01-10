@@ -58,7 +58,7 @@ export default async function AdminCertificationsPage() {
                         <div className="space-y-4">
                             {certifications.map((cert) => (
                                 <div key={cert.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/ko/profile/certifications/${cert.slug}`} className="flex-1">
+                                    <Link href={`/admin/profile/certifications-admin/${cert.id}/edit`} className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
                                             <h3 className="font-semibold hover:text-primary">{cert.name}</h3>
                                             <span className="text-xs text-muted-foreground">/{cert.slug}</span>

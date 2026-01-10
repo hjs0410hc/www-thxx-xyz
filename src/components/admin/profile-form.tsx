@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { updateProfile, addSocialLink, deleteSocialLink, addLanguage, deleteLanguage } from '@/lib/actions/profile';
+import { updateProfile, addSocialLink, deleteSocialLink, updateSocialLink, addLanguage, deleteLanguage, updateLanguage } from '@/lib/actions/profile';
 import { uploadImage } from '@/lib/actions/upload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { X, CheckCircle2, Upload } from 'lucide-react';
+import { X, CheckCircle2, Upload, Pencil, Save, Ban } from 'lucide-react';
 import Image from 'next/image';
 import { TiptapEditor } from '@/components/admin/tiptap-editor';
 
@@ -27,6 +27,8 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
     const [profileImageUrl, setProfileImageUrl] = useState<string>(profile?.profile_image_url || '');
     const [uploading, setUploading] = useState(false);
     const [markdownContent, setMarkdownContent] = useState(profile?.markdown_content || null);
+    const [editingSocialLink, setEditingSocialLink] = useState<string | null>(null);
+    const [editingLanguage, setEditingLanguage] = useState<string | null>(null);
 
     async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -89,6 +91,24 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
         const result = await deleteLanguage(id);
         if (result?.error) {
             setError(result.error);
+        }
+    }
+
+    async function handleUpdateSocialLink(id: string, formData: FormData) {
+        const result = await updateSocialLink(id, formData);
+        if (result?.error) {
+            setError(result.error);
+        } else {
+            setEditingSocialLink(null);
+        }
+    }
+
+    async function handleUpdateLanguage(id: string, formData: FormData) {
+        const result = await updateLanguage(id, formData);
+        if (result?.error) {
+            setError(result.error);
+        } else {
+            setEditingLanguage(null);
         }
     }
 
@@ -177,6 +197,17 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
                         </div>
 
                         <div className="space-y-2">
+                            <Label htmlFor="bio">Bio</Label>
+                            <Textarea
+                                id="bio"
+                                name="bio"
+                                defaultValue={profile?.bio || ''}
+                                rows={4}
+                                placeholder="Tell us about yourself..."
+                            />
+                        </div>
+
+                        <div className="space-y-2">
                             <Label>Profile Image</Label>
                             {profileImageUrl ? (
                                 <div className="relative inline-block">
@@ -219,24 +250,18 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
                             )}
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="military_service">Military Service</Label>
-                            <Input
-                                id="military_service"
-                                name="military_service"
-                                defaultValue={profile?.military_service || ''}
-                            />
-                        </div>
+
+
+
+
+                        <Separator className="my-6" />
 
                         <div className="space-y-2">
-                            <Label htmlFor="bio">Bio</Label>
-                            <Textarea
-                                id="bio"
-                                name="bio"
-                                defaultValue={profile?.bio || ''}
-                                rows={4}
-                                placeholder="Tell us about yourself..."
-                            />
+                            <Label>About Section (Markdown)</Label>
+                            <CardDescription className="mb-2">
+                                Rich text content for your profile&apos;s &quot;About&quot; section
+                            </CardDescription>
+                            <TiptapEditor content={markdownContent} onChange={setMarkdownContent} />
                         </div>
 
                         <Button type="submit">Save Profile</Button>
@@ -244,21 +269,7 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
                 </CardContent>
             </Card>
 
-            {/* Markdown Content */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>About Section</CardTitle>
-                    <CardDescription>
-                        Rich text content for your profile's "About" section
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-2">
-                        <Label>Markdown Content</Label>
-                        <TiptapEditor content={markdownContent} onChange={setMarkdownContent} />
-                    </div>
-                </CardContent>
-            </Card>
+
 
             {/* Social Links */}
             <Card>
@@ -274,17 +285,58 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
                         <div className="space-y-2">
                             {socialLinks.map((link) => (
                                 <div key={link.id} className="flex items-center justify-between p-3 border rounded-lg">
-                                    <div>
-                                        <p className="font-medium">{link.platform}</p>
-                                        <p className="text-sm text-muted-foreground">{link.url}</p>
-                                    </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => handleDeleteSocialLink(link.id)}
-                                    >
-                                        <X className="h-4 w-4" />
-                                    </Button>
+                                    {editingSocialLink === link.id ? (
+                                        <form
+                                            action={(formData) => handleUpdateSocialLink(link.id, formData)}
+                                            className="flex-1 flex gap-2 items-center"
+                                        >
+                                            <Input
+                                                name="platform"
+                                                defaultValue={link.platform}
+                                                placeholder="Platform"
+                                                className="w-1/3"
+                                                required
+                                            />
+                                            <Input
+                                                name="url"
+                                                defaultValue={link.url}
+                                                placeholder="URL"
+                                                className="flex-1"
+                                                required
+                                            />
+                                            <Button type="submit" size="icon" variant="ghost">
+                                                <Save className="h-4 w-4 text-green-600" />
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                size="icon"
+                                                variant="ghost"
+                                                onClick={() => setEditingSocialLink(null)}
+                                            >
+                                                <Ban className="h-4 w-4 text-red-600" />
+                                            </Button>
+                                        </form>
+                                    ) : (
+                                        <>
+                                            <div
+                                                className="flex-1 cursor-pointer"
+                                                onClick={() => setEditingSocialLink(link.id)}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <p className="font-medium">{link.platform}</p>
+                                                    <Pencil className="h-3 w-3 text-muted-foreground opacity-50" />
+                                                </div>
+                                                <p className="text-sm text-muted-foreground">{link.url}</p>
+                                            </div>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleDeleteSocialLink(link.id)}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -341,16 +393,61 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
                     {languages && languages.length > 0 && (
                         <div className="flex flex-wrap gap-2">
                             {languages.map((lang) => (
-                                <Badge key={lang.id} variant="secondary" className="text-sm py-2 px-3">
-                                    {lang.language} ({lang.proficiency_level})
-                                    <button
-                                        type="button"
-                                        onClick={() => handleDeleteLanguage(lang.id)}
-                                        className="inline ml-2 hover:text-destructive"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </Badge>
+                                <div key={lang.id}>
+                                    {editingLanguage === lang.id ? (
+                                        <div className="flex items-center gap-2 p-2 border rounded-md bg-background">
+                                            <form
+                                                action={(formData) => handleUpdateLanguage(lang.id, formData)}
+                                                className="flex items-center gap-2"
+                                            >
+                                                <Input
+                                                    name="language"
+                                                    defaultValue={lang.language}
+                                                    className="h-8 w-24"
+                                                    placeholder="Lang"
+                                                    required
+                                                />
+                                                <Input
+                                                    name="proficiency_level"
+                                                    defaultValue={lang.proficiency_level}
+                                                    className="h-8 w-32"
+                                                    placeholder="Level"
+                                                    required
+                                                />
+                                                <Button type="submit" size="icon" variant="ghost" className="h-8 w-8">
+                                                    <Save className="h-3 w-3 text-green-600" />
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    className="h-8 w-8"
+                                                    onClick={() => setEditingLanguage(null)}
+                                                >
+                                                    <Ban className="h-3 w-3 text-red-600" />
+                                                </Button>
+                                            </form>
+                                        </div>
+                                    ) : (
+                                        <Badge
+                                            variant="secondary"
+                                            className="text-sm py-2 px-3 cursor-pointer hover:bg-secondary/80 transition-colors"
+                                            onClick={() => setEditingLanguage(lang.id)}
+                                        >
+                                            {lang.language} ({lang.proficiency_level})
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteLanguage(lang.id);
+                                                }}
+                                                className="inline ml-2 hover:text-destructive p-1 rounded-full hover:bg-muted"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    )}
+                                </div>
                             ))}
                         </div>
                     )}
@@ -385,6 +482,6 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
                     </form>
                 </CardContent>
             </Card>
-        </div>
+        </div >
     );
 }

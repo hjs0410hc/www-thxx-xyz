@@ -246,6 +246,34 @@ export async function addCertification(formData: FormData) {
     redirect('/admin/profile/certifications-admin');
 }
 
+export async function updateCertification(id: string, formData: FormData) {
+    const supabase = await createClient();
+
+    const contentRaw = formData.get('content') as string;
+    const content = contentRaw ? JSON.parse(contentRaw) : null;
+
+    const { error } = await supabase
+        .from('certifications')
+        .update({
+            name: formData.get('name') as string,
+            issuer: formData.get('issuer') as string,
+            issue_date: formData.get('issue_date') as string,
+            expiry_date: formData.get('expiry_date') as string || null,
+            slug: formData.get('slug') as string,
+            description: formData.get('description') as string || null,
+            content,
+            preview_image: formData.get('preview_image') as string || null,
+            locale: formData.get('locale') as string || 'ko',
+        })
+        .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin/profile/certifications-admin');
+    revalidatePath('/[locale]/profile/certifications', 'page');
+    redirect('/admin/profile/certifications-admin');
+}
+
 export async function deleteCertification(id: string) {
     const supabase = await createClient();
     const { error } = await supabase.from('certifications').delete().eq('id', id);
@@ -254,4 +282,176 @@ export async function deleteCertification(id: string) {
 
     revalidatePath('/admin/profile/certifications-admin');
     revalidatePath('/[locale]/profile/certifications', 'page');
+}
+
+// Hobbies
+export async function updateHobby(id: string, formData: FormData) {
+    const supabase = await createClient();
+
+    const contentRaw = formData.get('content') as string;
+    const content = contentRaw ? JSON.parse(contentRaw) : null;
+
+    const { error } = await supabase
+        .from('hobbies')
+        .update({
+            name: formData.get('name') as string,
+            slug: formData.get('slug') as string,
+            description: formData.get('description') as string || null,
+            content,
+            preview_image: formData.get('preview_image') as string || null,
+            locale: formData.get('locale') as string || 'ko',
+        })
+        .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin/profile/hobbies');
+    revalidatePath('/[locale]/profile/hobbies', 'page');
+    redirect('/admin/profile/hobbies');
+}
+
+// Education
+export async function updateEducation(id: string, formData: FormData) {
+    const supabase = await createClient();
+
+    const contentRaw = formData.get('content') as string;
+    const content = contentRaw ? JSON.parse(contentRaw) : null;
+
+    const { error } = await supabase
+        .from('education')
+        .update({
+            institution: formData.get('institution') as string,
+            degree: formData.get('degree') as string,
+            field: formData.get('field') as string || null,
+            type: formData.get('type') as string,
+            start_date: formData.get('start_date') as string,
+            end_date: formData.get('end_date') as string || null,
+            slug: formData.get('slug') as string,
+            description: formData.get('description') as string || null,
+            content,
+            preview_image: formData.get('preview_image') as string || null,
+            locale: formData.get('locale') as string || 'ko',
+        })
+        .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin/profile/education');
+    revalidatePath('/[locale]/profile/timeline', 'page');
+    redirect('/admin/profile/education');
+}
+
+// Work Experience
+export async function updateWorkExperience(id: string, formData: FormData) {
+    const supabase = await createClient();
+
+    const contentRaw = formData.get('content') as string;
+    const content = contentRaw ? JSON.parse(contentRaw) : null;
+
+    const { error } = await supabase
+        .from('work_experience')
+        .update({
+            company: formData.get('company') as string,
+            position: formData.get('position') as string,
+            type: formData.get('type') as string,
+            start_date: formData.get('start_date') as string,
+            end_date: formData.get('end_date') as string || null,
+            slug: formData.get('slug') as string,
+            description: formData.get('description') as string || null,
+            content,
+            preview_image: formData.get('preview_image') as string || null,
+            locale: formData.get('locale') as string || 'ko',
+        })
+        .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin/profile/work');
+    revalidatePath('/[locale]/profile/timeline', 'page');
+    redirect('/admin/profile/work');
+}
+
+// Clubs
+export async function updateClub(id: string, formData: FormData) {
+    const supabase = await createClient();
+
+    const contentRaw = formData.get('content') as string;
+    const content = contentRaw ? JSON.parse(contentRaw) : null;
+
+    const { error } = await supabase
+        .from('clubs')
+        .update({
+            name: formData.get('name') as string,
+            role: formData.get('role') as string || null,
+            start_date: formData.get('start_date') as string,
+            end_date: formData.get('end_date') as string || null,
+            slug: formData.get('slug') as string,
+            description: formData.get('description') as string || null,
+            content,
+            preview_image: formData.get('preview_image') as string || null,
+            locale: formData.get('locale') as string || 'ko',
+        })
+        .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin/profile/clubs');
+    revalidatePath('/[locale]/profile/timeline', 'page');
+    redirect('/admin/profile/clubs');
+}
+
+// Experiences
+export async function updateExperience(id: string, formData: FormData) {
+    const supabase = await createClient();
+
+    const contentRaw = formData.get('content') as string;
+    const content = contentRaw ? JSON.parse(contentRaw) : null;
+
+    const { error } = await supabase
+        .from('experiences')
+        .update({
+            title: formData.get('title') as string,
+            organization: formData.get('organization') as string || null,
+            date: formData.get('date') as string,
+            slug: formData.get('slug') as string,
+            description: formData.get('description') as string || null,
+            content,
+            preview_image: formData.get('preview_image') as string || null,
+            locale: formData.get('locale') as string || 'ko',
+        })
+        .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin/profile/experiences-admin');
+    revalidatePath('/[locale]/profile/experiences', 'page');
+    redirect('/admin/profile/experiences-admin');
+}
+
+// Awards
+export async function updateAward(id: string, formData: FormData) {
+    const supabase = await createClient();
+
+    const contentRaw = formData.get('content') as string;
+    const content = contentRaw ? JSON.parse(contentRaw) : null;
+
+    const { error } = await supabase
+        .from('awards')
+        .update({
+            title: formData.get('title') as string,
+            issuer: formData.get('issuer') as string,
+            date: formData.get('date') as string,
+            slug: formData.get('slug') as string,
+            description: formData.get('description') as string || null,
+            content,
+            preview_image: formData.get('preview_image') as string || null,
+            locale: formData.get('locale') as string || 'ko',
+        })
+        .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin/profile/awards-admin');
+    revalidatePath('/[locale]/profile/awards', 'page');
+    redirect('/admin/profile/awards-admin');
 }

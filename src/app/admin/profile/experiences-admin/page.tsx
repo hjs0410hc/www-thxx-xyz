@@ -57,7 +57,7 @@ export default async function AdminExperiencesPage() {
                         <div className="space-y-4">
                             {experiences.map((exp) => (
                                 <div key={exp.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/ko/profile/experiences/${exp.slug}`} className="flex-1">
+                                    <Link href={`/admin/profile/experiences-admin/${exp.id}/edit`} className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
                                             <h3 className="font-semibold hover:text-primary">{exp.title}</h3>
                                             <span className="text-xs text-muted-foreground">/{exp.slug}</span>

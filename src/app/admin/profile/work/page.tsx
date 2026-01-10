@@ -70,7 +70,7 @@ export default async function AdminWorkPage() {
                         <div className="space-y-4">
                             {work.map((job) => (
                                 <div key={job.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/ko/profile/work/${job.slug}`} className="flex-1">
+                                    <Link href={`/admin/profile/work/${job.id}/edit`} className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
                                             <h3 className="font-semibold hover:text-primary">{job.company}</h3>
                                             <span className="text-xs text-muted-foreground">/{job.slug}</span>

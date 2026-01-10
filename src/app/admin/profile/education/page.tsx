@@ -70,7 +70,7 @@ export default async function AdminEducationPage() {
                         <div className="space-y-4">
                             {education.map((edu) => (
                                 <div key={edu.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/ko/profile/education/${edu.slug}`} className="flex-1">
+                                    <Link href={`/admin/profile/education/${edu.id}/edit`} className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
                                             <h3 className="font-semibold hover:text-primary">{edu.institution}</h3>
                                             <span className="text-xs text-muted-foreground">/{edu.slug}</span>

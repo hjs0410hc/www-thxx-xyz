@@ -28,6 +28,7 @@ interface ProfileFormWithEditorProps {
     imageFieldName?: string;
     hasSlug?: boolean;
     hasDescription?: boolean;
+    initialData?: any;
 }
 
 export function ProfileFormWithEditor({
@@ -41,9 +42,10 @@ export function ProfileFormWithEditor({
     imageFieldName = 'image_url',
     hasSlug = true,
     hasDescription = true,
+    initialData,
 }: ProfileFormWithEditorProps) {
-    const [content, setContent] = useState<any>(null);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [content, setContent] = useState<any>(initialData?.content || null);
+    const [imageUrl, setImageUrl] = useState<string | null>(initialData?.[imageFieldName] || null);
     const [uploading, setUploading] = useState(false);
 
     async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -105,7 +107,7 @@ export function ProfileFormWithEditor({
                                             name={field.name}
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                             required={field.required}
-                                            defaultValue={field.options[0]?.value}
+                                            defaultValue={initialData?.[field.name] || field.options[0]?.value}
                                         >
                                             {field.options.map((option) => (
                                                 <option key={option.value} value={option.value}>
@@ -120,6 +122,7 @@ export function ProfileFormWithEditor({
                                             type={field.type || 'text'}
                                             required={field.required}
                                             placeholder={field.placeholder}
+                                            defaultValue={initialData?.[field.name]}
                                         />
                                     )}
                                 </div>
@@ -180,7 +183,7 @@ export function ProfileFormWithEditor({
 
                     <Button type="submit" disabled={uploading}>
                         <Plus className="h-4 w-4 mr-2" />
-                        Add {title}
+                        {initialData ? 'Update' : 'Add'} {title}
                     </Button>
                 </form>
             </CardContent>

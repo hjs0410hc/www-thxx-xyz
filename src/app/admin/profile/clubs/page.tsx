@@ -58,7 +58,7 @@ export default async function AdminClubsPage() {
                         <div className="space-y-4">
                             {clubs.map((club) => (
                                 <div key={club.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/ko/profile/clubs/${club.slug}`} className="flex-1">
+                                    <Link href={`/admin/profile/clubs/${club.id}/edit`} className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
                                             <h3 className="font-semibold hover:text-primary">{club.name}</h3>
                                             <span className="text-xs text-muted-foreground">/{club.slug}</span>
