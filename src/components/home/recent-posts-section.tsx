@@ -30,8 +30,8 @@ export function RecentPostsSection({ posts, locale }: RecentPostsSectionProps) {
         <section className="container px-4 py-8 md:py-12">
             <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">{t('title')}</h2>
-                    <p className="text-muted-foreground mt-2">{t('description')}</p>
+                    <h2 className="text-3xl font-bold tracking-tight text-center md:text-left">{t('title')}</h2>
+                    <p className="text-muted-foreground mt-2 text-center md:text-left">{t('description')}</p>
                 </div>
                 <Button asChild variant="ghost">
                     <Link href={`/${locale}/blog`} className="group">

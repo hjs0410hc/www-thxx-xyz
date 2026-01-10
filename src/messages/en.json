@@ -24,7 +24,8 @@
         "allPosts": "All Posts",
         "contact": "Contact",
         "searchPlaceholder": "Search...",
-        "copyright": "© {year} Hyeon Jinseop (THXX). All rights reserved."
+        "copyright": "© {year} Hyeon Jinseop (THXX).",
+        "allRightsReserved": "All rights reserved."
     },
     "theme": {
         "light": "Light mode",
@@ -69,6 +70,7 @@
             "bio": "Add your bio"
         },
         "nav": {
+            "profile": "Menu",
             "summary": "Summary",
             "hobbies": "Hobbies & Interests",
             "work": "Work Experience",
