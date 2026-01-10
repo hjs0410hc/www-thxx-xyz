@@ -271,7 +271,7 @@ export function ProfileSections({
                     <div className="flex items-center gap-3 mb-4">
                         <div className="flex items-center gap-2">
                             <Languages className="h-5 w-5" />
-                            <h2 className="text-2xl font-bold">Languages</h2>
+                            <h2 className="text-2xl font-bold">{t('languages')}</h2>
                         </div>
                         <Badge variant="secondary" className="text-xs">
                             {languages.length}

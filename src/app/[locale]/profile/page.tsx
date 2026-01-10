@@ -59,7 +59,7 @@ export default async function ProfilePage({ params }: { params: { locale: Locale
             </div>
 
             {/* Profile Header */}
-            <div>
+            <div className="hidden md:block">
                 <h1 className="text-4xl font-bold mb-2">{profile?.name || t('default.name')}</h1>
                 <p className="text-xl text-muted-foreground">{profile?.bio || t('default.bio')}</p>
             </div>

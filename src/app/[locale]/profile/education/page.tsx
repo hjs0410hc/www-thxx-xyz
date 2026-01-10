@@ -5,6 +5,7 @@ import { GraduationCap, ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
 
 export default async function EducationPage({
     params,
@@ -13,6 +14,7 @@ export default async function EducationPage({
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+    const t = await getTranslations({ locale, namespace: 'profile.education' });
 
     const { data: educationData } = await supabase
         .from('education')
@@ -34,7 +36,7 @@ export default async function EducationPage({
     const education = (educationData || []).map(getLocalized);
 
     const formatDate = (date: string | null) => {
-        if (!date) return 'Present';
+        if (!date) return t('present');
         const d = new Date(date);
         return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
     };
@@ -42,9 +44,9 @@ export default async function EducationPage({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Education</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    My academic background and learning journey
+                    {t('description')}
                 </p>
             </div>
 
@@ -88,9 +90,9 @@ export default async function EducationPage({
                                                 <div className="flex flex-col items-start sm:items-end gap-1 flex-shrink-0">
                                                     {edu.type && (
                                                         <Badge variant="secondary" className="text-xs px-2 py-0.5 font-medium">
-                                                            {edu.type === 'university' && 'University'}
-                                                            {edu.type === 'study_abroad' && 'Study Abroad'}
-                                                            {edu.type === 'course' && 'Course'}
+                                                            {edu.type === 'university' && t('university')}
+                                                            {edu.type === 'study_abroad' && t('study_abroad')}
+                                                            {edu.type === 'course' && t('course')}
                                                         </Badge>
                                                     )}
                                                     <span className="text-sm text-foreground font-medium whitespace-nowrap">
@@ -115,9 +117,9 @@ export default async function EducationPage({
                         <CardContent className="p-6">
                             <div className="text-center py-8">
                                 <GraduationCap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                <h3 className="text-lg font-semibold mb-2">No Education Added</h3>
+                                <h3 className="text-lg font-semibold mb-2">{t('empty')}</h3>
                                 <p className="text-sm text-muted-foreground">
-                                    Add your education through the admin panel.
+                                    {t('emptyDesc')}
                                 </p>
                             </div>
                         </CardContent>

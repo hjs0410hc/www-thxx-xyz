@@ -78,7 +78,61 @@
             "clubs": "동아리 & 활동",
             "experiences": "기타 경험",
             "certifications": "자격증",
-            "awards": "수상 경력"
+            "awards": "수상 경력",
+            "languages": "언어"
+        },
+        "work": {
+            "title": "경력",
+            "description": "전문 경력 및 이력",
+            "empty": "등록된 경력이 없습니다",
+            "emptyDesc": "관리자 패널에서 경력을 추가해주세요.",
+            "internship": "인턴",
+            "part_time": "파트타임",
+            "full_time": "정규직",
+            "military_service": "병역",
+            "present": "재직중"
+        },
+        "education": {
+            "title": "학력",
+            "description": "학업 배경 및 학습 여정",
+            "empty": "등록된 학력이 없습니다",
+            "emptyDesc": "관리자 패널에서 학력을 추가해주세요.",
+            "university": "대학교",
+            "study_abroad": "유학",
+            "course": "코스",
+            "present": "재학중"
+        },
+        "awards": {
+            "title": "수상 및 인정",
+            "description": "수상 실적 및 성과",
+            "empty": "등록된 수상이 없습니다",
+            "emptyDesc": "관리자 패널에서 수상을 추가해주세요."
+        },
+        "certifications": {
+            "title": "자격증",
+            "description": "전문 자격증 및 면허",
+            "empty": "등록된 자격증이 없습니다",
+            "emptyDesc": "관리자 패널에서 자격증을 추가해주세요.",
+            "issuedBy": "발급기관: {issuer}"
+        },
+        "clubs": {
+            "title": "동아리 및 활동",
+            "description": "교외 활동 및 커뮤니티",
+            "empty": "등록된 활동이 없습니다",
+            "emptyDesc": "관리자 패널에서 활동을 추가해주세요.",
+            "role": "역할: {role}"
+        },
+        "experiences": {
+            "title": "경험",
+            "description": "봉사활동 및 기타 의미 있는 경험",
+            "empty": "등록된 경험이 없습니다",
+            "emptyDesc": "관리자 패널에서 경험을 추가해주세요."
+        },
+        "hobbies": {
+            "title": "취미 및 관심사",
+            "description": "여가 시간 활동",
+            "empty": "등록된 취미가 없습니다",
+            "emptyDesc": "관리자 패널에서 취미를 추가해주세요."
         }
     },
     "tech": {
@@ -101,6 +155,22 @@
             "programming_language": "프로그래밍 언어",
             "cloud": "클라우드",
             "other": "기타"
+        },
+        "projects": {
+            "title": "프로젝트",
+            "description": "작업물 및 사이드 프로젝트 포트폴리오",
+            "empty": "등록된 프로젝트가 없습니다",
+            "emptyDesc": "관리자 패널에서 프로젝트를 추가해주세요.",
+            "view": "프로젝트 보기",
+            "preview": "미리보기",
+            "source": "소스코드",
+            "present": "진행중"
+        },
+        "skills": {
+            "title": "기술 스택",
+            "description": "사용 가능한 기술, 도구 및 방법론",
+            "empty": "등록된 기술이 없습니다",
+            "emptyDesc": "관리자 패널에서 기술을 추가해주세요."
         }
     },
     "blog": {
@@ -112,11 +182,5 @@
         "noPostsWithTag": "\"{tag}\" 태그가 포함된 글이 없습니다.",
         "emptyState": "발행된 글이 없습니다.",
         "readMore": "더 읽기"
-    },
-    "projects": {
-        "title": "프로젝트",
-        "description": "개인 작업 및 사이드 프로젝트",
-        "noProjects": "프로젝트 없음",
-        "emptyState": "관리자 패널에서 추가된 프로젝트가 없습니다."
     }
 }

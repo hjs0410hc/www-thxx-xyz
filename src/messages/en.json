@@ -78,7 +78,61 @@
             "clubs": "Clubs & Activities",
             "experiences": "Experiences",
             "certifications": "Certifications",
-            "awards": "Awards"
+            "awards": "Awards",
+            "languages": "Languages"
+        },
+        "work": {
+            "title": "Work Experience",
+            "description": "My professional journey and career history",
+            "empty": "No Work Experience Added",
+            "emptyDesc": "Add your work experience through the admin panel.",
+            "internship": "Internship",
+            "part_time": "Part-time",
+            "full_time": "Full-time",
+            "military_service": "Military Service",
+            "present": "Present"
+        },
+        "education": {
+            "title": "Education",
+            "description": "My academic background and learning journey",
+            "empty": "No Education Added",
+            "emptyDesc": "Add your education through the admin panel.",
+            "university": "University",
+            "study_abroad": "Study Abroad",
+            "course": "Course",
+            "present": "Present"
+        },
+        "awards": {
+            "title": "Awards & Recognition",
+            "description": "Achievements and awards received",
+            "empty": "No Awards Added",
+            "emptyDesc": "Add your awards through the admin panel."
+        },
+        "certifications": {
+            "title": "Certifications",
+            "description": "Professional certifications and licenses",
+            "empty": "No Certifications Added",
+            "emptyDesc": "Add your certifications through the admin panel.",
+            "issuedBy": "Issued by {issuer}"
+        },
+        "clubs": {
+            "title": "Clubs & Activities",
+            "description": "Extracurricular activities and communities",
+            "empty": "No Activities Added",
+            "emptyDesc": "Add your activities through the admin panel.",
+            "role": "Role: {role}"
+        },
+        "experiences": {
+            "title": "Experiences",
+            "description": "Volunteering and other meaningful experiences",
+            "empty": "No Experiences Added",
+            "emptyDesc": "Add your experiences through the admin panel."
+        },
+        "hobbies": {
+            "title": "Hobbies & Interests",
+            "description": "What I enjoy doing in my free time",
+            "empty": "No Hobbies Added",
+            "emptyDesc": "Add your hobbies through the admin panel."
         }
     },
     "tech": {
@@ -101,22 +155,32 @@
             "programming_language": "Programming Language",
             "cloud": "Cloud",
             "other": "Other"
+        },
+        "projects": {
+            "title": "Projects",
+            "description": "Portfolio of my work and side projects",
+            "empty": "No Projects Yet",
+            "emptyDesc": "Projects will appear here once added through the admin panel.",
+            "view": "View Project",
+            "preview": "Preview",
+            "source": "Source",
+            "present": "Present"
+        },
+        "skills": {
+            "title": "Skills & Tech Stack",
+            "description": "Technologies, tools, and methodologies I work with",
+            "empty": "No Skills Added",
+            "emptyDesc": "Skills will appear here once added through the admin panel."
+        },
+        "blog": {
+            "title": "Blog",
+            "description": "Technical articles and thoughts",
+            "minRead": "{min} min read",
+            "moreTags": "+{count} more",
+            "noPosts": "No Posts Found",
+            "noPostsWithTag": "No posts found with tag \"{tag}\".",
+            "emptyState": "Blog posts will appear here once published.",
+            "readMore": "Read more"
         }
-    },
-    "blog": {
-        "title": "Blog",
-        "description": "Technical articles and thoughts",
-        "minRead": "{min} min read",
-        "moreTags": "+{count} more",
-        "noPosts": "No Posts Found",
-        "noPostsWithTag": "No posts found with tag \"{tag}\".",
-        "emptyState": "Blog posts will appear here once published.",
-        "readMore": "Read more"
-    },
-    "projects": {
-        "title": "Projects",
-        "description": "Portfolio of my work and side projects",
-        "noProjects": "No Projects Yet",
-        "emptyState": "Projects will appear here once added through the admin panel."
     }
 }

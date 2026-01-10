@@ -78,7 +78,61 @@
             "clubs": "クラブ & 活動",
             "experiences": "経験",
             "certifications": "資格",
-            "awards": "受賞歴"
+            "awards": "受賞",
+            "languages": "言語"
+        },
+        "work": {
+            "title": "職務経歴",
+            "description": "専門的な経歴とキャリア",
+            "empty": "登録された経歴がありません",
+            "emptyDesc": "管理パネルから経歴を追加してください。",
+            "internship": "インターンシップ",
+            "part_time": "アルバイト",
+            "full_time": "正社員",
+            "military_service": "兵役",
+            "present": "在職中"
+        },
+        "education": {
+            "title": "学歴",
+            "description": "学問的背景と学習の過程",
+            "empty": "登録された学歴がありません",
+            "emptyDesc": "管理パネルから学歴を追加してください。",
+            "university": "大学",
+            "study_abroad": "留学",
+            "course": "コース",
+            "present": "在学中"
+        },
+        "awards": {
+            "title": "受賞・表彰",
+            "description": "受賞実績と成果",
+            "empty": "登録された受賞歴がありません",
+            "emptyDesc": "管理パネルから受賞歴を追加してください。"
+        },
+        "certifications": {
+            "title": "資格",
+            "description": "専門資格と免許",
+            "empty": "登録された資格がありません",
+            "emptyDesc": "管理パネルから資格を追加してください。",
+            "issuedBy": "発行機関: {issuer}"
+        },
+        "clubs": {
+            "title": "サークル・活動",
+            "description": "課外活動とコミュニティ",
+            "empty": "登録された活動がありません",
+            "emptyDesc": "管理パネルから活動を追加してください。",
+            "role": "役割: {role}"
+        },
+        "experiences": {
+            "title": "経験",
+            "description": "ボランティアやその他の有意義な経験",
+            "empty": "登録された経験がありません",
+            "emptyDesc": "管理パネルから経験を追加してください。"
+        },
+        "hobbies": {
+            "title": "趣味・関心",
+            "description": "余暇の活動",
+            "empty": "登録された趣味がありません",
+            "emptyDesc": "管理パネルから趣味を追加してください。"
         }
     },
     "tech": {
@@ -101,6 +155,22 @@
             "programming_language": "プログラミング言語",
             "cloud": "クラウド",
             "other": "その他"
+        },
+        "projects": {
+            "title": "プロジェクト",
+            "description": "制作物とサイドプロジェクトのポートフォリオ",
+            "empty": "登録されたプロジェクトがありません",
+            "emptyDesc": "管理パネルからプロジェクトを追加してください。",
+            "view": "プロジェクトを見る",
+            "preview": "プレビュー",
+            "source": "ソースコード",
+            "present": "進行中"
+        },
+        "skills": {
+            "title": "技術スタック",
+            "description": "使用可能な技術、ツール、方法論",
+            "empty": "登録されたスキルがありません",
+            "emptyDesc": "管理パネルからスキルを追加してください。"
         }
     },
     "blog": {
@@ -112,11 +182,5 @@
         "noPostsWithTag": "タグ \"{tag}\" の投稿は見つかりませんでした。",
         "emptyState": "投稿はまだありません。",
         "readMore": "続きを読む"
-    },
-    "projects": {
-        "title": "プロジェクト",
-        "description": "作品とサイドプロジェクトのポートフォリオ",
-        "noProjects": "プロジェクトなし",
-        "emptyState": "管理パネルからプロジェクトを追加すると、ここに表示されます。"
     }
 }

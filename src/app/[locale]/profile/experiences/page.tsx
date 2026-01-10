@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
 
 export default async function ExperiencesPage({
     params,
@@ -13,6 +14,7 @@ export default async function ExperiencesPage({
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+    const t = await getTranslations({ locale, namespace: 'profile.experiences' });
 
     const { data: experiencesData } = await supabase
         .from('experiences')
@@ -42,9 +44,9 @@ export default async function ExperiencesPage({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Experiences</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Exhibitions, hackathons, conferences, and other activities
+                    {t('description')}
                 </p>
             </div>
 
@@ -109,9 +111,9 @@ export default async function ExperiencesPage({
                 ) : (
                     <Card>
                         <CardHeader>
-                            <CardTitle>No Experiences Added</CardTitle>
+                            <CardTitle>{t('empty')}</CardTitle>
                             <CardDescription>
-                                Add your experiences through the admin panel.
+                                {t('emptyDesc')}
                             </CardDescription>
                         </CardHeader>
                     </Card>

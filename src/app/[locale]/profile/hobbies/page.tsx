@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
 
 export default async function HobbiesPage({
     params,
@@ -12,6 +13,7 @@ export default async function HobbiesPage({
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+    const t = await getTranslations({ locale, namespace: 'profile.hobbies' });
 
     const { data: hobbiesData } = await supabase
         .from('hobbies')
@@ -34,9 +36,9 @@ export default async function HobbiesPage({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Hobbies & Interests</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Things I enjoy doing in my free time
+                    {t('description')}
                 </p>
             </div>
 
@@ -77,9 +79,9 @@ export default async function HobbiesPage({
                 ) : (
                     <Card className="col-span-full">
                         <CardHeader>
-                            <CardTitle>No Hobbies Added</CardTitle>
+                            <CardTitle>{t('empty')}</CardTitle>
                             <CardDescription>
-                                Add your hobbies through the admin panel.
+                                {t('emptyDesc')}
                             </CardDescription>
                         </CardHeader>
                     </Card>

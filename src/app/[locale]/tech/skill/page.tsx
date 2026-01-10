@@ -1,18 +1,20 @@
 import { createClient } from '@/lib/supabase/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Skill, SkillWithDetails } from '@/types/tech';
+import { SkillWithDetails } from '@/types/tech';
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
+import type { Locale } from '@/i18n';
 
 export default async function SkillsPage({
     params,
 }: {
-    params: Promise<{ locale: string }>;
+    params: Promise<{ locale: Locale }>;
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+    const t = await getTranslations({ locale, namespace: 'tech.skills' });
 
     const { data: skillsData } = await supabase
         .from('skills')
@@ -52,9 +54,9 @@ export default async function SkillsPage({
     return (
         <div className="space-y-8">
             <div>
-                <h1 className="text-3xl font-bold">Skills & Tech Stack</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Technologies, tools, and methodologies I work with
+                    {t('description')}
                 </p>
             </div>
 
@@ -115,9 +117,9 @@ export default async function SkillsPage({
             ) : (
                 <Card>
                     <CardHeader>
-                        <CardTitle>No Skills Added</CardTitle>
+                        <CardTitle>{t('empty')}</CardTitle>
                         <CardDescription>
-                            Skills will appear here once added through the admin panel.
+                            {t('emptyDesc')}
                         </CardDescription>
                     </CardHeader>
                 </Card>

@@ -5,6 +5,7 @@ import { Award, ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
 
 export default async function CertificationsPage({
     params,
@@ -13,6 +14,7 @@ export default async function CertificationsPage({
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+    const t = await getTranslations({ locale, namespace: 'profile.certifications' });
 
     const { data: certificationsData } = await supabase
         .from('certifications')
@@ -36,9 +38,9 @@ export default async function CertificationsPage({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold mb-2">Certifications</h1>
+                <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
                 <p className="text-muted-foreground">
-                    Professional certifications and licenses
+                    {t('description')}
                 </p>
             </div>
 
@@ -77,7 +79,7 @@ export default async function CertificationsPage({
                                         )}
                                         <div className="flex flex-wrap gap-2 mt-auto">
                                             <Badge variant="outline">
-                                                Issued: {new Date(cert.issue_date).toLocaleDateString()}
+                                                {new Date(cert.issue_date).toLocaleDateString()}
                                             </Badge>
                                         </div>
                                     </div>
@@ -88,7 +90,7 @@ export default async function CertificationsPage({
                 ) : (
                     <Card>
                         <CardContent className="py-8 text-center text-muted-foreground">
-                            No certifications yet
+                            {t('empty')}
                         </CardContent>
                     </Card>
                 )}

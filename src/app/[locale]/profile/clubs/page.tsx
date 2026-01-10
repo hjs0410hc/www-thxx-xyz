@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
 
 export default async function ClubsPage({
     params,
@@ -13,6 +14,7 @@ export default async function ClubsPage({
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+    const t = await getTranslations({ locale, namespace: 'profile.clubs' });
 
     const { data: clubsData } = await supabase
         .from('clubs')
@@ -41,9 +43,9 @@ export default async function ClubsPage({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Clubs & Activities</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Organizations and activities I've been involved with
+                    {t('description')}
                 </p>
             </div>
 
@@ -90,9 +92,9 @@ export default async function ClubsPage({
                 ) : (
                     <Card className="col-span-full">
                         <CardHeader>
-                            <CardTitle>No Clubs & Activities Added</CardTitle>
+                            <CardTitle>{t('empty')}</CardTitle>
                             <p className="text-sm text-muted-foreground">
-                                Add your clubs and activities through the admin panel.
+                                {t('emptyDesc')}
                             </p>
                         </CardHeader>
                     </Card>

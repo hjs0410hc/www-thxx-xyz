@@ -1,20 +1,23 @@
 
 import { createClient } from '@/lib/supabase/server';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ExternalLink, Github } from 'lucide-react';
-import { Project, ProjectWithDetails } from '@/types/tech';
+import { ProjectWithDetails } from '@/types/tech';
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
+import type { Locale } from '@/i18n';
 
 export default async function ProjectsPage({
     params,
 }: {
-    params: Promise<{ locale: string }>;
+    params: Promise<{ locale: Locale }>;
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+    const t = await getTranslations({ locale, namespace: 'tech.projects' });
 
     const { data: projectsData } = await supabase
         .from('projects')
@@ -39,9 +42,9 @@ export default async function ProjectsPage({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Projects</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Portfolio of my work and side projects
+                    {t('description')}
                 </p>
             </div>
 
@@ -55,7 +58,7 @@ export default async function ProjectsPage({
                                 href={`/${locale}/tech/project/${project.slug}`}
                                 className="absolute inset-0 z-0"
                             >
-                                <span className="sr-only">View Project</span>
+                                <span className="sr-only">{t('view')}</span>
                             </Link>
 
                             {/* Image Section - Fixed Desktop Width */}
@@ -89,7 +92,7 @@ export default async function ProjectsPage({
                                         </span>
                                         {(project.start_date || project.end_date) && <span className="text-muted-foreground/50">~</span>}
                                         <span>
-                                            {project.end_date ? new Date(project.end_date).toISOString().slice(0, 7) : 'Present'}
+                                            {project.end_date ? new Date(project.end_date).toISOString().slice(0, 7) : t('present')}
                                         </span>
                                     </div>
                                 </div>
@@ -123,7 +126,7 @@ export default async function ProjectsPage({
                                             <Button variant="ghost" size="sm" asChild className="h-8 text-xs px-2 hover:bg-primary/5 hover:text-primary -ml-2">
                                                 <a href={project.demo_url} target="_blank" rel="noopener noreferrer">
                                                     <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-                                                    Preview
+                                                    {t('preview')}
                                                 </a>
                                             </Button>
                                         )}
@@ -131,7 +134,7 @@ export default async function ProjectsPage({
                                             <Button variant="ghost" size="sm" asChild className="h-8 text-xs px-2 hover:bg-primary/5 hover:text-primary">
                                                 <a href={project.github_url} target="_blank" rel="noopener noreferrer">
                                                     <Github className="h-3.5 w-3.5 mr-1.5" />
-                                                    Source
+                                                    {t('source')}
                                                 </a>
                                             </Button>
                                         )}
@@ -143,9 +146,9 @@ export default async function ProjectsPage({
                 ) : (
                     <Card className="col-span-full">
                         <CardHeader>
-                            <CardTitle>No Projects Yet</CardTitle>
+                            <CardTitle>{t('empty')}</CardTitle>
                             <CardDescription>
-                                Projects will appear here once added through the admin panel.
+                                {t('emptyDesc')}
                             </CardDescription>
                         </CardHeader>
                     </Card>
