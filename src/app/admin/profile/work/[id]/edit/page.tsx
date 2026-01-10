@@ -14,7 +14,7 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
     const supabase = await createClient();
     const { data: work } = await supabase
         .from('work_experience')
-        .select('*')
+        .select('*, translations:work_experience_translations(*)')
         .eq('id', id)
         .single();
 
@@ -40,6 +40,7 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
                 fields={[
                     { name: 'company', label: 'Company', required: true, placeholder: 'Company Name' },
                     { name: 'position', label: 'Position', required: true, placeholder: 'Software Engineer' },
+                    { name: 'location', label: 'Location', placeholder: 'Seoul, Korea' },
                     {
                         name: 'type',
                         label: 'Type',
@@ -54,16 +55,6 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
                     },
                     { name: 'slug', label: 'Slug (URL)', required: true, placeholder: 'google-software-engineer' },
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary for list view...' },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                     { name: 'start_date', label: 'Start Date', type: 'date', required: true },
                     { name: 'end_date', label: 'End Date', type: 'date' },
                 ]}
@@ -71,6 +62,7 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['company', 'position', 'location', 'description']}
             />
         </div>
     );

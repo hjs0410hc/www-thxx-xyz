@@ -15,15 +15,29 @@ export default async function WorkDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: work } = await supabase
+    const { data: workData } = await supabase
         .from('work_experience')
-        .select('*')
+        .select('*, work_experience_translations(*)')
         .eq('slug', slug)
         .single();
 
-    if (!work) {
+    if (!workData) {
         notFound();
     }
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.work_experience_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const work = getLocalized(workData);
 
     return (
         <div className="container max-w-4xl py-8">

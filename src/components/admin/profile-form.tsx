@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { updateProfile, addSocialLink, deleteSocialLink, updateSocialLink, addLanguage, deleteLanguage, updateLanguage } from '@/lib/actions/profile';
 import { uploadImage } from '@/lib/actions/upload';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, CheckCircle2, Upload, Pencil, Save, Ban } from 'lucide-react';
 import Image from 'next/image';
 import { TiptapEditor } from '@/components/admin/tiptap-editor';
@@ -26,9 +27,44 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
     const [error, setError] = useState<string | null>(null);
     const [profileImageUrl, setProfileImageUrl] = useState<string>(profile?.profile_image_url || '');
     const [uploading, setUploading] = useState(false);
-    const [markdownContent, setMarkdownContent] = useState(profile?.markdown_content || null);
+
+    // Controlled states for localized fields
+    const [locale, setLocale] = useState('ko');
+
+    // Initialize from translations if available
+    const initialTrans = profile?.profile_translations?.find((t: any) => t.locale === 'ko')
+        || profile?.profile_translations?.[0];
+
+    const [name, setName] = useState(initialTrans?.name || '');
+    const [phone, setPhone] = useState(initialTrans?.phone || '');
+    const [nationality, setNationality] = useState(initialTrans?.nationality || '');
+    const [bio, setBio] = useState(initialTrans?.bio || '');
+    const [markdownContent, setMarkdownContent] = useState(initialTrans?.markdown_content || null);
+
     const [editingSocialLink, setEditingSocialLink] = useState<string | null>(null);
     const [editingLanguage, setEditingLanguage] = useState<string | null>(null);
+
+    // Update localized fields when locale changes
+    useEffect(() => {
+        if (profile && profile.profile_translations) {
+            const translation = profile.profile_translations.find((t: any) => t.locale === locale);
+            if (translation) {
+                setName(translation.name || '');
+                setPhone(translation.phone || '');
+                setNationality(translation.nationality || '');
+                setBio(translation.bio || '');
+                setMarkdownContent(translation.markdown_content || null);
+            } else {
+                // If no translation exists for this locale, start mostly empty or keep existing?
+                // Better to start empty for clean input except maybe name
+                setName('');
+                setPhone('');
+                setNationality('');
+                setBio('');
+                setMarkdownContent(null);
+            }
+        }
+    }, [locale, profile]);
 
     async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -51,6 +87,14 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
     async function handleProfileSubmit(formData: FormData) {
         setSuccess(false);
         setError(null);
+
+        // Append localized data
+        formData.set('locale', locale);
+        formData.set('name', name);
+        formData.set('phone', phone);
+        formData.set('nationality', nationality);
+        formData.set('bio', bio);
+
         if (profileImageUrl) {
             formData.set('profile_image_url', profileImageUrl);
         }
@@ -137,13 +181,28 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
                 </CardHeader>
                 <CardContent>
                     <form action={handleProfileSubmit} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="locale">Language</Label>
+                            <Select name="locale" value={locale} onValueChange={setLocale}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Language" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="ko">Korean</SelectItem>
+                                    <SelectItem value="en">English</SelectItem>
+                                    <SelectItem value="ja">Japanese</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
                         <div className="grid gap-4 sm:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="name">Name *</Label>
+                                <Label htmlFor="name">Name ({locale}) *</Label>
                                 <Input
                                     id="name"
                                     name="name"
-                                    defaultValue={profile?.name || ''}
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
                                     required
                                 />
                             </div>
@@ -159,20 +218,22 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="phone">Phone</Label>
+                                <Label htmlFor="phone">Phone ({locale})</Label>
                                 <Input
                                     id="phone"
                                     name="phone"
-                                    defaultValue={profile?.phone || ''}
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="nationality">Nationality</Label>
+                                <Label htmlFor="nationality">Nationality ({locale})</Label>
                                 <Input
                                     id="nationality"
                                     name="nationality"
-                                    defaultValue={profile?.nationality || ''}
+                                    value={nationality}
+                                    onChange={(e) => setNationality(e.target.value)}
                                 />
                             </div>
 
@@ -197,11 +258,12 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="bio">Bio</Label>
+                            <Label htmlFor="bio">Bio ({locale})</Label>
                             <Textarea
                                 id="bio"
                                 name="bio"
-                                defaultValue={profile?.bio || ''}
+                                value={bio}
+                                onChange={(e) => setBio(e.target.value)}
                                 rows={4}
                                 placeholder="Tell us about yourself..."
                             />
@@ -257,7 +319,7 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
                         <Separator className="my-6" />
 
                         <div className="space-y-2">
-                            <Label>About Section (Markdown)</Label>
+                            <Label>About Section (Markdown) ({locale})</Label>
                             <CardDescription className="mb-2">
                                 Rich text content for your profile&apos;s &quot;About&quot; section
                             </CardDescription>

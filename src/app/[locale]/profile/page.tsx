@@ -8,15 +8,36 @@ export default async function ProfilePage({ params }: { params: { locale: Locale
     const supabase = await createClient();
     const locale = (await params).locale;
 
-    const { data: profile } = await supabase.from('profiles').select('*').single();
-    const { data: workExperience } = await supabase.from('work_experience').select('*').order('start_date', { ascending: false });
-    const { data: education } = await supabase.from('education').select('*').order('start_date', { ascending: false });
-    const { data: hobbies } = await supabase.from('hobbies').select('*');
-    const { data: clubs } = await supabase.from('clubs').select('*').order('start_date', { ascending: false });
-    const { data: experiences } = await supabase.from('experiences').select('*').order('date', { ascending: false });
-    const { data: awards } = await supabase.from('awards').select('*').order('date', { ascending: false });
-    const { data: certifications } = await supabase.from('certifications').select('*').order('issue_date', { ascending: false });
+    const { data: profileData } = await supabase.from('profiles').select('*, profile_translations(*)').single();
+    const { data: workExperienceData } = await supabase.from('work_experience').select('*, work_experience_translations(*)').order('start_date', { ascending: false });
+    const { data: educationData } = await supabase.from('education').select('*, education_translations(*)').order('start_date', { ascending: false });
+    const { data: hobbiesData } = await supabase.from('hobbies').select('*, hobby_translations(*)');
+    const { data: clubsData } = await supabase.from('clubs').select('*, club_translations(*)').order('start_date', { ascending: false });
+    const { data: experiencesData } = await supabase.from('experiences').select('*, experience_translations(*)').order('date', { ascending: false });
+    const { data: awardsData } = await supabase.from('awards').select('*, award_translations(*)').order('date', { ascending: false });
+    const { data: certificationsData } = await supabase.from('certifications').select('*, certification_translations(*)').order('issue_date', { ascending: false });
     const { data: languages } = await supabase.from('languages').select('*').order('proficiency_level', { ascending: false });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any, translationsField: string) => {
+        if (!item) return null;
+        const translations = item[translationsField] || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const profile = getLocalized(profileData, 'profile_translations');
+    const workExperience = (workExperienceData || []).map((item) => getLocalized(item, 'work_experience_translations'));
+    const education = (educationData || []).map((item) => getLocalized(item, 'education_translations'));
+    const hobbies = (hobbiesData || []).map((item) => getLocalized(item, 'hobby_translations'));
+    const clubs = (clubsData || []).map((item) => getLocalized(item, 'club_translations'));
+    const experiences = (experiencesData || []).map((item) => getLocalized(item, 'experience_translations'));
+    const awards = (awardsData || []).map((item) => getLocalized(item, 'award_translations'));
+    const certifications = (certificationsData || []).map((item) => getLocalized(item, 'certification_translations'));
 
     return (
         <div className="space-y-8">

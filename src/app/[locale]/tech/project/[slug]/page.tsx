@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ExternalLink, Github, Calendar, ArrowLeft } from 'lucide-react';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
-import { Project } from '@/types/tech';
+import { Project, ProjectWithDetails } from '@/types/tech';
 
 export async function generateMetadata({
     params,
@@ -20,12 +20,24 @@ export async function generateMetadata({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: project } = await supabase
+    const { data: projectData } = await supabase
         .from('projects')
-        .select('*')
+        .select('*, project_translations(*)')
         .eq('slug', slug)
-        .eq('locale', locale)
         .single();
+
+    if (!projectData) {
+        return {};
+    }
+
+    const translations = projectData.project_translations || [];
+    const trans = translations.find((t: any) => t.locale === locale)
+        || translations.find((t: any) => t.locale === 'ko')
+        || translations.find((t: any) => t.locale === 'en')
+        || translations[0]
+        || {};
+
+    const project = { ...projectData, ...trans } as ProjectWithDetails;
 
     if (!project) {
         return {};
@@ -37,7 +49,7 @@ export async function generateMetadata({
         path: `/${locale}/tech/project/${slug}`,
         locale,
         image: undefined, // Images removed
-        tags: project.technologies,
+        tags: project.technologies || undefined,
     });
 }
 
@@ -49,12 +61,24 @@ export default async function ProjectDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: project } = await supabase
+    const { data: projectData } = await supabase
         .from('projects')
-        .select('*')
+        .select('*, project_translations(*)')
         .eq('slug', slug)
-        .eq('locale', locale)
         .single();
+
+    if (!projectData) {
+        notFound();
+    }
+
+    const translations = projectData.project_translations || [];
+    const trans = translations.find((t: any) => t.locale === locale)
+        || translations.find((t: any) => t.locale === 'ko')
+        || translations.find((t: any) => t.locale === 'en')
+        || translations[0]
+        || {};
+
+    const project = { ...projectData, ...trans } as ProjectWithDetails;
 
     if (!project) {
         notFound();

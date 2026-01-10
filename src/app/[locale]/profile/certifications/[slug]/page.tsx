@@ -16,15 +16,29 @@ export default async function CertificationDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: certification } = await supabase
+    const { data: certificationData } = await supabase
         .from('certifications')
-        .select('*')
+        .select('*, certification_translations(*)')
         .eq('slug', slug)
         .single();
 
-    if (!certification) {
+    if (!certificationData) {
         notFound();
     }
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.certification_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const certification = getLocalized(certificationData);
 
     const isExpired = certification.expiry_date && new Date(certification.expiry_date) < new Date();
 

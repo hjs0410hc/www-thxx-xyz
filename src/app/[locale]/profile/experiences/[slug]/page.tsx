@@ -16,15 +16,29 @@ export default async function ExperienceDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: experience } = await supabase
+    const { data: experienceData } = await supabase
         .from('experiences')
-        .select('*')
+        .select('*, experience_translations(*)')
         .eq('slug', slug)
         .single();
 
-    if (!experience) {
+    if (!experienceData) {
         notFound();
     }
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.experience_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const experience = getLocalized(experienceData);
 
     return (
         <div className="container max-w-4xl py-8">

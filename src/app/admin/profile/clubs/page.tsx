@@ -16,7 +16,7 @@ export default async function AdminClubsPage() {
     const supabase = await createClient();
     const { data: clubs } = await supabase
         .from('clubs')
-        .select('*')
+        .select('*, club_translations(*)')
         .order('start_date', { ascending: false });
 
     return (
@@ -30,16 +30,6 @@ export default async function AdminClubsPage() {
                     { name: 'role', label: 'Role', placeholder: 'President' },
                     { name: 'slug', label: 'Slug (URL)', required: true, placeholder: 'robotics-club' },
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary...' },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                     { name: 'start_date', label: 'Start Date', type: 'date', required: true },
                     { name: 'end_date', label: 'End Date', type: 'date' },
                 ]}
@@ -47,6 +37,7 @@ export default async function AdminClubsPage() {
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['name', 'role', 'description']}
             />
 
             <Card>
@@ -56,26 +47,33 @@ export default async function AdminClubsPage() {
                 <CardContent>
                     {clubs && clubs.length > 0 ? (
                         <div className="space-y-4">
-                            {clubs.map((club) => (
-                                <div key={club.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/admin/profile/clubs/${club.id}/edit`} className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="font-semibold hover:text-primary">{club.name}</h3>
-                                            <span className="text-xs text-muted-foreground">/{club.slug}</span>
-                                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                                        </div>
-                                        {club.role && <p className="text-sm text-muted-foreground mb-1">{club.role}</p>}
-                                        {club.description && (
-                                            <p className="text-sm text-muted-foreground line-clamp-2">{club.description}</p>
-                                        )}
-                                    </Link>
-                                    <form action={deleteClub.bind(null, club.id)}>
-                                        <Button variant="ghost" size="icon" type="submit">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </form>
-                                </div>
-                            ))}
+                            {clubs.map((club: any) => {
+                                const trans = club.club_translations?.find((t: any) => t.locale === 'ko')
+                                    || club.club_translations?.find((t: any) => t.locale === 'en')
+                                    || club.club_translations?.[0]
+                                    || {};
+
+                                return (
+                                    <div key={club.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                                        <Link href={`/admin/profile/clubs/${club.id}/edit`} className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h3 className="font-semibold hover:text-primary">{trans.name || 'Untitled'}</h3>
+                                                <span className="text-xs text-muted-foreground">/{club.slug}</span>
+                                                <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                                            </div>
+                                            {trans.role && <p className="text-sm text-muted-foreground mb-1">{trans.role}</p>}
+                                            {trans.description && (
+                                                <p className="text-sm text-muted-foreground line-clamp-2">{trans.description}</p>
+                                            )}
+                                        </Link>
+                                        <form action={deleteClub.bind(null, club.id)}>
+                                            <Button variant="ghost" size="icon" type="submit">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </form>
+                                    </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <p className="text-muted-foreground text-center py-4">No clubs added yet</p>

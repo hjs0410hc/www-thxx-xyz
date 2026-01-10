@@ -14,7 +14,7 @@ export default async function EditCertificationPage({ params }: { params: Promis
     const supabase = await createClient();
     const { data: certification } = await supabase
         .from('certifications')
-        .select('*')
+        .select('*, translations:certification_translations(*)')
         .eq('id', id)
         .single();
 
@@ -44,21 +44,12 @@ export default async function EditCertificationPage({ params }: { params: Promis
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary...' },
                     { name: 'issue_date', label: 'Issue Date', type: 'date', required: true },
                     { name: 'expiry_date', label: 'Expiry Date', type: 'date' },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                 ]}
                 hasEditor={true}
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['name', 'issuer', 'description']}
             />
         </div>
     );

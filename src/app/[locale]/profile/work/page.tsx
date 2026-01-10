@@ -14,10 +14,23 @@ export default async function WorkPage({
     const { locale } = await params;
     const supabase = await createClient();
 
-    const { data: workExperience } = await supabase
+    const { data: workData } = await supabase
         .from('work_experience')
-        .select('*')
-        .order('start_date', { ascending: false });
+        .select('*, work_experience_translations(*)').order('start_date', { ascending: false });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.work_experience_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const workExperience = (workData || []).map(getLocalized);
 
     const formatDate = (date: string | null) => {
         if (!date) return 'Present';

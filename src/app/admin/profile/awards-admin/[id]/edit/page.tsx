@@ -14,7 +14,7 @@ export default async function EditAwardPage({ params }: { params: Promise<{ id: 
     const supabase = await createClient();
     const { data: award } = await supabase
         .from('awards')
-        .select('*')
+        .select('*, translations:award_translations(*)')
         .eq('id', id)
         .single();
 
@@ -43,21 +43,12 @@ export default async function EditAwardPage({ params }: { params: Promise<{ id: 
                     { name: 'slug', label: 'Slug (URL)', required: true, placeholder: 'topcit-4th' },
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary...' },
                     { name: 'date', label: 'Date', type: 'date', required: true },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                 ]}
                 hasEditor={true}
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['title', 'issuer', 'description']}
             />
         </div>
     );

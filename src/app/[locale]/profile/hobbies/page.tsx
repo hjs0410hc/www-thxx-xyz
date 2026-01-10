@@ -13,9 +13,23 @@ export default async function HobbiesPage({
     const { locale } = await params;
     const supabase = await createClient();
 
-    const { data: hobbies } = await supabase
+    const { data: hobbiesData } = await supabase
         .from('hobbies')
-        .select('*');
+        .select('*, hobby_translations(*)');
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.hobby_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const hobbies = (hobbiesData || []).map(getLocalized);
 
     return (
         <div className="space-y-6">

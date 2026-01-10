@@ -60,11 +60,7 @@ export function RecentPostsSection({ posts, locale }: RecentPostsSectionProps) {
                                     <Calendar className="h-3 w-3" />
                                     <span>
                                         {post.published_at
-                                            ? new Date(post.published_at).toLocaleDateString('en-US', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric'
-                                            })
+                                            ? new Date(post.published_at).toISOString().split('T')[0]
                                             : ''}
                                     </span>
                                 </div>

@@ -14,7 +14,7 @@ export default async function EditHobbyPage({ params }: { params: Promise<{ id: 
     const supabase = await createClient();
     const { data: hobby } = await supabase
         .from('hobbies')
-        .select('*')
+        .select('*, translations:hobby_translations(*)')
         .eq('id', id)
         .single();
 
@@ -46,6 +46,7 @@ export default async function EditHobbyPage({ params }: { params: Promise<{ id: 
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['name', 'description']}
             />
         </div>
     );

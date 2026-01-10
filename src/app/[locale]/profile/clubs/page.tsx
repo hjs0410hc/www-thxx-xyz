@@ -14,10 +14,23 @@ export default async function ClubsPage({
     const { locale } = await params;
     const supabase = await createClient();
 
-    const { data: clubs } = await supabase
+    const { data: clubsData } = await supabase
         .from('clubs')
-        .select('*')
-        .order('start_date', { ascending: false });
+        .select('*, club_translations(*)').order('start_date', { ascending: false });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.club_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const clubs = (clubsData || []).map(getLocalized);
 
     const formatDate = (date: string | null) => {
         if (!date) return 'Present';

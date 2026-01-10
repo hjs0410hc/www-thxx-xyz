@@ -16,15 +16,29 @@ export default async function HobbyDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: hobby } = await supabase
+    const { data: hobbyData } = await supabase
         .from('hobbies')
-        .select('*')
+        .select('*, hobby_translations(*)')
         .eq('slug', slug)
         .single();
 
-    if (!hobby) {
+    if (!hobbyData) {
         notFound();
     }
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.hobby_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const hobby = getLocalized(hobbyData);
 
     return (
         <div className="container max-w-4xl py-8">

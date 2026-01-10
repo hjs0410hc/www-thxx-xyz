@@ -21,7 +21,7 @@ export default async function AdminProfilePage() {
     // Fetch profile data
     const { data: profile } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*, profile_translations(*)')
         .single();
 
     // Fetch social links

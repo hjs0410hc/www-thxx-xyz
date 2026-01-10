@@ -34,10 +34,19 @@ export function ProfileSidebar() {
     useEffect(() => {
         const fetchData = async () => {
             const supabase = createClient();
-            const { data: profileData } = await supabase.from('profiles').select('*').single();
+            const { data: profileData } = await supabase.from('profiles').select('*, profile_translations(*)').single();
             const { data: socialLinksData } = await supabase.from('social_links').select('*').order('display_order', { ascending: true });
 
-            setProfile(profileData);
+            if (profileData) {
+                const translations = profileData.profile_translations || [];
+                const trans = translations.find((t: any) => t.locale === locale)
+                    || translations.find((t: any) => t.locale === 'ko')
+                    || translations.find((t: any) => t.locale === 'en')
+                    || translations[0]
+                    || {};
+                setProfile({ ...profileData, ...trans });
+            }
+
             setSocialLinks(socialLinksData || []);
         };
         fetchData();

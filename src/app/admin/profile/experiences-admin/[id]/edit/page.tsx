@@ -14,7 +14,7 @@ export default async function EditExperiencePage({ params }: { params: Promise<{
     const supabase = await createClient();
     const { data: experience } = await supabase
         .from('experiences')
-        .select('*')
+        .select('*, translations:experience_translations(*)')
         .eq('id', id)
         .single();
 
@@ -43,21 +43,12 @@ export default async function EditExperiencePage({ params }: { params: Promise<{
                     { name: 'slug', label: 'Slug (URL)', required: true, placeholder: 'hackathon-2024' },
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary...' },
                     { name: 'date', label: 'Date', type: 'date', required: true },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                 ]}
                 hasEditor={true}
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['title', 'organization', 'description']}
             />
         </div>
     );
