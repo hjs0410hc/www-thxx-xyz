@@ -15,12 +15,25 @@ export default async function ProjectsPage({
     const { locale } = await params;
     const supabase = await createClient();
 
-    const { data: projects } = await supabase
+    const { data: projectsData } = await supabase
         .from('projects')
-        .select('*')
-        .eq('locale', locale)
+        .select('*, project_translations(*)')
         .order('display_order')
         .order('created_at', { ascending: false });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.project_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const projects = (projectsData || []).map(getLocalized);
 
     return (
         <div className="container py-8 space-y-6">

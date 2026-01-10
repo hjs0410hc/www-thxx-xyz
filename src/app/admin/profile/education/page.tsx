@@ -16,7 +16,7 @@ export default async function AdminEducationPage() {
     const supabase = await createClient();
     const { data: education } = await supabase
         .from('education')
-        .select('*')
+        .select('*, education_translations(*)')
         .order('start_date', { ascending: false });
 
     return (
@@ -42,16 +42,6 @@ export default async function AdminEducationPage() {
                     },
                     { name: 'slug', label: 'Slug (URL)', required: true, placeholder: 'mit-computer-science' },
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary for list view...' },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                     { name: 'start_date', label: 'Start Date', type: 'date', required: true },
                     { name: 'end_date', label: 'End Date', type: 'date' },
                 ]}
@@ -59,6 +49,7 @@ export default async function AdminEducationPage() {
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['institution', 'degree', 'field', 'description']}
             />
 
             <Card>
@@ -68,26 +59,33 @@ export default async function AdminEducationPage() {
                 <CardContent>
                     {education && education.length > 0 ? (
                         <div className="space-y-4">
-                            {education.map((edu) => (
-                                <div key={edu.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/admin/profile/education/${edu.id}/edit`} className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="font-semibold hover:text-primary">{edu.institution}</h3>
-                                            <span className="text-xs text-muted-foreground">/{edu.slug}</span>
-                                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                                        </div>
-                                        <p className="text-sm text-muted-foreground mb-1">{edu.degree} {edu.field && `in ${edu.field}`}</p>
-                                        {edu.description && (
-                                            <p className="text-sm text-muted-foreground line-clamp-2">{edu.description}</p>
-                                        )}
-                                    </Link>
-                                    <form action={deleteEducation.bind(null, edu.id)}>
-                                        <Button variant="ghost" size="icon" type="submit">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </form>
-                                </div>
-                            ))}
+                            {education.map((edu: any) => {
+                                const trans = edu.education_translations?.find((t: any) => t.locale === 'ko')
+                                    || edu.education_translations?.find((t: any) => t.locale === 'en')
+                                    || edu.education_translations?.[0]
+                                    || {};
+
+                                return (
+                                    <div key={edu.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                                        <Link href={`/admin/profile/education/${edu.id}/edit`} className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h3 className="font-semibold hover:text-primary">{trans.institution || 'Untitled'}</h3>
+                                                <span className="text-xs text-muted-foreground">/{edu.slug}</span>
+                                                <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                                            </div>
+                                            <p className="text-sm text-muted-foreground mb-1">{trans.degree} {trans.field && `in ${trans.field}`}</p>
+                                            {trans.description && (
+                                                <p className="text-sm text-muted-foreground line-clamp-2">{trans.description}</p>
+                                            )}
+                                        </Link>
+                                        <form action={deleteEducation.bind(null, edu.id)}>
+                                            <Button variant="ghost" size="icon" type="submit">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </form>
+                                    </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <p className="text-muted-foreground text-center py-4">No education added yet</p>

@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
-import { Skill } from '@/types/tech';
+import { SkillWithDetails } from '@/types/tech';
 
 export async function generateMetadata({
     params,
@@ -18,23 +18,31 @@ export async function generateMetadata({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: skill } = await supabase
+    const { data: skillData } = await supabase
         .from('skills')
-        .select('*')
+        .select('*, skill_translations(*)')
         .eq('slug', slug)
-        .eq('locale', locale)
         .single();
 
-    if (!skill) {
+    if (!skillData) {
         return {};
     }
+
+    const translations = skillData.skill_translations || [];
+    const trans = translations.find((t: any) => t.locale === locale)
+        || translations.find((t: any) => t.locale === 'ko')
+        || translations.find((t: any) => t.locale === 'en')
+        || translations[0]
+        || {};
+
+    const skill = { ...skillData, ...trans } as SkillWithDetails;
 
     return generateSEOMetadata({
         title: skill.title,
         description: skill.description || skill.title,
         path: `/${locale}/tech/skill/${slug}`,
         locale,
-        tags: skill.technologies,
+        tags: skill.technologies || undefined,
     });
 }
 
@@ -46,16 +54,24 @@ export default async function SkillDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: skill } = await supabase
+    const { data: skillData } = await supabase
         .from('skills')
-        .select('*')
+        .select('*, skill_translations(*)')
         .eq('slug', slug)
-        .eq('locale', locale)
         .single();
 
-    if (!skill) {
+    if (!skillData) {
         notFound();
     }
+
+    const translations = skillData.skill_translations || [];
+    const trans = translations.find((t: any) => t.locale === locale)
+        || translations.find((t: any) => t.locale === 'ko')
+        || translations.find((t: any) => t.locale === 'en')
+        || translations[0]
+        || {};
+
+    const skill = { ...skillData, ...trans } as SkillWithDetails;
 
     return (
         <div className="max-w-4xl">

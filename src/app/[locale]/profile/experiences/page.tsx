@@ -14,10 +14,24 @@ export default async function ExperiencesPage({
     const { locale } = await params;
     const supabase = await createClient();
 
-    const { data: experiences } = await supabase
+    const { data: experiencesData } = await supabase
         .from('experiences')
-        .select('*')
+        .select('*, experience_translations(*)')
         .order('date', { ascending: false });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.experience_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const experiences = (experiencesData || []).map(getLocalized);
 
     const formatDate = (date: string | null) => {
         if (!date) return '';

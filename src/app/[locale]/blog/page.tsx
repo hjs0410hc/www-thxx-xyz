@@ -35,8 +35,7 @@ export default async function BlogPage({
     // Build query for posts
     let query = supabase
         .from('posts')
-        .select('*, post_tags(*)')
-        .eq('locale', locale)
+        .select('*, post_tags(*), post_translations(*)')
         .eq('published', true)
         .order('published_at', { ascending: false });
 
@@ -51,26 +50,32 @@ export default async function BlogPage({
         const postIds = matchingTags?.map(t => t.post_id) || [];
 
         if (postIds.length > 0) {
-            // Step 2: Fetch posts with those IDs, getting ALL tags
-            query = supabase
-                .from('posts')
-                .select('*, post_tags(*)')
-                .eq('locale', locale)
-                .eq('published', true)
-                .in('id', postIds)
-                .order('published_at', { ascending: false });
+            // Step 2: Fetch posts with those IDs
+            query = query.in('id', postIds);
         } else {
-            // No posts found with this tag, return empty
-            // We can just force an empty result by querying an impossible condition or handling it gracefully
-            // For simplicity, let's just make the query return nothing
-            query = supabase
-                .from('posts')
-                .select('*, post_tags(*)')
-                .eq('id', '00000000-0000-0000-0000-000000000000'); // Impossible ID
+            // No posts found with this tag, return empty by using an impossible ID
+            query = query.eq('id', '00000000-0000-0000-0000-000000000000');
         }
     }
 
-    const { data: posts } = await query;
+    const { data: rawPosts } = await query;
+
+    // Flatten and localize posts
+    const posts = (rawPosts || []).map((p: any) => {
+        const translations = p.post_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+
+        return {
+            ...p,
+            title: trans.title || p.title || '(No Title)', // Fallback to p.title if legacy data exists and migration failed, or just safety
+            excerpt: trans.excerpt || p.excerpt,
+            content: trans.content,
+        };
+    });
 
     const formatDate = (date: string | null) => {
         if (!date) return '';

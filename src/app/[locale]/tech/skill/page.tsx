@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Skill } from '@/types/tech';
+import { Skill, SkillWithDetails } from '@/types/tech';
 import Image from 'next/image';
 
 export default async function SkillsPage({
@@ -14,15 +14,31 @@ export default async function SkillsPage({
     const { locale } = await params;
     const supabase = await createClient();
 
-    const { data: skills } = await supabase
+    const { data: skillsData } = await supabase
         .from('skills')
-        .select('*')
-        .eq('locale', locale)
+        .select(`
+            *,
+            skill_translations (*)
+        `)
         .order('display_order')
         .order('created_at', { ascending: false });
 
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.skill_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const skills = (skillsData || []).map(getLocalized) as SkillWithDetails[];
+
     // Group skills by category
-    const groupedSkills = (skills || []).reduce((acc: Record<string, Skill[]>, skill: Skill) => {
+    const groupedSkills = (skills || []).reduce((acc: Record<string, SkillWithDetails[]>, skill: SkillWithDetails) => {
         const category = skill.category || 'Other';
         if (!acc[category]) {
             acc[category] = [];
@@ -47,10 +63,10 @@ export default async function SkillsPage({
                     <div key={category} className="space-y-4">
                         <h2 className="text-2xl font-semibold capitalize">{category}</h2>
                         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {groupedSkills[category].map((skill: Skill) => (
+                            {groupedSkills[category].map((skill: SkillWithDetails) => (
                                 <Link key={skill.id} href={`/${locale}/tech/skill/${skill.slug}`} className="block h-full">
-                                    <Card className="h-full flex flex-col hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer overflow-hidden">
-                                        <CardHeader className="pb-3 flex-row gap-4 space-y-0">
+                                    <Card className="h-full flex flex-col hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer overflow-hidden gap-1">
+                                        <CardHeader className="pb-3 flex flex-row items-center gap-4 space-y-0">
                                             {skill.cover_image && (
                                                 <div className="relative h-12 w-12 shrink-0 rounded-md overflow-hidden bg-muted">
                                                     <Image

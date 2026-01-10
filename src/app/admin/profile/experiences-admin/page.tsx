@@ -16,7 +16,7 @@ export default async function AdminExperiencesPage() {
     const supabase = await createClient();
     const { data: experiences } = await supabase
         .from('experiences')
-        .select('*')
+        .select('*, experience_translations(*)')
         .order('date', { ascending: false });
 
     return (
@@ -31,21 +31,12 @@ export default async function AdminExperiencesPage() {
                     { name: 'slug', label: 'Slug (URL)', required: true, placeholder: 'hackathon-2024' },
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary...' },
                     { name: 'date', label: 'Date', type: 'date', required: true },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                 ]}
                 hasEditor={true}
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['title', 'organization', 'description']}
             />
 
             <Card>
@@ -55,26 +46,33 @@ export default async function AdminExperiencesPage() {
                 <CardContent>
                     {experiences && experiences.length > 0 ? (
                         <div className="space-y-4">
-                            {experiences.map((exp) => (
-                                <div key={exp.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/admin/profile/experiences-admin/${exp.id}/edit`} className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="font-semibold hover:text-primary">{exp.title}</h3>
-                                            <span className="text-xs text-muted-foreground">/{exp.slug}</span>
-                                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                                        </div>
-                                        {exp.organization && <p className="text-sm text-muted-foreground mb-1">{exp.organization}</p>}
-                                        {exp.description && (
-                                            <p className="text-sm text-muted-foreground line-clamp-2">{exp.description}</p>
-                                        )}
-                                    </Link>
-                                    <form action={deleteExperience.bind(null, exp.id)}>
-                                        <Button variant="ghost" size="icon" type="submit">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </form>
-                                </div>
-                            ))}
+                            {experiences.map((exp: any) => {
+                                const trans = exp.experience_translations?.find((t: any) => t.locale === 'ko')
+                                    || exp.experience_translations?.find((t: any) => t.locale === 'en')
+                                    || exp.experience_translations?.[0]
+                                    || {};
+
+                                return (
+                                    <div key={exp.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                                        <Link href={`/admin/profile/experiences-admin/${exp.id}/edit`} className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h3 className="font-semibold hover:text-primary">{trans.title || 'Untitled'}</h3>
+                                                <span className="text-xs text-muted-foreground">/{exp.slug}</span>
+                                                <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                                            </div>
+                                            {trans.organization && <p className="text-sm text-muted-foreground mb-1">{trans.organization}</p>}
+                                            {trans.description && (
+                                                <p className="text-sm text-muted-foreground line-clamp-2">{trans.description}</p>
+                                            )}
+                                        </Link>
+                                        <form action={deleteExperience.bind(null, exp.id)}>
+                                            <Button variant="ghost" size="icon" type="submit">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </form>
+                                    </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <p className="text-muted-foreground text-center py-4">No experiences added yet</p>

@@ -14,10 +14,24 @@ export default async function AwardsPage({
     const { locale } = await params;
     const supabase = await createClient();
 
-    const { data: awards } = await supabase
+    const { data: awardsData } = await supabase
         .from('awards')
-        .select('*')
+        .select('*, award_translations(*)')
         .order('date', { ascending: false });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.award_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const awards = (awardsData || []).map(getLocalized);
 
     const formatDate = (date: string | null) => {
         if (!date) return '';

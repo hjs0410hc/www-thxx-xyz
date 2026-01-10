@@ -12,7 +12,10 @@ export default async function EditSkillPage({
 
     const { data: skill } = await supabase
         .from('skills')
-        .select('*')
+        .select(`
+            *,
+            skill_translations (*)
+        `)
         .eq('id', id)
         .single();
 

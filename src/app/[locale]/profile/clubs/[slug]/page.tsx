@@ -15,15 +15,29 @@ export default async function ClubDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: club } = await supabase
+    const { data: clubData } = await supabase
         .from('clubs')
-        .select('*')
+        .select('*, club_translations(*)')
         .eq('slug', slug)
         .single();
 
-    if (!club) {
+    if (!clubData) {
         notFound();
     }
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.club_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const club = getLocalized(clubData);
 
     return (
         <div className="container max-w-4xl py-8">

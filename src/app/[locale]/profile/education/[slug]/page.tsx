@@ -15,15 +15,29 @@ export default async function EducationDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: education } = await supabase
+    const { data: educationData } = await supabase
         .from('education')
-        .select('*')
+        .select('*, education_translations(*)')
         .eq('slug', slug)
         .single();
 
-    if (!education) {
+    if (!educationData) {
         notFound();
     }
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.education_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const education = getLocalized(educationData);
 
     return (
         <div className="container max-w-4xl py-8">

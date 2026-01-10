@@ -14,10 +14,24 @@ export default async function EducationPage({
     const { locale } = await params;
     const supabase = await createClient();
 
-    const { data: education } = await supabase
+    const { data: educationData } = await supabase
         .from('education')
-        .select('*')
+        .select('*, education_translations(*)')
         .order('start_date', { ascending: false });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.education_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const education = (educationData || []).map(getLocalized);
 
     const formatDate = (date: string | null) => {
         if (!date) return 'Present';

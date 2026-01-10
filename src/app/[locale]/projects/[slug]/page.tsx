@@ -18,16 +18,25 @@ export async function generateMetadata({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: project } = await supabase
+    const { data: projectData } = await supabase
         .from('projects')
-        .select('*')
+        .select('*, project_translations(*)')
         .eq('slug', slug)
-        .eq('locale', locale)
         .single();
 
-    if (!project) {
+    if (!projectData) {
         return {};
     }
+
+    const translations = projectData.project_translations || [];
+    const project = {
+        ...projectData,
+        ...(translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {})
+    };
 
     return generateSEOMetadata({
         title: project.title,
@@ -47,16 +56,29 @@ export default async function ProjectDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: project } = await supabase
+    const { data: projectData } = await supabase
         .from('projects')
-        .select('*')
+        .select('*, project_translations(*)')
         .eq('slug', slug)
-        .eq('locale', locale)
         .single();
 
-    if (!project) {
+    if (!projectData) {
         notFound();
     }
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.project_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const project = getLocalized(projectData);
 
     const formatDate = (date: string | null) => {
         if (!date) return '';

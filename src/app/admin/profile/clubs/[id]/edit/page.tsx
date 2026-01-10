@@ -14,7 +14,7 @@ export default async function EditClubPage({ params }: { params: Promise<{ id: s
     const supabase = await createClient();
     const { data: club } = await supabase
         .from('clubs')
-        .select('*')
+        .select('*, translations:club_translations(*)')
         .eq('id', id)
         .single();
 
@@ -42,16 +42,6 @@ export default async function EditClubPage({ params }: { params: Promise<{ id: s
                     { name: 'role', label: 'Role', placeholder: 'President' },
                     { name: 'slug', label: 'Slug (URL)', required: true, placeholder: 'robotics-club' },
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary...' },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                     { name: 'start_date', label: 'Start Date', type: 'date', required: true },
                     { name: 'end_date', label: 'End Date', type: 'date' },
                 ]}
@@ -59,6 +49,7 @@ export default async function EditClubPage({ params }: { params: Promise<{ id: s
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['name', 'role', 'description']}
             />
         </div>
     );

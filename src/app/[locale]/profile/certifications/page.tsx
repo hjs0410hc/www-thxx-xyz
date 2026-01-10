@@ -14,10 +14,24 @@ export default async function CertificationsPage({
     const { locale } = await params;
     const supabase = await createClient();
 
-    const { data: certifications } = await supabase
+    const { data: certificationsData } = await supabase
         .from('certifications')
-        .select('*')
+        .select('*, certification_translations(*)')
         .order('issue_date', { ascending: false });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.certification_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const certifications = (certificationsData || []).map(getLocalized);
 
     return (
         <div className="space-y-6">

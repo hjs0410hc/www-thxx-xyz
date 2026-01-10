@@ -9,10 +9,25 @@ import { DeletePostButton } from '@/components/admin/delete-post-button';
 export default async function AdminBlogPage() {
     const supabase = await createClient();
 
-    const { data: posts } = await supabase
+    const { data: postsData } = await supabase
         .from('posts')
-        .select('*, post_tags(*)')
+        .select('*, post_tags(*), post_translations(*)')
         .order('created_at', { ascending: false });
+
+    const posts = (postsData || []).map((p: any) => {
+        const translations = p.post_translations || [];
+        const trans = translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {}; // Default to empty if no translation (shouldn't happen if created correctly)
+
+        return {
+            ...p,
+            title: trans.title || '(No Title)',
+            excerpt: trans.excerpt,
+            locale: trans.locale || 'ko', // Show which locale we picked
+        };
+    });
 
     return (
         <div className="container py-8">

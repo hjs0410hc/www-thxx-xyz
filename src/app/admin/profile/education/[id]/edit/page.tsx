@@ -14,7 +14,7 @@ export default async function EditEducationPage({ params }: { params: Promise<{ 
     const supabase = await createClient();
     const { data: education } = await supabase
         .from('education')
-        .select('*')
+        .select('*, translations:education_translations(*)')
         .eq('id', id)
         .single();
 
@@ -54,16 +54,6 @@ export default async function EditEducationPage({ params }: { params: Promise<{ 
                     },
                     { name: 'slug', label: 'Slug (URL)', required: true, placeholder: 'mit-computer-science' },
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary for list view...' },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                     { name: 'start_date', label: 'Start Date', type: 'date', required: true },
                     { name: 'end_date', label: 'End Date', type: 'date' },
                 ]}
@@ -71,6 +61,7 @@ export default async function EditEducationPage({ params }: { params: Promise<{ 
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['institution', 'degree', 'field', 'description']}
             />
         </div>
     );
