@@ -13,13 +13,37 @@ import { TiptapEditor } from '@/components/admin/tiptap-editor';
 import { AlertCircle, Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { uploadImage } from '@/lib/actions/upload';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+const SUPPORTED_LOCALES = [
+    { value: 'ko', label: 'Korean' },
+    { value: 'en', label: 'English' },
+    { value: 'ja', label: 'Japanese' },
+];
 
 export default function NewBlogPostPage() {
-    const [content, setContent] = useState(null);
+    // State for translations: { [locale]: { title, excerpt, content } }
+    const [translations, setTranslations] = useState<Record<string, any>>({
+        ko: { title: '', excerpt: '', content: null },
+        en: { title: '', excerpt: '', content: null },
+        ja: { title: '', excerpt: '', content: null },
+    });
+
+    // Shared state
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
+
+    const updateTranslation = (locale: string, field: string, value: any) => {
+        setTranslations(prev => ({
+            ...prev,
+            [locale]: {
+                ...prev[locale],
+                [field]: value
+            }
+        }));
+    };
 
     async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -48,13 +72,18 @@ export default function NewBlogPostPage() {
         setLoading(true);
         setError(null);
 
-        // Add content & cover image to formData
-        if (content) {
-            formData.append('content', JSON.stringify(content));
+        // Validation: Ensure at least one title is provided
+        const hasTitle = Object.values(translations).some(t => t.title && t.title.trim() !== '');
+        if (!hasTitle) {
+            setError('At least one language must have a title.');
+            setLoading(false);
+            return;
         }
 
+        // Add translations JSON to formData
+        formData.append('translations', JSON.stringify(translations));
+
         if (imageUrl) {
-            // formData already might have cover_image from hidden input, but ensuring it here
             formData.set('cover_image', imageUrl);
         }
 
@@ -64,7 +93,6 @@ export default function NewBlogPostPage() {
             setError(result.error);
             setLoading(false);
         }
-        // If successful, createPost redirects
     }
 
     return (
@@ -79,7 +107,7 @@ export default function NewBlogPostPage() {
                 <CardHeader>
                     <CardTitle>Create New Blog Post</CardTitle>
                     <CardDescription>
-                        Write and publish a new blog post
+                        Write and publish a new blog post. Add content in multiple languages.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -91,18 +119,8 @@ export default function NewBlogPostPage() {
                             </Alert>
                         )}
 
+                        {/* Shared Fields */}
                         <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="space-y-2">
-                                <Label htmlFor="title">Title *</Label>
-                                <Input
-                                    id="title"
-                                    name="title"
-                                    required
-                                    placeholder="My Awesome Post"
-                                    disabled={loading}
-                                />
-                            </div>
-
                             <div className="space-y-2">
                                 <Label htmlFor="slug">Slug *</Label>
                                 <Input
@@ -112,21 +130,6 @@ export default function NewBlogPostPage() {
                                     placeholder="my-awesome-post"
                                     disabled={loading}
                                 />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="locale">Language</Label>
-                                <select
-                                    id="locale"
-                                    name="locale"
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                                    defaultValue="ko"
-                                    disabled={loading}
-                                >
-                                    <option value="ko">Korean</option>
-                                    <option value="en">English</option>
-                                    <option value="ja">Japanese</option>
-                                </select>
                             </div>
 
                             <div className="space-y-2">
@@ -144,17 +147,6 @@ export default function NewBlogPostPage() {
                                     </label>
                                 </div>
                             </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="excerpt">Excerpt</Label>
-                            <Textarea
-                                id="excerpt"
-                                name="excerpt"
-                                rows={3}
-                                placeholder="Brief summary of the post..."
-                                disabled={loading}
-                            />
                         </div>
 
                         <div className="space-y-2">
@@ -177,7 +169,6 @@ export default function NewBlogPostPage() {
                                     >
                                         <X className="h-4 w-4" />
                                     </Button>
-                                    {/* Hidden input to ensure the value is submitted if needed, though we handle it in handleSubmit */}
                                     <input type="hidden" name="cover_image" value={imageUrl} />
                                 </div>
                             ) : (
@@ -214,9 +205,58 @@ export default function NewBlogPostPage() {
                             />
                         </div>
 
+                        {/* Localized Fields */}
                         <div className="space-y-2">
-                            <Label>Content *</Label>
-                            <TiptapEditor content={content} onChange={setContent} />
+                            <Label>Content & Translations</Label>
+                            <Tabs defaultValue="ko" className="w-full border rounded-lg p-4">
+                                <TabsList className="grid w-full grid-cols-3 mb-4">
+                                    {SUPPORTED_LOCALES.map(locale => (
+                                        <TabsTrigger key={locale.value} value={locale.value}>
+                                            {locale.label}
+                                        </TabsTrigger>
+                                    ))}
+                                </TabsList>
+
+                                {SUPPORTED_LOCALES.map(locale => (
+                                    <TabsContent key={locale.value} value={locale.value} className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`title-${locale.value}`}>Title ({locale.label})</Label>
+                                            <Input
+                                                id={`title-${locale.value}`}
+                                                value={translations[locale.value].title}
+                                                onChange={(e) => updateTranslation(locale.value, 'title', e.target.value)}
+                                                placeholder={`Post Title in ${locale.label}`}
+                                                disabled={loading}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`excerpt-${locale.value}`}>Excerpt ({locale.label})</Label>
+                                            <Textarea
+                                                id={`excerpt-${locale.value}`}
+                                                value={translations[locale.value].excerpt}
+                                                onChange={(e) => updateTranslation(locale.value, 'excerpt', e.target.value)}
+                                                rows={3}
+                                                placeholder={`Brief summary in ${locale.label}...`}
+                                                disabled={loading}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label>Content ({locale.label})</Label>
+                                            {/* Key ensures editor remounts content when tab changes if needed, though we map all so they stay mounted? 
+                                                Actually, TabsContent mounts/unmounts? 
+                                                If it stays mounted, key isn't strictly needed for remount, but good for uniqueness.
+                                                However, standard TiptapEditor usage:
+                                            */}
+                                            <TiptapEditor
+                                                content={translations[locale.value].content}
+                                                onChange={(content) => updateTranslation(locale.value, 'content', content)}
+                                            />
+                                        </div>
+                                    </TabsContent>
+                                ))}
+                            </Tabs>
                         </div>
 
                         <div className="flex gap-2">

@@ -23,6 +23,7 @@
         "topics": "주제",
         "allPosts": "전체 글",
         "contact": "연락처",
+        "searchPlaceholder": "검색...",
         "copyright": "© {year} 현진섭 (THXX). All rights reserved."
     },
     "theme": {

@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, Clock, ArrowLeft, Globe } from 'lucide-react';
+import { Calendar, ArrowLeft, Globe } from 'lucide-react';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -50,18 +50,13 @@ export function BlogPostViewer({ post, locale: initialLocale, backLink }: BlogPo
 
     const formatDate = (date: string | null) => {
         if (!date) return '';
-        return new Date(date).toLocaleDateString(currentLocale === 'ko' ? 'ko-KR' : 'en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    };
-
-    const calculateReadingTime = (content: any) => {
-        if (!content) return 0;
-        const text = JSON.stringify(content);
-        const words = text.split(/\s+/).length;
-        return Math.ceil(words / 200);
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
     };
 
     return (
@@ -121,10 +116,6 @@ export function BlogPostViewer({ post, locale: initialLocale, backLink }: BlogPo
                                 <span>{formatDate(post.published_at)}</span>
                             </div>
                         )}
-                        <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4" />
-                            <span>{calculateReadingTime(translation.content)} min read</span>
-                        </div>
                     </div>
 
                     {/* Tags */}

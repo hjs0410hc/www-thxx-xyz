@@ -23,6 +23,7 @@
         "topics": "Topics",
         "allPosts": "All Posts",
         "contact": "Contact",
+        "searchPlaceholder": "Search...",
         "copyright": "© {year} Hyeon Jinseop (THXX). All rights reserved."
     },
     "theme": {
@@ -117,4 +118,3 @@
         "emptyState": "Projects will appear here once added through the admin panel."
     }
 }
-```

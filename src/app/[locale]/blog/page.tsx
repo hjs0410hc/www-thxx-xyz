@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { BlogSidebar } from '@/components/blog/blog-sidebar';
 import { getTranslations } from 'next-intl/server';
 
@@ -12,10 +12,10 @@ export default async function BlogPage({
     searchParams,
 }: {
     params: Promise<{ locale: string }>;
-    searchParams: Promise<{ tag?: string }>;
+    searchParams: Promise<{ tag?: string; q?: string }>;
 }) {
     const { locale } = await params;
-    const { tag: searchTag } = await searchParams;
+    const { tag: searchTag, q: userSearchQuery } = await searchParams;
     const supabase = await createClient();
 
     // Fetch all tags for the sidebar
@@ -40,21 +40,56 @@ export default async function BlogPage({
         .eq('published', true)
         .order('published_at', { ascending: false });
 
-    // Apply tag filter if present
+    // Apply tag and search filter
+    let postIds = new Set<string>();
+    let searchPerformed = false;
+
+    // Handle text search
+    if (userSearchQuery) {
+        searchPerformed = true;
+
+        // 1. Search in translations (title, excerpt)
+        const { data: transMatches } = await supabase
+            .from('post_translations')
+            .select('post_id')
+            .or(`title.ilike.%${userSearchQuery}%,excerpt.ilike.%${userSearchQuery}%`);
+
+        // 2. Search tags
+        const { data: tagMatches } = await supabase
+            .from('post_tags')
+            .select('post_id')
+            .ilike('tag', `%${userSearchQuery}%`);
+
+        // Collect IDs
+        transMatches?.forEach(t => postIds.add(t.post_id));
+        tagMatches?.forEach(t => postIds.add(t.post_id));
+    }
+
+    // Handle Tag Filter
     if (searchTag) {
-        // Step 1: Find post IDs that have the tag
-        const { data: matchingTags } = await supabase
+        const { data: tagFilterMatches } = await supabase
             .from('post_tags')
             .select('post_id')
             .eq('tag', searchTag);
 
-        const postIds = matchingTags?.map(t => t.post_id) || [];
+        const tagIds = new Set(tagFilterMatches?.map(t => t.post_id) || []);
 
-        if (postIds.length > 0) {
-            // Step 2: Fetch posts with those IDs
-            query = query.in('id', postIds);
+        if (searchPerformed) {
+            // Intersect
+            postIds = new Set([...postIds].filter(x => tagIds.has(x)));
         } else {
-            // No posts found with this tag, return empty by using an impossible ID
+            // Just use tag IDs
+            postIds = tagIds;
+            searchPerformed = true;
+        }
+    }
+
+    // Apply filters to query
+    if (searchPerformed) {
+        if (postIds.size > 0) {
+            query = query.in('id', Array.from(postIds));
+        } else {
+            // No matches
             query = query.eq('id', '00000000-0000-0000-0000-000000000000');
         }
     }
@@ -80,15 +115,13 @@ export default async function BlogPage({
 
     const formatDate = (date: string | null) => {
         if (!date) return '';
-        return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    };
-
-    // Calculate reading time (rough estimate: 200 words per minute)
-    const calculateReadingTime = (content: any) => {
-        if (!content) return 0;
-        const text = JSON.stringify(content);
-        const words = text.split(/\s+/).length;
-        return Math.ceil(words / 200);
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
     };
 
     const t = await getTranslations({ locale, namespace: 'blog' });
@@ -147,10 +180,6 @@ export default async function BlogPage({
                                                             <span>{formatDate(post.published_at)}</span>
                                                         </div>
                                                     )}
-                                                    <div className="flex items-center gap-1">
-                                                        <Clock className="h-3 w-3" />
-                                                        <span>{t('minRead', { min: calculateReadingTime(post.content) })}</span>
-                                                    </div>
                                                 </div>
 
                                                 {/* Tags */}

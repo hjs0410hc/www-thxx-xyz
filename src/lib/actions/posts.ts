@@ -6,7 +6,6 @@ import { redirect } from 'next/navigation';
 
 export async function createPost(formData: FormData) {
     const supabase = await createClient();
-    const locale = formData.get('locale') as string || 'ko';
 
     // 1. Prepare shared data
     const postData = {
@@ -27,28 +26,57 @@ export async function createPost(formData: FormData) {
         return { error: postError.message };
     }
 
-    // 3. Prepare localized data
-    const translationData = {
-        post_id: post.id,
-        locale: locale,
-        title: formData.get('title') as string,
-        excerpt: formData.get('excerpt') as string || null,
-        content: formData.get('content') ? JSON.parse(formData.get('content') as string) : null,
-    };
+    // 3. Handle Translations
+    // Check if we have multiple translations passed as JSON
+    const translationsJson = formData.get('translations') as string;
 
-    // 4. Insert into post_translations
-    const { error: transError } = await supabase
-        .from('post_translations')
-        .insert([translationData]);
+    if (translationsJson) {
+        try {
+            const translationsMap = JSON.parse(translationsJson);
+            const translationInserts = Object.entries(translationsMap).map(([locale, data]: [string, any]) => ({
+                post_id: post.id,
+                locale,
+                title: data.title,
+                excerpt: data.excerpt || null,
+                content: data.content,
+            })).filter(t => t.title); // Only insert if title exists
 
-    if (transError) {
-        // Rollback? ideally yes, but for now just return error
-        console.error('Error creating translation:', transError);
-        // We might want to delete the post if translation failed, but let's keep it simple
-        return { error: transError.message };
+            if (translationInserts.length > 0) {
+                const { error: transError } = await supabase
+                    .from('post_translations')
+                    .insert(translationInserts);
+
+                if (transError) {
+                    console.error('Error creating translations:', transError);
+                    return { error: transError.message };
+                }
+            }
+        } catch (e) {
+            console.error('Failed to parse translations JSON:', e);
+            return { error: 'Invalid translations data' };
+        }
+    } else {
+        // Fallback to single locale (legacy support)
+        const locale = formData.get('locale') as string || 'ko';
+        const translationData = {
+            post_id: post.id,
+            locale: locale,
+            title: formData.get('title') as string,
+            excerpt: formData.get('excerpt') as string || null,
+            content: formData.get('content') ? JSON.parse(formData.get('content') as string) : null,
+        };
+
+        const { error: transError } = await supabase
+            .from('post_translations')
+            .insert([translationData]);
+
+        if (transError) {
+            console.error('Error creating translation:', transError);
+            return { error: transError.message };
+        }
     }
 
-    // 5. Handle tags
+    // 4. Handle tags
     const tags = formData.get('tags') as string;
     if (tags && post) {
         const tagArray = tags.split(',').map(t => t.trim()).filter(t => t);
@@ -63,7 +91,8 @@ export async function createPost(formData: FormData) {
     }
 
     revalidatePath('/admin/blog');
-    revalidatePath(`/${locale}/blog`);
+    // We should revalidate all affected locales, basically all locales /blog
+    revalidatePath('/[locale]/blog', 'page');
     redirect('/admin/blog');
 }
 
@@ -123,20 +152,49 @@ export async function updatePost(id: string, formData: FormData) {
     }
 
     // 2. Upsert localized data
-    const translationData = {
-        post_id: id,
-        locale: locale,
-        title: formData.get('title') as string,
-        excerpt: formData.get('excerpt') as string || null,
-        content: formData.get('content') ? JSON.parse(formData.get('content') as string) : null,
-    };
+    const translationsJson = formData.get('translations') as string;
 
-    const { error: transError } = await supabase
-        .from('post_translations')
-        .upsert(translationData, { onConflict: 'post_id, locale' });
+    if (translationsJson) {
+        try {
+            const translationsMap = JSON.parse(translationsJson);
+            const translationUpserts = Object.entries(translationsMap).map(([locale, data]: [string, any]) => ({
+                post_id: id,
+                locale,
+                title: data.title,
+                excerpt: data.excerpt || null,
+                content: data.content,
+            })).filter(t => t.title); // Only upsert if title exists
 
-    if (transError) {
-        return { error: transError.message };
+            if (translationUpserts.length > 0) {
+                const { error: transError } = await supabase
+                    .from('post_translations')
+                    .upsert(translationUpserts, { onConflict: 'post_id, locale' });
+
+                if (transError) {
+                    return { error: transError.message };
+                }
+            }
+        } catch (e) {
+            console.error('Failed to parse translations JSON:', e);
+            return { error: 'Invalid translations data' };
+        }
+    } else {
+        // Fallback to single locale
+        const translationData = {
+            post_id: id,
+            locale: locale,
+            title: formData.get('title') as string,
+            excerpt: formData.get('excerpt') as string || null,
+            content: formData.get('content') ? JSON.parse(formData.get('content') as string) : null,
+        };
+
+        const { error: transError } = await supabase
+            .from('post_translations')
+            .upsert(translationData, { onConflict: 'post_id, locale' });
+
+        if (transError) {
+            return { error: transError.message };
+        }
     }
 
     // 3. Update tags

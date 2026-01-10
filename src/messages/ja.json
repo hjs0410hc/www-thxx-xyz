@@ -23,6 +23,7 @@
         "topics": "トピック",
         "allPosts": "すべての投稿",
         "contact": "連絡先",
+        "searchPlaceholder": "検索...",
         "copyright": "© {year} Hyeon Jinseop (THXX). All rights reserved."
     },
     "theme": {

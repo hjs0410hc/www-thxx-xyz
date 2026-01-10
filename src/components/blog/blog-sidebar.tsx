@@ -6,6 +6,7 @@ import { Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SearchInput } from './search-input';
 
 import { useTranslations } from 'next-intl';
 
@@ -27,6 +28,9 @@ export function BlogSidebar({ tags, currentTag, locale }: BlogSidebarProps) {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="px-0">
+                    <div className="mb-6 px-1">
+                        <SearchInput />
+                    </div>
                     <div className="flex flex-col space-y-1">
                         <Link href={`/${locale}/blog`} className="w-full">
                             <Button
