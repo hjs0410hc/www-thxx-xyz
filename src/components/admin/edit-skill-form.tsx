@@ -171,14 +171,16 @@ export function EditSkillForm({ skill, mode }: EditSkillFormProps) {
                                 list="categories"
                                 defaultValue={skill?.category || ''}
                                 disabled={loading}
-                                placeholder="e.g. Frontend, Backend, DevOps"
+                                placeholder="e.g. frontend, backend, devops"
                             />
                             <datalist id="categories">
-                                <option value="Frontend" />
-                                <option value="Backend" />
-                                <option value="DevOps" />
-                                <option value="Design" />
-                                <option value="Tools" />
+                                <option value="frontend" />
+                                <option value="backend" />
+                                <option value="database" />
+                                <option value="devops" />
+                                <option value="programming_language" />
+                                <option value="cloud" />
+                                <option value="other" />
                             </datalist>
                         </div>
 

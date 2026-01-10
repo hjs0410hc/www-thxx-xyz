@@ -3,6 +3,7 @@ import { FileText } from 'lucide-react';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { ProfileSections } from '@/components/profile/profile-sections';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
 
 export default async function ProfilePage({ params }: { params: { locale: Locale } }) {
     const supabase = await createClient();
@@ -39,12 +40,14 @@ export default async function ProfilePage({ params }: { params: { locale: Locale
     const awards = (awardsData || []).map((item) => getLocalized(item, 'award_translations'));
     const certifications = (certificationsData || []).map((item) => getLocalized(item, 'certification_translations'));
 
+    const t = await getTranslations({ locale, namespace: 'profile' });
+
     return (
         <div className="space-y-8">
             {/* Profile Header */}
             <div>
-                <h1 className="text-4xl font-bold mb-2">{profile?.name || 'Your Name'}</h1>
-                <p className="text-xl text-muted-foreground">{profile?.bio || 'Add your bio'}</p>
+                <h1 className="text-4xl font-bold mb-2">{profile?.name || t('default.name')}</h1>
+                <p className="text-xl text-muted-foreground">{profile?.bio || t('default.bio')}</p>
             </div>
 
             {/* Markdown Content Section */}
@@ -52,7 +55,7 @@ export default async function ProfilePage({ params }: { params: { locale: Locale
                 <section>
                     <div className="flex items-center gap-2 mb-4">
                         <FileText className="h-5 w-5" />
-                        <h2 className="text-2xl font-bold">About</h2>
+                        <h2 className="text-2xl font-bold">{t('about')}</h2>
                     </div>
                     <div className="prose prose-neutral dark:prose-invert max-w-none">
                         <TiptapRenderer content={profile.markdown_content} />

@@ -55,8 +55,11 @@ export default async function EducationDetailPage({
                     <div className="flex items-start gap-4">
                         <GraduationCap className="h-8 w-8 text-primary mt-1" />
                         <div className="flex-1">
-                            <CardTitle className="text-3xl">{education.degree} {education.field && `in ${education.field}`}</CardTitle>
-                            <p className="text-xl text-muted-foreground mt-2">{education.institution}</p>
+                            <CardTitle className="text-3xl">{education.institution}</CardTitle>
+                            <div className="mt-2 text-xl text-muted-foreground">
+                                <p>{education.degree}</p>
+                                {education.field && <p>{education.field}</p>}
+                            </div>
                             <p className="text-sm text-muted-foreground mt-1">
                                 {new Date(education.start_date).getFullYear()} - {education.end_date ? new Date(education.end_date).getFullYear() : 'Present'}
                             </p>

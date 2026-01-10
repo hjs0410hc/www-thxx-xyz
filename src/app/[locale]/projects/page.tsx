@@ -6,6 +6,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ExternalLink, Github } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 export default async function ProjectsPage({
     params,
@@ -34,13 +35,15 @@ export default async function ProjectsPage({
     };
 
     const projects = (projectsData || []).map(getLocalized);
+    const t = await getTranslations({ locale, namespace: 'projects' });
+    const ct = await getTranslations({ locale, namespace: 'common' });
 
     return (
         <div className="container py-8 space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Projects</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Portfolio of my work and side projects
+                    {t('description')}
                 </p>
             </div>
 
@@ -99,7 +102,7 @@ export default async function ProjectsPage({
                                     <Button variant="outline" size="sm" asChild>
                                         <a href={project.demo_url} target="_blank" rel="noopener noreferrer">
                                             <ExternalLink className="h-4 w-4 mr-1" />
-                                            Demo
+                                            {ct('demo')}
                                         </a>
                                     </Button>
                                 )}
@@ -107,7 +110,7 @@ export default async function ProjectsPage({
                                     <Button variant="outline" size="sm" asChild>
                                         <a href={project.github_url} target="_blank" rel="noopener noreferrer">
                                             <Github className="h-4 w-4 mr-1" />
-                                            Code
+                                            {ct('code')}
                                         </a>
                                     </Button>
                                 )}
@@ -117,9 +120,9 @@ export default async function ProjectsPage({
                 ) : (
                     <Card className="col-span-full">
                         <CardHeader>
-                            <CardTitle>No Projects Yet</CardTitle>
+                            <CardTitle>{t('noProjects')}</CardTitle>
                             <CardDescription>
-                                Projects will appear here once added through the admin panel.
+                                {t('emptyState')}
                             </CardDescription>
                         </CardHeader>
                     </Card>

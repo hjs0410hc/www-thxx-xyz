@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import type { Locale } from '@/i18n';
 import { User, Layers, Rocket, Home } from 'lucide-react';
@@ -10,12 +11,13 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 const navItems = [
-    { key: 'Summary', icon: Home, href: '' }, // /tech
-    { key: 'Projects', icon: Rocket, href: '/project' }, // /tech/project
-    { key: 'Skills', icon: Layers, href: '/skill' }, // /tech/skill
+    { key: 'home', icon: Home, href: '' },
+    { key: 'projects', icon: Rocket, href: '/project' },
+    { key: 'skills', icon: Layers, href: '/skill' },
 ];
 
 export function TechSidebar() {
+    const t = useTranslations('tech.nav');
     const params = useParams();
     const pathname = usePathname();
     const locale = params.locale as Locale;
@@ -79,7 +81,7 @@ export function TechSidebar() {
                             )}
                         >
                             <Icon className="h-4 w-4" />
-                            {item.key}
+                            {t(item.key)}
                         </Link>
                     );
                 })}

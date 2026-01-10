@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useTranslations } from 'next-intl';
 
 interface Post {
     id: string;
@@ -20,18 +21,21 @@ interface RecentPostsSectionProps {
 }
 
 export function RecentPostsSection({ posts, locale }: RecentPostsSectionProps) {
+    const t = useTranslations('home.recentPosts');
+    const ct = useTranslations('common');
+
     if (!posts || posts.length === 0) return null;
 
     return (
         <section className="container px-4 py-8 md:py-12">
             <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Recent Posts</h2>
-                    <p className="text-muted-foreground mt-2">Latest technical articles and updates</p>
+                    <h2 className="text-3xl font-bold tracking-tight">{t('title')}</h2>
+                    <p className="text-muted-foreground mt-2">{t('description')}</p>
                 </div>
                 <Button asChild variant="ghost">
                     <Link href={`/${locale}/blog`} className="group">
-                        View all posts
+                        {t('viewAll')}
                         <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Link>
                 </Button>
@@ -51,7 +55,7 @@ export function RecentPostsSection({ posts, locale }: RecentPostsSectionProps) {
                                     />
                                 ) : (
                                     <div className="flex h-full items-center justify-center bg-muted text-muted-foreground">
-                                        No Image
+                                        {t('noImage')}
                                     </div>
                                 )}
                             </div>

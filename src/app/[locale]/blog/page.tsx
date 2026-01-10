@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, Clock } from 'lucide-react';
 import { BlogSidebar } from '@/components/blog/blog-sidebar';
+import { getTranslations } from 'next-intl/server';
 
 export default async function BlogPage({
     params,
@@ -90,12 +91,15 @@ export default async function BlogPage({
         return Math.ceil(words / 200);
     };
 
+    const t = await getTranslations({ locale, namespace: 'blog' });
+    const ct = await getTranslations({ locale, namespace: 'common' });
+
     return (
         <div className="container py-8 space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Blog</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Technical articles and thoughts
+                    {t('description')}
                 </p>
             </div>
 
@@ -145,7 +149,7 @@ export default async function BlogPage({
                                                     )}
                                                     <div className="flex items-center gap-1">
                                                         <Clock className="h-3 w-3" />
-                                                        <span>{calculateReadingTime(post.content)} min read</span>
+                                                        <span>{t('minRead', { min: calculateReadingTime(post.content) })}</span>
                                                     </div>
                                                 </div>
 
@@ -159,7 +163,7 @@ export default async function BlogPage({
                                                         ))}
                                                         {post.post_tags.length > 3 && (
                                                             <Badge variant="outline" className="text-xs">
-                                                                +{post.post_tags.length - 3} more
+                                                                {t('moreTags', { count: post.post_tags.length - 3 })}
                                                             </Badge>
                                                         )}
                                                     </div>
@@ -173,11 +177,11 @@ export default async function BlogPage({
                     ) : (
                         <Card>
                             <CardHeader>
-                                <CardTitle>No Posts Found</CardTitle>
+                                <CardTitle>{t('noPosts')}</CardTitle>
                                 <CardDescription>
                                     {searchTag
-                                        ? `No posts found with tag "${searchTag}".`
-                                        : "Blog posts will appear here once published."}
+                                        ? t('noPostsWithTag', { tag: searchTag })
+                                        : t('emptyState')}
                                 </CardDescription>
                             </CardHeader>
                         </Card>

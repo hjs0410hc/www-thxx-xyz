@@ -12,7 +12,18 @@
         "error": "An error occurred",
         "notFound": "Page not found",
         "readMore": "Read more",
-        "viewAll": "View all"
+        "viewAll": "View all",
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "expandAll": "Expand All",
+        "collapseAll": "Collapse All",
+        "present": "Present",
+        "demo": "Demo",
+        "code": "Code",
+        "topics": "Topics",
+        "allPosts": "All Posts",
+        "contact": "Contact",
+        "copyright": "© {year} Hyeon Jinseop (THXX). All rights reserved."
     },
     "theme": {
         "light": "Light mode",
@@ -29,6 +40,18 @@
                 "projects": "View Projects"
             }
         },
+        "stats": {
+            "posts": "Blog Posts",
+            "projects": "Projects",
+            "skills": "Skills",
+            "awards": "Awards"
+        },
+        "recentPosts": {
+            "title": "Recent Posts",
+            "description": "Latest technical articles and updates",
+            "viewAll": "View all posts",
+            "noImage": "No Image"
+        },
         "sections": {
             "profile": "Profile",
             "profileDesc": "Career, education, awards, and more",
@@ -39,6 +62,11 @@
         }
     },
     "profile": {
+        "about": "About",
+        "default": {
+            "name": "Your Name",
+            "bio": "Add your bio"
+        },
         "nav": {
             "summary": "Summary",
             "hobbies": "Hobbies & Interests",
@@ -49,5 +77,44 @@
             "certifications": "Certifications",
             "awards": "Awards"
         }
+    },
+    "tech": {
+        "summary": "Summary",
+        "description": "Welcome to my technology portfolio. Explore my projects and technical skills.",
+        "nav": {
+            "home": "Home",
+            "projects": "Projects",
+            "skills": "Skills"
+        },
+        "sections": {
+            "projects": "Featured Projects",
+            "skills": "Skills & Stack"
+        },
+        "categories": {
+            "frontend": "Frontend",
+            "backend": "Backend",
+            "database": "Database",
+            "devops": "DevOps",
+            "programming_language": "Programming Language",
+            "cloud": "Cloud",
+            "other": "Other"
+        }
+    },
+    "blog": {
+        "title": "Blog",
+        "description": "Technical articles and thoughts",
+        "minRead": "{min} min read",
+        "moreTags": "+{count} more",
+        "noPosts": "No Posts Found",
+        "noPostsWithTag": "No posts found with tag \"{tag}\".",
+        "emptyState": "Blog posts will appear here once published.",
+        "readMore": "Read more"
+    },
+    "projects": {
+        "title": "Projects",
+        "description": "Portfolio of my work and side projects",
+        "noProjects": "No Projects Yet",
+        "emptyState": "Projects will appear here once added through the admin panel."
     }
 }
+```

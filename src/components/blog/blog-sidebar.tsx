@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
+import { useTranslations } from 'next-intl';
+
 interface BlogSidebarProps {
     tags: { name: string; count: number }[];
     currentTag?: string;
@@ -14,13 +16,14 @@ interface BlogSidebarProps {
 }
 
 export function BlogSidebar({ tags, currentTag, locale }: BlogSidebarProps) {
+    const t = useTranslations('common');
     return (
         <div className="space-y-6">
             <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="px-0 pt-0">
                     <CardTitle className="flex items-center gap-2 text-lg">
                         <Tag className="h-4 w-4" />
-                        Topics
+                        {t('topics')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="px-0">
@@ -33,7 +36,7 @@ export function BlogSidebar({ tags, currentTag, locale }: BlogSidebarProps) {
                                     !currentTag ? "bg-muted font-medium text-primary" : "text-muted-foreground"
                                 )}
                             >
-                                <span>All Posts</span>
+                                <span>{t('allPosts')}</span>
                             </Button>
                         </Link>
                         {tags.map((tag) => (

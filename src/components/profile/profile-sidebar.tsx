@@ -5,12 +5,11 @@ import { useParams, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import type { Locale } from '@/i18n';
-import { User, Heart, Briefcase, GraduationCap, Users, Award, FileCheck, Trophy, Mail, Phone, MapPin, Calendar } from 'lucide-react';
+import { User, Heart, Briefcase, GraduationCap, Users, Award, FileCheck, Trophy, Mail, Phone, MapPin, Calendar, Github, Youtube, Linkedin, AudioLines, Globe } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { FaGithub, FaYoutube, FaLinkedin, FaSoundcloud } from 'react-icons/fa';
 
 const navItems = [
     { key: 'summary', icon: User, href: '' },
@@ -25,6 +24,7 @@ const navItems = [
 
 export function ProfileSidebar() {
     const t = useTranslations('profile.nav');
+    const ct = useTranslations('common');
     const params = useParams();
     const pathname = usePathname();
     const locale = params.locale as Locale;
@@ -66,7 +66,7 @@ export function ProfileSidebar() {
 
             {/* Contact Section */}
             <div className="space-y-3 pb-6 border-b">
-                <h3 className="text-sm font-semibold text-muted-foreground">CONTACT</h3>
+                <h3 className="text-sm font-semibold text-muted-foreground">{ct('contact')}</h3>
                 {profile?.email && (
                     <div className="flex items-start gap-3">
                         <Mail className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
@@ -98,13 +98,13 @@ export function ProfileSidebar() {
                         {socialLinks.map((link) => {
                             // Map platform names to icons
                             const platformIcons: Record<string, any> = {
-                                'github': FaGithub,
-                                'youtube': FaYoutube,
-                                'linkedin': FaLinkedin,
-                                'soundcloud': FaSoundcloud,
+                                'github': Github,
+                                'youtube': Youtube,
+                                'linkedin': Linkedin,
+                                'soundcloud': AudioLines,
                             };
 
-                            const IconComponent = platformIcons[link.platform.toLowerCase()];
+                            const IconComponent = platformIcons[link.platform.toLowerCase()] || Globe;
 
                             return (
                                 <Link
@@ -114,9 +114,7 @@ export function ProfileSidebar() {
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-3 text-sm hover:text-primary transition-colors"
                                 >
-                                    {IconComponent && (
-                                        <IconComponent className="w-4 h-4 flex-shrink-0" />
-                                    )}
+                                    <IconComponent className="w-4 h-4 flex-shrink-0" />
                                     <span>{link.platform}</span>
                                 </Link>
                             );

@@ -57,7 +57,7 @@ export default async function EducationPage({
                                 <CardContent>
                                     <div className="flex gap-4 items-start">
                                         {/* Preview Image */}
-                                        <div className="relative w-20 h-20 bg-muted rounded-md overflow-hidden flex-shrink-0">
+                                        <div className="relative w-28 h-28 bg-muted rounded-md overflow-hidden flex-shrink-0">
                                             {edu.preview_image ? (
                                                 <Image
                                                     src={edu.preview_image}
@@ -77,11 +77,12 @@ export default async function EducationPage({
                                             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-y-2 gap-x-4 mb-2">
                                                 <div className="space-y-1">
                                                     <h3 className="text-lg font-bold leading-tight">
-                                                        {edu.degree} {edu.field && `in ${edu.field}`}
-                                                    </h3>
-                                                    <p className="text-base font-medium text-muted-foreground">
                                                         {edu.institution}
-                                                    </p>
+                                                    </h3>
+                                                    <div className="text-base font-medium text-muted-foreground">
+                                                        <p>{edu.degree}</p>
+                                                        {edu.field && <p>{edu.field}</p>}
+                                                    </div>
                                                 </div>
 
                                                 <div className="flex flex-col items-start sm:items-end gap-1 flex-shrink-0">
