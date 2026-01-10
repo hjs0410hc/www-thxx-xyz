@@ -114,7 +114,7 @@ export function ProfileSections({
     return (
         <div className="space-y-8">
             {/* Global Expand/Collapse All Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-start">
                 <Button
                     variant="outline"
                     size="sm"

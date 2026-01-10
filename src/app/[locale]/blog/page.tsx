@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Calendar } from 'lucide-react';
 import { BlogSidebar } from '@/components/blog/blog-sidebar';
 import { getTranslations } from 'next-intl/server';
+import { MobileBlogMenu } from '@/components/blog/mobile-blog-menu';
 
 export default async function BlogPage({
     params,
@@ -136,9 +137,12 @@ export default async function BlogPage({
                 </p>
             </div>
 
+            {/* Mobile Menu */}
+            <MobileBlogMenu tags={formattedTags} currentTag={searchTag} locale={locale} />
+
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Left Sidebar */}
-                <div className="lg:col-span-1">
+                {/* Left Sidebar - Hidden on mobile, handled by MobileBlogMenu */}
+                <div className="hidden lg:block lg:col-span-1">
                     <BlogSidebar tags={formattedTags} currentTag={searchTag} locale={locale} />
                 </div>
 

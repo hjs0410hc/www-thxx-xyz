@@ -1,4 +1,5 @@
 import { ProfileSidebar } from '@/components/profile/profile-sidebar';
+import { MobileProfileSidebar } from '@/components/profile/mobile-profile-sidebar';
 
 export default function ProfileLayout({
     children,
@@ -7,9 +8,10 @@ export default function ProfileLayout({
 }) {
     return (
         <div className="container py-8">
+            <MobileProfileSidebar />
             <div className="flex gap-8">
                 <ProfileSidebar />
-                <div className="flex-1">{children}</div>
+                <div className="flex-1 min-w-0">{children}</div>
             </div>
         </div>
     );

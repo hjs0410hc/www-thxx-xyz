@@ -20,7 +20,7 @@ export function BlogSidebar({ tags, currentTag, locale }: BlogSidebarProps) {
     const t = useTranslations('common');
     return (
         <div className="space-y-6">
-            <Card className="border-none shadow-none bg-transparent">
+            <Card className="border-none shadow-none bg-transparent pt-1">
                 <CardHeader className="px-0 pt-0">
                     <CardTitle className="flex items-center gap-2 text-lg">
                         <Tag className="h-4 w-4" />

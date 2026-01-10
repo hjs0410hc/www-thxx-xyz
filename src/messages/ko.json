@@ -24,7 +24,8 @@
         "allPosts": "전체 글",
         "contact": "연락처",
         "searchPlaceholder": "검색...",
-        "copyright": "© {year} 현진섭 (THXX). All rights reserved."
+        "copyright": "© {year} 현진섭 (THXX).",
+        "allRightsReserved": "All rights reserved."
     },
     "theme": {
         "light": "라이트 모드",
@@ -69,6 +70,7 @@
             "bio": "소개를 입력하세요"
         },
         "nav": {
+            "profile": "메뉴",
             "summary": "요약",
             "hobbies": "취미 & 관심사",
             "work": "경력",

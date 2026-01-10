@@ -4,6 +4,7 @@ import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { ProfileSections } from '@/components/profile/profile-sections';
 import type { Locale } from '@/i18n';
 import { getTranslations } from 'next-intl/server';
+import { ProfileSidebarContent } from '@/components/profile/profile-sidebar-content';
 
 export default async function ProfilePage({ params }: { params: { locale: Locale } }) {
     const supabase = await createClient();
@@ -18,6 +19,8 @@ export default async function ProfilePage({ params }: { params: { locale: Locale
     const { data: awardsData } = await supabase.from('awards').select('*, award_translations(*)').order('date', { ascending: false });
     const { data: certificationsData } = await supabase.from('certifications').select('*, certification_translations(*)').order('issue_date', { ascending: false });
     const { data: languages } = await supabase.from('languages').select('*').order('proficiency_level', { ascending: false });
+
+    const { data: socialLinksData } = await supabase.from('social_links').select('*').order('display_order', { ascending: true });
 
     // Helper to extract localized content
     const getLocalized = (item: any, translationsField: string) => {
@@ -44,6 +47,17 @@ export default async function ProfilePage({ params }: { params: { locale: Locale
 
     return (
         <div className="space-y-8">
+            {/* Mobile Profile Info (Hidden on Desktop) */}
+            <div className="md:hidden">
+                <ProfileSidebarContent
+                    profile={profile}
+                    socialLinks={socialLinksData || []}
+                    locale={locale}
+                    pathname=""
+                    hideNav={true}
+                />
+            </div>
+
             {/* Profile Header */}
             <div>
                 <h1 className="text-4xl font-bold mb-2">{profile?.name || t('default.name')}</h1>
