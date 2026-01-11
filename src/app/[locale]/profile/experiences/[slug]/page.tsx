@@ -1,3 +1,4 @@
+
 import { createClient } from '@/lib/supabase/server';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +8,26 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import type { Locale } from '@/i18n';
+import { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }): Promise<Metadata> {
+    const { locale, slug } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase.from('experiences').select('*, experience_translations(*)').eq('slug', slug).single();
+
+    if (!item) return { title: 'Experience' };
+
+    const t = await getTranslations({ locale, namespace: 'profile.experiences' });
+    const trans = item.experience_translations?.find((t: any) => t.locale === locale)
+        || item.experience_translations?.find((t: any) => t.locale === 'ko')
+        || item.experience_translations?.find((t: any) => t.locale === 'en')
+        || item.experience_translations?.[0]
+        || {};
+    return {
+        title: t('detailTitle', { title: trans.title || item.title }),
+    };
+}
 
 export default async function ExperienceDetailPage({
     params,
@@ -25,6 +46,8 @@ export default async function ExperienceDetailPage({
     if (!experienceData) {
         notFound();
     }
+
+    const t = await getTranslations({ locale, namespace: 'profile.experiences' });
 
     // Helper to extract localized content
     const getLocalized = (item: any) => {
@@ -46,7 +69,7 @@ export default async function ExperienceDetailPage({
                 <Link href={`/${locale}/profile/experiences`}>
                     <Button variant="ghost" size="sm">
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Experiences
+                        {t('back')}
                     </Button>
                 </Link>
             </div>

@@ -1,7 +1,17 @@
+
 import { createClient } from '@/lib/supabase/server';
 import { HeroSection } from '@/components/home/hero-section';
 import { StatsSection } from '@/components/home/stats-section';
 import { RecentPostsSection } from '@/components/home/recent-posts-section';
+import { getTranslations } from 'next-intl/server';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'nav' });
+    return {
+        title: t('home'),
+    };
+}
 
 export default async function HomePage({
     params,
@@ -10,6 +20,7 @@ export default async function HomePage({
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+
 
     // Parallel data fetching for posts
     const [

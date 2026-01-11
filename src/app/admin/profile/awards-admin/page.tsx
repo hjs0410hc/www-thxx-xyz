@@ -8,6 +8,11 @@ import { deleteAward } from '@/lib/actions/profile-items';
 import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-editor';
 import { addAward } from '@/lib/actions/profile-items';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Awards',
+};
 
 export default async function AdminAwardsPage() {
     const user = await getUser();

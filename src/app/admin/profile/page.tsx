@@ -6,9 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link';
 import { ProfileForm } from '@/components/admin/profile-form';
 import { redirect } from 'next/navigation';
+
 import { getUser } from '@/lib/actions/auth';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Profile Management',
+};
 
 export default async function AdminProfilePage() {
+
     const user = await getUser();
 
     // Redirect to login if not authenticated

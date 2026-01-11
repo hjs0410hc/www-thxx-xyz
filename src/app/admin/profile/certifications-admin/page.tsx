@@ -8,6 +8,11 @@ import { deleteCertification } from '@/lib/actions/profile-items';
 import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-editor';
 import { addCertification } from '@/lib/actions/profile-items';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Certifications',
+};
 
 export default async function AdminCertificationsPage() {
     const user = await getUser();

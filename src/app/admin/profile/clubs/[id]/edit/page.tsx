@@ -5,6 +5,20 @@ import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-edit
 import { updateClub } from '@/lib/actions/profile-items';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase.from('clubs').select('*, club_translations(*)').eq('id', id).single();
+
+    if (!item) return { title: 'Edit Club' };
+
+    const trans = item.club_translations?.find((t: any) => t.locale === 'ko' || t.locale === 'en') || {};
+    return {
+        title: `Edit ${trans.name || 'Club'}`,
+    };
+}
 
 export default async function EditClubPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

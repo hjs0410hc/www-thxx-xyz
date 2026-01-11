@@ -11,6 +11,7 @@ import { notFound } from 'next/navigation';
 import { ExternalLink, Github, Calendar, ArrowLeft } from 'lucide-react';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { Project, ProjectWithDetails } from '@/types/tech';
+import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata({
     params,
@@ -30,6 +31,7 @@ export async function generateMetadata({
         return {};
     }
 
+    const t = await getTranslations({ locale, namespace: 'tech.projects' });
     const translations = projectData.project_translations || [];
     const trans = translations.find((t: any) => t.locale === locale)
         || translations.find((t: any) => t.locale === 'ko')
@@ -44,7 +46,7 @@ export async function generateMetadata({
     }
 
     return generateSEOMetadata({
-        title: project.title,
+        title: t('detailTitle', { title: project.title }),
         description: project.description || project.title,
         path: `/${locale}/tech/project/${slug}`,
         locale,
@@ -71,6 +73,7 @@ export default async function ProjectDetailPage({
         notFound();
     }
 
+    const t = await getTranslations({ locale, namespace: 'tech.projects' });
     const translations = projectData.project_translations || [];
     const trans = translations.find((t: any) => t.locale === locale)
         || translations.find((t: any) => t.locale === 'ko')
@@ -86,7 +89,10 @@ export default async function ProjectDetailPage({
 
     const formatDate = (date: string | null) => {
         if (!date) return '';
-        return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        return `${year}-${month}`;
     };
 
     // Generate structured data
@@ -110,7 +116,7 @@ export default async function ProjectDetailPage({
                 <Button variant="ghost" asChild className="mb-6">
                     <Link href={`/${locale}/tech/project`}>
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Projects
+                        {t('back')}
                     </Link>
                 </Button>
 
@@ -121,7 +127,7 @@ export default async function ProjectDetailPage({
                             <h1 className="text-4xl font-bold mb-4">{project.title}</h1>
                             {project.status && (
                                 <Badge variant={project.status === 'completed' ? 'default' : 'secondary'} className="capitalize">
-                                    {project.status.replace('_', ' ')}
+                                    {t(`status.${project.status}`)}
                                 </Badge>
                             )}
                         </div>
@@ -133,7 +139,7 @@ export default async function ProjectDetailPage({
                                     <Calendar className="h-4 w-4" />
                                     <span>
                                         {formatDate(project.start_date)}
-                                        {project.end_date && ` - ${formatDate(project.end_date)}`}
+                                        {project.end_date ? ` ~ ${formatDate(project.end_date)}` : ` ~ ${t('present')}`}
                                     </span>
                                 </div>
                             )}
@@ -145,7 +151,7 @@ export default async function ProjectDetailPage({
                                 <Button asChild>
                                     <a href={project.demo_url} target="_blank" rel="noopener noreferrer">
                                         <ExternalLink className="h-4 w-4 mr-2" />
-                                        View Demo
+                                        {t('viewDemo')}
                                     </a>
                                 </Button>
                             )}
@@ -153,7 +159,7 @@ export default async function ProjectDetailPage({
                                 <Button variant="outline" asChild>
                                     <a href={project.github_url} target="_blank" rel="noopener noreferrer">
                                         <Github className="h-4 w-4 mr-2" />
-                                        View Code
+                                        {t('viewCode')}
                                     </a>
                                 </Button>
                             )}
@@ -182,7 +188,7 @@ export default async function ProjectDetailPage({
                     {project.technologies && project.technologies.length > 0 && (
                         <Card>
                             <CardHeader>
-                                <CardTitle>Technologies Used</CardTitle>
+                                <CardTitle>{t('technologiesUsed')}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="flex flex-wrap gap-2">

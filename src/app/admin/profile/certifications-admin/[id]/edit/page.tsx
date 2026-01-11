@@ -5,6 +5,20 @@ import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-edit
 import { updateCertification } from '@/lib/actions/profile-items';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase.from('certifications').select('*, certification_translations(*)').eq('id', id).single();
+
+    if (!item) return { title: 'Edit Certification' };
+
+    const trans = item.certification_translations?.find((t: any) => t.locale === 'ko' || t.locale === 'en') || {};
+    return {
+        title: `Edit ${trans.name || 'Certification'}`,
+    };
+}
 
 export default async function EditCertificationPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

@@ -4,14 +4,24 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { SkillWithDetails } from '@/types/tech';
 import Image from 'next/image';
+
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'tech.nav' });
+    return {
+        title: t('skills'),
+    };
+}
 
 export default async function SkillsPage({
     params,
 }: {
     params: Promise<{ locale: Locale }>;
 }) {
+
     const { locale } = await params;
     const supabase = await createClient();
     const t = await getTranslations({ locale, namespace: 'tech.skills' });

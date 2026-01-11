@@ -5,6 +5,22 @@ import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-edit
 import { updateEducation } from '@/lib/actions/profile-items';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Metadata } from 'next';
+
+import { ArrowLeft } from 'lucide-react';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase.from('education').select('*, education_translations(*)').eq('id', id).single();
+
+    if (!item) return { title: 'Edit Education' };
+
+    const trans = item.education_translations?.find((t: any) => t.locale === 'ko' || t.locale === 'en') || {};
+    return {
+        title: `Edit ${trans.institution || 'Education'}`,
+    };
+}
 
 export default async function EditEducationPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

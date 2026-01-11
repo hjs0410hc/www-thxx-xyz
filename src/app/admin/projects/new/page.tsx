@@ -1,8 +1,12 @@
-'use client';
 
 import { ProjectForm } from '@/components/admin/edit-project-form';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Projects - New Project',
+};
 
 export default function NewProjectPage() {
     return (

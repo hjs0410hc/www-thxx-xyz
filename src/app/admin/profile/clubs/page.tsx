@@ -8,6 +8,11 @@ import { deleteClub } from '@/lib/actions/profile-items';
 import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-editor';
 import { addClub } from '@/lib/actions/profile-items';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Clubs',
+};
 
 export default async function AdminClubsPage() {
     const user = await getUser();

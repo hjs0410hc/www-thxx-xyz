@@ -8,6 +8,11 @@ import { deleteEducation } from '@/lib/actions/profile-items';
 import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-editor';
 import { addEducation } from '@/lib/actions/profile-items';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Education',
+};
 
 export default async function AdminEducationPage() {
     const user = await getUser();

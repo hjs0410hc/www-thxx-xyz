@@ -95,7 +95,9 @@
             "part_time": "Part-time",
             "full_time": "Full-time",
             "military_service": "Military Service",
-            "present": "Present"
+            "present": "Present",
+            "detailTitle": "Work - {title}",
+            "back": "Back to Work Experience"
         },
         "education": {
             "title": "Education",
@@ -105,39 +107,51 @@
             "university": "University",
             "study_abroad": "Study Abroad",
             "course": "Course",
-            "present": "Present"
+            "present": "Present",
+            "detailTitle": "Education - {title}",
+            "back": "Back to Education"
         },
         "awards": {
             "title": "Awards & Recognition",
             "description": "Achievements and awards received",
             "empty": "No Awards Added",
-            "emptyDesc": "Add your awards through the admin panel."
+            "emptyDesc": "Add your awards through the admin panel.",
+            "detailTitle": "Award - {title}",
+            "back": "Back to Awards"
         },
         "certifications": {
             "title": "Certifications",
             "description": "Professional certifications and licenses",
             "empty": "No Certifications Added",
             "emptyDesc": "Add your certifications through the admin panel.",
-            "issuedBy": "Issued by {issuer}"
+            "issuedBy": "Issued by {issuer}",
+            "detailTitle": "Certification - {title}",
+            "back": "Back to Certifications"
         },
         "clubs": {
             "title": "Clubs & Activities",
             "description": "Extracurricular activities and communities",
             "empty": "No Activities Added",
             "emptyDesc": "Add your activities through the admin panel.",
-            "role": "Role: {role}"
+            "role": "Role: {role}",
+            "detailTitle": "Activity - {title}",
+            "back": "Back to Clubs"
         },
         "experiences": {
             "title": "Experiences",
             "description": "Volunteering and other meaningful experiences",
             "empty": "No Experiences Added",
-            "emptyDesc": "Add your experiences through the admin panel."
+            "emptyDesc": "Add your experiences through the admin panel.",
+            "detailTitle": "Experience - {title}",
+            "back": "Back to Experiences"
         },
         "hobbies": {
             "title": "Hobbies & Interests",
             "description": "What I enjoy doing in my free time",
             "empty": "No Hobbies Added",
-            "emptyDesc": "Add your hobbies through the admin panel."
+            "emptyDesc": "Add your hobbies through the admin panel.",
+            "detailTitle": "Hobby - {title}",
+            "back": "Back to Hobbies"
         }
     },
     "tech": {
@@ -169,13 +183,28 @@
             "view": "View Project",
             "preview": "Preview",
             "source": "Source",
-            "present": "Present"
+            "present": "Present",
+            "detailTitle": "Project - {title}",
+            "back": "Back to Projects",
+            "technologiesUsed": "Technologies Used",
+            "viewDemo": "View Demo",
+            "viewCode": "View Code",
+            "status": {
+                "in_progress": "In Progress",
+                "completed": "Completed",
+                "on_hold": "On Hold",
+                "planned": "Planned",
+                "maintenance": "Maintenance"
+            }
         },
         "skills": {
             "title": "Skills & Tech Stack",
             "description": "Technologies, tools, and methodologies I work with",
             "empty": "No Skills Added",
-            "emptyDesc": "Skills will appear here once added through the admin panel."
+            "emptyDesc": "Skills will appear here once added through the admin panel.",
+            "detailTitle": "Skill - {title}",
+            "back": "Back to Skills",
+            "relatedTechnologies": "Related Technologies"
         }
     },
     "blog": {
@@ -186,6 +215,7 @@
         "noPosts": "No Posts Found",
         "noPostsWithTag": "No posts found with tag \"{tag}\".",
         "emptyState": "Blog posts will appear here once published.",
-        "readMore": "Read more"
+        "readMore": "Read more",
+        "postTitle": "Blog - {title}"
     }
 }

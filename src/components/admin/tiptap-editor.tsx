@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -39,6 +39,18 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         },
         immediatelyRender: false,
     });
+
+    // Sync content when props change (e.g., language switch)
+    useEffect(() => {
+        if (!editor || !content) return;
+
+        // Compare current editor content with new content prop
+        // Using JSON stringify for deep comparison
+        const currentContent = editor.getJSON();
+        if (JSON.stringify(currentContent) !== JSON.stringify(content)) {
+            editor.commands.setContent(content);
+        }
+    }, [content, editor]);
 
     async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];

@@ -323,7 +323,7 @@ export function ProfileForm({ profile, socialLinks, languages }: ProfileFormProp
                             <CardDescription className="mb-2">
                                 Rich text content for your profile&apos;s &quot;About&quot; section
                             </CardDescription>
-                            <TiptapEditor content={markdownContent} onChange={setMarkdownContent} />
+                            <TiptapEditor key={locale} content={markdownContent} onChange={setMarkdownContent} />
                         </div>
 
                         <Button type="submit">Save Profile</Button>

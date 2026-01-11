@@ -4,9 +4,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Plus, Edit } from 'lucide-react';
+
 import { DeletePostButton } from '@/components/admin/delete-post-button';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Blog',
+};
 
 export default async function AdminBlogPage() {
+
     const supabase = await createClient();
 
     const { data: postsData } = await supabase
