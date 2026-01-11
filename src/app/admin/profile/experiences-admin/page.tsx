@@ -35,7 +35,8 @@ export default async function AdminExperiencesPage() {
                     { name: 'organization', label: 'Organization', placeholder: 'Tech Conference' },
                     { name: 'slug', label: 'Slug (URL)', required: true, placeholder: 'hackathon-2024' },
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary...' },
-                    { name: 'date', label: 'Date', type: 'date', required: true },
+                    { name: 'date', label: 'Start Date', type: 'date', required: true },
+                    { name: 'end_date', label: 'End Date (Optional)', type: 'date' },
                 ]}
                 hasEditor={true}
                 editorLabel="Content"

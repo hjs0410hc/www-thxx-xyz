@@ -9,6 +9,7 @@ import { notFound } from 'next/navigation';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import type { Locale } from '@/i18n';
 import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
     const { locale, slug } = await params;
@@ -86,14 +87,32 @@ export default async function HobbyDetailPage({
             {/* Main Content */}
             <Card>
                 <CardHeader>
-                    <div className="flex items-center gap-3">
-                        {hobby.icon && <span className="text-4xl">{hobby.icon}</span>}
-                        <div>
-                            <CardTitle className="text-3xl">{hobby.name}</CardTitle>
-                            {hobby.description && (
-                                <p className="text-muted-foreground mt-2">{hobby.description}</p>
-                            )}
+                    <div className="flex flex-col sm:flex-row gap-6">
+                        <div className="flex-1 space-y-2">
+                            <div className="flex items-center gap-3">
+                                {hobby.icon && <span className="text-4xl">{hobby.icon}</span>}
+                                {!hobby.icon && <Heart className="h-8 w-8 text-primary mt-1 flex-shrink-0" />}
+                                <div>
+                                    <CardTitle className="text-3xl">{hobby.name}</CardTitle>
+                                    {hobby.description && (
+                                        <p className="text-muted-foreground mt-2">{hobby.description}</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
+                        {hobby.preview_image && (
+                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                                <Image
+                                    src={hobby.preview_image}
+                                    alt={hobby.name}
+                                    width={0}
+                                    height={0}
+                                    sizes="100vw"
+                                    style={{ width: 'auto', height: '100%' }}
+                                    className="object-cover"
+                                />
+                            </div>
+                        )}
                     </div>
                 </CardHeader>
 

@@ -257,6 +257,7 @@ export function ProfileSections({
                                 {exp.date && (
                                     <p className="text-xs text-muted-foreground mt-1">
                                         {new Date(exp.date).toLocaleDateString()}
+                                        {exp.end_date && ` ~ ${new Date(exp.end_date).toLocaleDateString()}`}
                                     </p>
                                 )}
                             </div>

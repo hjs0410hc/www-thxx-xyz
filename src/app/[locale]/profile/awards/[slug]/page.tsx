@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation';
 import type { Locale } from '@/i18n';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }): Promise<Metadata> {
     const { locale, slug } = await params;
@@ -75,18 +76,35 @@ export default async function AwardDetailPage({
 
             <Card>
                 <CardHeader>
-                    <div className="flex items-start gap-4">
-                        <Trophy className="h-8 w-8 text-primary mt-1" />
-                        <div className="flex-1">
-                            <CardTitle className="text-3xl">{award.title}</CardTitle>
-                            <p className="text-xl text-muted-foreground mt-2">{award.issuer}</p>
-                            <p className="text-sm text-muted-foreground mt-1">
-                                {new Date(award.date).toLocaleDateString()}
-                            </p>
-                            {award.description && (
-                                <p className="text-muted-foreground mt-3">{award.description}</p>
-                            )}
+                    <div className="flex flex-col sm:flex-row gap-6">
+                        <div className="flex-1 space-y-2">
+                            <div className="flex items-start gap-4">
+                                <Trophy className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
+                                <div>
+                                    <CardTitle className="text-3xl">{award.title}</CardTitle>
+                                    <p className="text-xl text-muted-foreground mt-2">{award.issuer}</p>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        {new Date(award.date).toLocaleDateString()}
+                                    </p>
+                                    {award.description && (
+                                        <p className="text-muted-foreground mt-3">{award.description}</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
+                        {award.preview_image && (
+                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                                <Image
+                                    src={award.preview_image}
+                                    alt={award.title}
+                                    width={0}
+                                    height={0}
+                                    sizes="100vw"
+                                    style={{ width: 'auto', height: '100%' }}
+                                    className="object-cover"
+                                />
+                            </div>
+                        )}
                     </div>
                 </CardHeader>
 
