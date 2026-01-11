@@ -6,16 +6,45 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
+    const { locale, slug } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase
+        .from('hobbies')
+        .select('*, hobby_translations(*)')
+        .eq('slug', slug)
+        .single();
+
+    if (!item) return;
+
+    const t = await getTranslations({ locale, namespace: 'profile.hobbies' });
+    const trans = item.hobby_translations?.find((t: any) => t.locale === locale)
+        || item.hobby_translations?.find((t: any) => t.locale === 'ko')
+        || item.hobby_translations?.find((t: any) => t.locale === 'en')
+        || item.hobby_translations?.[0]
+        || {};
+
+    return generateSEOMetadata({
+        title: t('detailTitle', { title: trans.name || item.name }),
+        description: trans.description || item.description,
+        path: `/${locale}/profile/hobbies/${slug}`,
+        locale,
+    });
+}
 
 export default async function HobbyDetailPage({
     params,
 }: {
-    params: Promise<{ locale: Locale; slug: string }>;
+    params: Promise<{ locale: string; slug: string }>;
 }) {
     const { locale, slug } = await params;
     const supabase = await createClient();
 
+    // Fetch hobby data
     const { data: hobbyData } = await supabase
         .from('hobbies')
         .select('*, hobby_translations(*)')
@@ -25,6 +54,8 @@ export default async function HobbyDetailPage({
     if (!hobbyData) {
         notFound();
     }
+
+    const t = await getTranslations({ locale, namespace: 'profile.hobbies' });
 
     // Helper to extract localized content
     const getLocalized = (item: any) => {
@@ -47,7 +78,7 @@ export default async function HobbyDetailPage({
                 <Link href={`/${locale}/profile/hobbies`}>
                     <Button variant="ghost" size="sm">
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Hobbies
+                        {t('back')}
                     </Button>
                 </Link>
             </div>

@@ -4,9 +4,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Plus, Edit, Trash2 } from 'lucide-react';
+
 import { DeleteProjectButton } from '@/components/admin/delete-project-button';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Projects',
+};
 
 export default async function AdminProjectsPage() {
+
     const supabase = await createClient();
 
     const { data: projects } = await supabase

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { getUser } from '@/lib/actions/auth';
 import { redirect } from 'next/navigation';
+import { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -9,6 +10,10 @@ import { deleteHobby } from '@/lib/actions/profile-items';
 import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-editor';
 import { addHobby } from '@/lib/actions/profile-items';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
+
+export const metadata: Metadata = {
+    title: 'Hobbies',
+};
 
 export default async function AdminHobbiesPage() {
     const user = await getUser();

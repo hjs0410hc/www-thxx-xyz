@@ -1,3 +1,4 @@
+
 import { createClient } from '@/lib/supabase/server';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,16 +6,45 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
+    const { locale, slug } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase
+        .from('education')
+        .select('*, education_translations(*)')
+        .eq('slug', slug)
+        .single();
+
+    if (!item) return;
+
+    const t = await getTranslations({ locale, namespace: 'profile.education' });
+    const trans = item.education_translations?.find((t: any) => t.locale === locale)
+        || item.education_translations?.find((t: any) => t.locale === 'ko')
+        || item.education_translations?.find((t: any) => t.locale === 'en')
+        || item.education_translations?.[0]
+        || {};
+
+    return generateSEOMetadata({
+        title: t('detailTitle', { title: trans.institution || item.institution }),
+        description: trans.description || item.description,
+        path: `/ ${locale} /profile/education / ${slug} `,
+        locale,
+    });
+}
 
 export default async function EducationDetailPage({
     params,
 }: {
-    params: Promise<{ locale: Locale; slug: string }>;
+    params: Promise<{ locale: string; slug: string }>;
 }) {
     const { locale, slug } = await params;
     const supabase = await createClient();
 
+    // Fetch education data
     const { data: educationData } = await supabase
         .from('education')
         .select('*, education_translations(*)')
@@ -24,6 +54,8 @@ export default async function EducationDetailPage({
     if (!educationData) {
         notFound();
     }
+
+    const t = await getTranslations({ locale, namespace: 'profile.education' });
 
     // Helper to extract localized content
     const getLocalized = (item: any) => {
@@ -45,7 +77,7 @@ export default async function EducationDetailPage({
                 <Link href={`/${locale}/profile/education`}>
                     <Button variant="ghost" size="sm">
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Education
+                        {t('back')}
                     </Button>
                 </Link>
             </div>

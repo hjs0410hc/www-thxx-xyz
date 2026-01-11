@@ -14,8 +14,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+
 export const metadata: Metadata = {
-  title: "thxx.xyz - Portfolio",
+  title: {
+    template: 'THXX - %s',
+    default: 'THXX',
+  },
   description: "Personal portfolio and blog",
   icons: {
     icon: '/favicon.ico',
@@ -23,6 +27,7 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
 };
+
 
 export default function RootLayout({
   children,

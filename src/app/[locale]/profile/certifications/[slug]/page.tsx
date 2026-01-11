@@ -6,16 +6,45 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Award } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
+    const { locale, slug } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase
+        .from('certifications')
+        .select('*, certification_translations(*)')
+        .eq('slug', slug)
+        .single();
+
+    if (!item) return;
+
+    const t = await getTranslations({ locale, namespace: 'profile.certifications' });
+    const trans = item.certification_translations?.find((t: any) => t.locale === locale)
+        || item.certification_translations?.find((t: any) => t.locale === 'ko')
+        || item.certification_translations?.find((t: any) => t.locale === 'en')
+        || item.certification_translations?.[0]
+        || {};
+
+    return generateSEOMetadata({
+        title: t('detailTitle', { title: trans.name || item.name }),
+        description: trans.description || item.description,
+        path: `/${locale}/profile/certifications/${slug}`,
+        locale,
+    });
+}
 
 export default async function CertificationDetailPage({
     params,
 }: {
-    params: Promise<{ locale: Locale; slug: string }>;
+    params: Promise<{ locale: string; slug: string }>;
 }) {
     const { locale, slug } = await params;
     const supabase = await createClient();
 
+    // Fetch certification data
     const { data: certificationData } = await supabase
         .from('certifications')
         .select('*, certification_translations(*)')
@@ -25,6 +54,8 @@ export default async function CertificationDetailPage({
     if (!certificationData) {
         notFound();
     }
+
+    const t = await getTranslations({ locale, namespace: 'profile.certifications' });
 
     // Helper to extract localized content
     const getLocalized = (item: any) => {
@@ -48,7 +79,7 @@ export default async function CertificationDetailPage({
                 <Link href={`/${locale}/profile/certifications`}>
                     <Button variant="ghost" size="sm">
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Certifications
+                        {t('back')}
                     </Button>
                 </Link>
             </div>

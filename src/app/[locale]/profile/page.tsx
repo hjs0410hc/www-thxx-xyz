@@ -4,10 +4,20 @@ import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { ProfileSections } from '@/components/profile/profile-sections';
 import type { Locale } from '@/i18n';
 import { getTranslations } from 'next-intl/server';
+
 import { ProfileSidebarContent } from '@/components/profile/profile-sidebar-content';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'nav' });
+    return {
+        title: t('profile'),
+    };
+}
 
 export default async function ProfilePage({ params }: { params: { locale: Locale } }) {
     const supabase = await createClient();
+
     const locale = (await params).locale;
 
     const { data: profileData } = await supabase.from('profiles').select('*, profile_translations(*)').single();

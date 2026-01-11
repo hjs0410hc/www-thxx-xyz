@@ -5,7 +5,35 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Briefcase } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
+    const { locale, slug } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase
+        .from('work_experience')
+        .select('*, work_experience_translations(*)')
+        .eq('slug', slug)
+        .single();
+
+    if (!item) return;
+
+    const t = await getTranslations({ locale, namespace: 'profile.work' });
+    const trans = item.work_experience_translations?.find((t: any) => t.locale === locale)
+        || item.work_experience_translations?.find((t: any) => t.locale === 'ko')
+        || item.work_experience_translations?.find((t: any) => t.locale === 'en')
+        || item.work_experience_translations?.[0]
+        || {};
+
+    return generateSEOMetadata({
+        title: t('detailTitle', { title: trans.position || item.position }),
+        description: trans.description || item.description,
+        path: `/${locale}/profile/work/${slug}`,
+        locale,
+    });
+}
 
 export default async function WorkDetailPage({
     params,
@@ -26,6 +54,7 @@ export default async function WorkDetailPage({
     }
 
     // Helper to extract localized content
+    // Helper to extract localized content
     const getLocalized = (item: any) => {
         if (!item) return null;
         const translations = item.work_experience_translations || [];
@@ -38,6 +67,7 @@ export default async function WorkDetailPage({
     };
 
     const work = getLocalized(workData);
+    const t = await getTranslations({ locale, namespace: 'profile.work' });
 
     return (
         <div className="container max-w-4xl py-8">
@@ -45,7 +75,7 @@ export default async function WorkDetailPage({
                 <Link href={`/${locale}/profile/work`}>
                     <Button variant="ghost" size="sm">
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Work Experience
+                        {t('back')}
                     </Button>
                 </Link>
             </div>

@@ -4,11 +4,21 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar } from 'lucide-react';
+
 import { BlogSidebar } from '@/components/blog/blog-sidebar';
 import { getTranslations } from 'next-intl/server';
 import { MobileBlogMenu } from '@/components/blog/mobile-blog-menu';
 
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'blog' });
+    return {
+        title: t('title'),
+    };
+}
+
 export default async function BlogPage({
+
     params,
     searchParams,
 }: {

@@ -95,7 +95,9 @@
             "part_time": "アルバイト",
             "full_time": "正社員",
             "military_service": "兵役",
-            "present": "在職中"
+            "present": "在職中",
+            "detailTitle": "職歴 - {title}",
+            "back": "職歴一覧に戻る"
         },
         "education": {
             "title": "学歴",
@@ -105,39 +107,51 @@
             "university": "大学",
             "study_abroad": "留学",
             "course": "コース",
-            "present": "在学中"
+            "present": "在学中",
+            "detailTitle": "学歴 - {title}",
+            "back": "学歴一覧に戻る"
         },
         "awards": {
             "title": "受賞・表彰",
             "description": "受賞実績と成果",
             "empty": "登録された受賞歴がありません",
-            "emptyDesc": "管理パネルから受賞歴を追加してください。"
+            "emptyDesc": "管理パネルから受賞歴を追加してください。",
+            "detailTitle": "受賞 - {title}",
+            "back": "受賞歴一覧に戻る"
         },
         "certifications": {
             "title": "資格",
             "description": "専門資格と免許",
             "empty": "登録された資格がありません",
             "emptyDesc": "管理パネルから資格を追加してください。",
-            "issuedBy": "発行機関: {issuer}"
+            "issuedBy": "発行機関: {issuer}",
+            "detailTitle": "資格 - {title}",
+            "back": "資格一覧に戻る"
         },
         "clubs": {
             "title": "サークル・活動",
             "description": "課外活動とコミュニティ",
             "empty": "登録された活動がありません",
             "emptyDesc": "管理パネルから活動を追加してください。",
-            "role": "役割: {role}"
+            "role": "役割: {role}",
+            "detailTitle": "活動 - {title}",
+            "back": "活動一覧に戻る"
         },
         "experiences": {
             "title": "経験",
             "description": "ボランティアやその他の有意義な経験",
             "empty": "登録された経験がありません",
-            "emptyDesc": "管理パネルから経験を追加してください。"
+            "emptyDesc": "管理パネルから経験を追加してください。",
+            "detailTitle": "経験 - {title}",
+            "back": "経験一覧に戻る"
         },
         "hobbies": {
             "title": "趣味・関心",
             "description": "余暇の活動",
             "empty": "登録された趣味がありません",
-            "emptyDesc": "管理パネルから趣味を追加してください。"
+            "emptyDesc": "管理パネルから趣味を追加してください。",
+            "detailTitle": "趣味 - {title}",
+            "back": "趣味一覧に戻る"
         }
     },
     "tech": {
@@ -169,13 +183,28 @@
             "view": "プロジェクトを見る",
             "preview": "プレビュー",
             "source": "ソースコード",
-            "present": "進行中"
+            "present": "進行中",
+            "detailTitle": "プロジェクト - {title}",
+            "back": "プロジェクト一覧に戻る",
+            "technologiesUsed": "使用技術",
+            "viewDemo": "デモを見る",
+            "viewCode": "コードを見る",
+            "status": {
+                "in_progress": "進行中",
+                "completed": "完了",
+                "on_hold": "保留",
+                "planned": "計画中",
+                "maintenance": "メンテナンス"
+            }
         },
         "skills": {
             "title": "技術スタック",
             "description": "使用可能な技術、ツール、方法論",
             "empty": "登録されたスキルがありません",
-            "emptyDesc": "管理パネルからスキルを追加してください。"
+            "emptyDesc": "管理パネルからスキルを追加してください。",
+            "detailTitle": "技術 - {title}",
+            "back": "技術一覧に戻る",
+            "relatedTechnologies": "関連技術"
         }
     },
     "blog": {
@@ -186,6 +215,7 @@
         "noPosts": "投稿が見つかりません",
         "noPostsWithTag": "タグ \"{tag}\" の投稿は見つかりませんでした。",
         "emptyState": "投稿はまだありません。",
-        "readMore": "続きを読む"
+        "readMore": "続きを読む",
+        "postTitle": "ブログ - {title}"
     }
 }

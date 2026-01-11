@@ -5,13 +5,23 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
 import type { Locale } from '@/i18n';
+
 import { getTranslations } from 'next-intl/server';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'profile.clubs' });
+    return {
+        title: t('title'),
+    };
+}
 
 export default async function ClubsPage({
     params,
 }: {
     params: Promise<{ locale: Locale }>;
 }) {
+
     const { locale } = await params;
     const supabase = await createClient();
     const t = await getTranslations({ locale, namespace: 'profile.clubs' });

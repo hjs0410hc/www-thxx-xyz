@@ -6,6 +6,26 @@ import { ArrowLeft, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Locale } from '@/i18n';
+import { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }): Promise<Metadata> {
+    const { locale, slug } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase.from('awards').select('*, award_translations(*)').eq('slug', slug).single();
+
+    if (!item) return { title: 'Award' };
+
+    const t = await getTranslations({ locale, namespace: 'profile.awards' });
+    const trans = item.award_translations?.find((t: any) => t.locale === locale)
+        || item.award_translations?.find((t: any) => t.locale === 'ko')
+        || item.award_translations?.find((t: any) => t.locale === 'en')
+        || item.award_translations?.[0]
+        || {};
+    return {
+        title: t('detailTitle', { title: trans.title || item.title }),
+    };
+}
 
 export default async function AwardDetailPage({
     params,
@@ -15,6 +35,7 @@ export default async function AwardDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
+    // Fetch award data
     const { data: awardData } = await supabase
         .from('awards')
         .select('*, award_translations(*)')
@@ -24,6 +45,8 @@ export default async function AwardDetailPage({
     if (!awardData) {
         notFound();
     }
+
+    const t = await getTranslations({ locale, namespace: 'profile.awards' });
 
     // Helper to extract localized content
     const getLocalized = (item: any) => {
@@ -45,7 +68,7 @@ export default async function AwardDetailPage({
                 <Link href={`/${locale}/profile/awards`}>
                     <Button variant="ghost" size="sm">
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Awards
+                        {t('back')}
                     </Button>
                 </Link>
             </div>

@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { generateMetadata as generateSEOMetadata, generateArticleStructuredData } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 import { BlogPostViewer } from '@/components/blog/blog-post-viewer';
+import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata({
     params,
@@ -15,13 +16,13 @@ export async function generateMetadata({
         .from('posts')
         .select('*, post_translations(*)')
         .eq('slug', slug)
-
         .single();
 
     if (!post) {
         return {};
     }
 
+    const t = await getTranslations({ locale, namespace: 'blog' });
     const translations = post.post_translations || [];
     const trans = translations.find((t: any) => t.locale === locale)
         || translations.find((t: any) => t.locale === 'ko')
@@ -30,7 +31,7 @@ export async function generateMetadata({
         || {};
 
     return generateSEOMetadata({
-        title: trans.title || post.title,
+        title: t('postTitle', { title: trans.title || post.title }),
         description: trans.excerpt || trans.title || post.title,
         path: `/${locale}/blog/${slug}`,
         locale,

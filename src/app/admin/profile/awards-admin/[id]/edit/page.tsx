@@ -5,6 +5,20 @@ import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-edit
 import { updateAward } from '@/lib/actions/profile-items';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase.from('awards').select('*, award_translations(*)').eq('id', id).single();
+
+    if (!item) return { title: 'Edit Award' };
+
+    const trans = item.award_translations?.find((t: any) => t.locale === 'ko' || t.locale === 'en') || {};
+    return {
+        title: `Edit ${trans.title || 'Award'}`,
+    };
+}
 
 export default async function EditAwardPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

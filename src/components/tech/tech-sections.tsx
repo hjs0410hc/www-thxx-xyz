@@ -160,7 +160,7 @@ export function TechSections({
                                             <div className="text-right shrink-0 flex flex-col items-end gap-1">
                                                 {project.status && (
                                                     <Badge variant={project.status === 'completed' ? 'default' : 'secondary'} className="text-xs px-2 py-0.5 h-5 capitalize border-transparent">
-                                                        {project.status.replace('_', ' ')}
+                                                        {t(`projects.status.${project.status}`)}
                                                     </Badge>
                                                 )}
                                                 <div className="text-xs text-muted-foreground font-medium">

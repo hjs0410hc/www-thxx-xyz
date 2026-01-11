@@ -5,6 +5,20 @@ import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-edit
 import { updateHobby } from '@/lib/actions/profile-items';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase.from('hobbies').select('*, hobby_translations(*)').eq('id', id).single();
+
+    if (!item) return { title: 'Edit Hobby' };
+
+    const trans = item.hobby_translations?.find((t: any) => t.locale === 'ko' || t.locale === 'en') || {};
+    return {
+        title: `Edit ${trans.name || 'Hobby'}`,
+    };
+}
 
 export default async function EditHobbyPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

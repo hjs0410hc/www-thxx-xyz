@@ -5,6 +5,23 @@ import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-edit
 import { updateWorkExperience } from '@/lib/actions/profile-items';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Metadata } from 'next';
+
+import { getTranslations } from 'next-intl/server';
+import { ArrowLeft } from 'lucide-react';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase.from('work_experience').select('*, work_experience_translations(*)').eq('id', id).single();
+
+    if (!item) return { title: 'Edit Work' };
+
+    const trans = item.work_experience_translations?.find((t: any) => t.locale === 'ko' || t.locale === 'en') || {};
+    return {
+        title: `Edit ${trans.company || 'Work'}`,
+    };
+}
 
 export default async function EditWorkPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

@@ -8,6 +8,11 @@ import { deleteWorkExperience } from '@/lib/actions/profile-items';
 import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-editor';
 import { addWorkExperience } from '@/lib/actions/profile-items';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Work',
+};
 
 export default async function AdminWorkPage() {
     const user = await getUser();

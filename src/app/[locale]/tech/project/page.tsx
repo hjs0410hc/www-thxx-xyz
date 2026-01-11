@@ -7,14 +7,24 @@ import Link from 'next/link';
 import { ExternalLink, Github } from 'lucide-react';
 import { ProjectWithDetails } from '@/types/tech';
 import Image from 'next/image';
+
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'tech.projects' });
+    return {
+        title: t('title'),
+    };
+}
 
 export default async function ProjectsPage({
     params,
 }: {
     params: Promise<{ locale: Locale }>;
 }) {
+
     const { locale } = await params;
     const supabase = await createClient();
     const t = await getTranslations({ locale, namespace: 'tech.projects' });
@@ -82,7 +92,7 @@ export default async function ProjectsPage({
                                         </CardTitle>
                                         {project.status && (
                                             <Badge variant={project.status === 'completed' ? 'default' : 'secondary'} className="shrink-0 text-[10px] px-2 py-0.5 h-auto capitalize border-transparent bg-primary/10 text-primary hover:bg-primary/20">
-                                                {project.status.replace('_', ' ')}
+                                                {t(`status.${project.status}`)}
                                             </Badge>
                                         )}
                                     </div>

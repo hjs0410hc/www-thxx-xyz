@@ -4,9 +4,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { User, Briefcase, FileText, LogOut, Layers } from 'lucide-react';
+
 import { redirect } from 'next/navigation';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Dashboard',
+};
 
 export default async function AdminDashboard() {
+
     const user = await getUser();
 
     // Redirect to login if not authenticated

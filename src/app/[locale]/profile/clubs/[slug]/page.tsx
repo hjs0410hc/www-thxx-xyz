@@ -1,3 +1,4 @@
+
 import { createClient } from '@/lib/supabase/server';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,7 +6,35 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Users } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
+    const { locale, slug } = await params;
+    const supabase = await createClient();
+    const { data: item } = await supabase
+        .from('clubs')
+        .select('*, club_translations(*)')
+        .eq('slug', slug)
+        .single();
+
+    if (!item) return;
+
+    const t = await getTranslations({ locale, namespace: 'profile.clubs' });
+    const trans = item.club_translations?.find((t: any) => t.locale === locale)
+        || item.club_translations?.find((t: any) => t.locale === 'ko')
+        || item.club_translations?.find((t: any) => t.locale === 'en')
+        || item.club_translations?.[0]
+        || {};
+
+    return generateSEOMetadata({
+        title: t('detailTitle', { title: trans.name || item.name }),
+        description: trans.description || item.description,
+        path: `/ ${locale} /profile/clubs / ${slug} `,
+        locale,
+    });
+}
 
 export default async function ClubDetailPage({
     params,
@@ -24,6 +53,8 @@ export default async function ClubDetailPage({
     if (!clubData) {
         notFound();
     }
+
+    const t = await getTranslations({ locale, namespace: 'profile.clubs' });
 
     // Helper to extract localized content
     const getLocalized = (item: any) => {
@@ -45,7 +76,7 @@ export default async function ClubDetailPage({
                 <Link href={`/${locale}/profile/clubs`}>
                     <Button variant="ghost" size="sm">
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Clubs & Activities
+                        {t('back')}
                     </Button>
                 </Link>
             </div>

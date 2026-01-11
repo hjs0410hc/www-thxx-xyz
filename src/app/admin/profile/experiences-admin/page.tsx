@@ -8,6 +8,11 @@ import { deleteExperience } from '@/lib/actions/profile-items';
 import { ProfileFormWithEditor } from '@/components/admin/profile-form-with-editor';
 import { addExperience } from '@/lib/actions/profile-items';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Experiences',
+};
 
 export default async function AdminExperiencesPage() {
     const user = await getUser();

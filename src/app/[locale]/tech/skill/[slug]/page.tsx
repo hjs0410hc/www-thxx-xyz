@@ -9,6 +9,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { SkillWithDetails } from '@/types/tech';
+import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata({
     params,
@@ -28,6 +29,7 @@ export async function generateMetadata({
         return {};
     }
 
+    const t = await getTranslations({ locale, namespace: 'tech.skills' });
     const translations = skillData.skill_translations || [];
     const trans = translations.find((t: any) => t.locale === locale)
         || translations.find((t: any) => t.locale === 'ko')
@@ -38,7 +40,7 @@ export async function generateMetadata({
     const skill = { ...skillData, ...trans } as SkillWithDetails;
 
     return generateSEOMetadata({
-        title: skill.title,
+        title: t('detailTitle', { title: skill.title }),
         description: skill.description || skill.title,
         path: `/${locale}/tech/skill/${slug}`,
         locale,
@@ -64,6 +66,7 @@ export default async function SkillDetailPage({
         notFound();
     }
 
+    const t = await getTranslations({ locale, namespace: 'tech.skills' });
     const translations = skillData.skill_translations || [];
     const trans = translations.find((t: any) => t.locale === locale)
         || translations.find((t: any) => t.locale === 'ko')
@@ -79,7 +82,7 @@ export default async function SkillDetailPage({
             <Button variant="ghost" asChild className="mb-6">
                 <Link href={`/${locale}/tech/skill`}>
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to Skills
+                    {t('back')}
                 </Link>
             </Button>
 
@@ -123,7 +126,7 @@ export default async function SkillDetailPage({
                 {skill.technologies && skill.technologies.length > 0 && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>Related Technologies</CardTitle>
+                            <CardTitle>{t('relatedTechnologies')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="flex flex-wrap gap-2">

@@ -5,9 +5,16 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { Plus, Edit, Layers } from 'lucide-react';
 import { DeleteSkillButton } from '@/components/admin/delete-skill-button';
+
 import { Skill, SkillTranslation } from '@/types/tech';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Skills',
+};
 
 export default async function AdminSkillsPage() {
+
     const supabase = await createClient();
 
     const { data: skills } = await supabase
