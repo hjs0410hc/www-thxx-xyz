@@ -16,7 +16,7 @@ export default async function AdminCertificationsPage() {
     const supabase = await createClient();
     const { data: certifications } = await supabase
         .from('certifications')
-        .select('*')
+        .select('*, certification_translations(*)')
         .order('issue_date', { ascending: false });
 
     return (
@@ -32,21 +32,12 @@ export default async function AdminCertificationsPage() {
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary...' },
                     { name: 'issue_date', label: 'Issue Date', type: 'date', required: true },
                     { name: 'expiry_date', label: 'Expiry Date', type: 'date' },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                 ]}
                 hasEditor={true}
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['name', 'issuer', 'description']}
             />
 
             <Card>
@@ -56,26 +47,33 @@ export default async function AdminCertificationsPage() {
                 <CardContent>
                     {certifications && certifications.length > 0 ? (
                         <div className="space-y-4">
-                            {certifications.map((cert) => (
-                                <div key={cert.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/ko/profile/certifications/${cert.slug}`} className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="font-semibold hover:text-primary">{cert.name}</h3>
-                                            <span className="text-xs text-muted-foreground">/{cert.slug}</span>
-                                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                                        </div>
-                                        <p className="text-sm text-muted-foreground mb-1">{cert.issuer}</p>
-                                        {cert.description && (
-                                            <p className="text-sm text-muted-foreground line-clamp-2">{cert.description}</p>
-                                        )}
-                                    </Link>
-                                    <form action={deleteCertification.bind(null, cert.id)}>
-                                        <Button variant="ghost" size="icon" type="submit">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </form>
-                                </div>
-                            ))}
+                            {certifications.map((cert: any) => {
+                                const trans = cert.certification_translations?.find((t: any) => t.locale === 'ko')
+                                    || cert.certification_translations?.find((t: any) => t.locale === 'en')
+                                    || cert.certification_translations?.[0]
+                                    || {};
+
+                                return (
+                                    <div key={cert.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                                        <Link href={`/admin/profile/certifications-admin/${cert.id}/edit`} className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h3 className="font-semibold hover:text-primary">{trans.name || 'Untitled'}</h3>
+                                                <span className="text-xs text-muted-foreground">/{cert.slug}</span>
+                                                <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                                            </div>
+                                            <p className="text-sm text-muted-foreground mb-1">{trans.issuer}</p>
+                                            {trans.description && (
+                                                <p className="text-sm text-muted-foreground line-clamp-2">{trans.description}</p>
+                                            )}
+                                        </Link>
+                                        <form action={deleteCertification.bind(null, cert.id)}>
+                                            <Button variant="ghost" size="icon" type="submit">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </form>
+                                    </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <p className="text-muted-foreground text-center py-4">No certifications added yet</p>

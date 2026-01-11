@@ -3,18 +3,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { BlogSidebar } from '@/components/blog/blog-sidebar';
+import { getTranslations } from 'next-intl/server';
+import { MobileBlogMenu } from '@/components/blog/mobile-blog-menu';
 
 export default async function BlogPage({
     params,
     searchParams,
 }: {
     params: Promise<{ locale: string }>;
-    searchParams: Promise<{ tag?: string }>;
+    searchParams: Promise<{ tag?: string; q?: string }>;
 }) {
     const { locale } = await params;
-    const { tag: searchTag } = await searchParams;
+    const { tag: searchTag, q: userSearchQuery } = await searchParams;
     const supabase = await createClient();
 
     // Fetch all tags for the sidebar
@@ -35,68 +37,122 @@ export default async function BlogPage({
     // Build query for posts
     let query = supabase
         .from('posts')
-        .select('*, post_tags(*)')
-        .eq('locale', locale)
-        .eq('published', true)
-        .order('published_at', { ascending: false });
+        .select('*, post_tags(*), post_translations(*)')
+        .order('created_at', { ascending: false });
 
-    // Apply tag filter if present
+    // Apply tag and search filter
+    let postIds = new Set<string>();
+    let searchPerformed = false;
+
+    // Handle text search
+    if (userSearchQuery) {
+        searchPerformed = true;
+
+        // 1. Search in translations (title, excerpt)
+        const { data: transMatches } = await supabase
+            .from('post_translations')
+            .select('post_id')
+            .or(`title.ilike.%${userSearchQuery}%,excerpt.ilike.%${userSearchQuery}%`);
+
+        // 2. Search tags
+        const { data: tagMatches } = await supabase
+            .from('post_tags')
+            .select('post_id')
+            .ilike('tag', `%${userSearchQuery}%`);
+
+        // Collect IDs
+        transMatches?.forEach(t => postIds.add(t.post_id));
+        tagMatches?.forEach(t => postIds.add(t.post_id));
+    }
+
+    // Handle Tag Filter
     if (searchTag) {
-        // Step 1: Find post IDs that have the tag
-        const { data: matchingTags } = await supabase
+        const { data: tagFilterMatches } = await supabase
             .from('post_tags')
             .select('post_id')
             .eq('tag', searchTag);
 
-        const postIds = matchingTags?.map(t => t.post_id) || [];
+        const tagIds = new Set(tagFilterMatches?.map(t => t.post_id) || []);
 
-        if (postIds.length > 0) {
-            // Step 2: Fetch posts with those IDs, getting ALL tags
-            query = supabase
-                .from('posts')
-                .select('*, post_tags(*)')
-                .eq('locale', locale)
-                .eq('published', true)
-                .in('id', postIds)
-                .order('published_at', { ascending: false });
+        if (searchPerformed) {
+            // Intersect
+            postIds = new Set([...postIds].filter(x => tagIds.has(x)));
         } else {
-            // No posts found with this tag, return empty
-            // We can just force an empty result by querying an impossible condition or handling it gracefully
-            // For simplicity, let's just make the query return nothing
-            query = supabase
-                .from('posts')
-                .select('*, post_tags(*)')
-                .eq('id', '00000000-0000-0000-0000-000000000000'); // Impossible ID
+            // Just use tag IDs
+            postIds = tagIds;
+            searchPerformed = true;
         }
     }
 
-    const { data: posts } = await query;
+    // Apply filters to query
+    if (searchPerformed) {
+        if (postIds.size > 0) {
+            query = query.in('id', Array.from(postIds));
+        } else {
+            // No matches
+            query = query.eq('id', '00000000-0000-0000-0000-000000000000');
+        }
+    }
+
+    const { data: rawPosts } = await query;
+
+    const posts = (rawPosts || []).map((p: any) => {
+        const translations = p.post_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+
+        const LANGUAGE_ORDER = ['ko', 'en', 'ja'];
+        const locales = (translations.map((t: any) => t.locale) as string[]).sort((a, b) => {
+            return LANGUAGE_ORDER.indexOf(a) - LANGUAGE_ORDER.indexOf(b);
+        });
+
+        return {
+            ...p,
+            title: trans.title || p.title || '(No Title)',
+            excerpt: trans.excerpt || p.excerpt,
+            content: trans.content,
+            locales,
+        };
+    });
 
     const formatDate = (date: string | null) => {
         if (!date) return '';
-        return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
     };
 
-    // Calculate reading time (rough estimate: 200 words per minute)
-    const calculateReadingTime = (content: any) => {
-        if (!content) return 0;
-        const text = JSON.stringify(content);
-        const words = text.split(/\s+/).length;
-        return Math.ceil(words / 200);
+    const LANGUAGE_LABELS: Record<string, string> = {
+        ko: '한국어',
+        en: 'English',
+        ja: '日本語',
     };
+
+    const t = await getTranslations({ locale, namespace: 'blog' });
+    const ct = await getTranslations({ locale, namespace: 'common' });
 
     return (
         <div className="container py-8 space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Blog</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Technical articles and thoughts
+                    {t('description')}
                 </p>
             </div>
 
+            {/* Mobile Menu */}
+            <MobileBlogMenu tags={formattedTags} currentTag={searchTag} locale={locale} />
+
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Left Sidebar */}
-                <div className="lg:col-span-1">
+                {/* Left Sidebar - Hidden on mobile, handled by MobileBlogMenu */}
+                <div className="hidden lg:block lg:col-span-1">
                     <BlogSidebar tags={formattedTags} currentTag={searchTag} locale={locale} />
                 </div>
 
@@ -105,7 +161,14 @@ export default async function BlogPage({
                     {posts && posts.length > 0 ? (
                         posts.map((post) => (
                             <Link key={post.id} href={`/${locale}/blog/${post.slug}`}>
-                                <Card className="transition-all hover:shadow-md hover:scale-[1.01]">
+                                <Card className="transition-all hover:shadow-md hover:scale-[1.01] mb-4 relative">
+                                    <div className="absolute top-6 right-6 flex gap-1 z-10">
+                                        {post.locales.map((l: string) => (
+                                            <Badge key={l} variant="secondary" className="text-[15px] py-0.5 px-1.5 font-normal">
+                                                {LANGUAGE_LABELS[l] || l}
+                                            </Badge>
+                                        ))}
+                                    </div>
                                     <CardContent>
                                         <div className="flex flex-col md:flex-row gap-6">
                                             {/* Cover Image */}
@@ -122,7 +185,7 @@ export default async function BlogPage({
 
                                             {/* Content */}
                                             <div className="flex-1 min-w-0">
-                                                <h2 className="text-2xl font-semibold mb-2">{post.title}</h2>
+                                                <h2 className="text-2xl font-semibold mb-2 pr-20">{post.title}</h2>
 
                                                 {post.excerpt && (
                                                     <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
@@ -132,16 +195,12 @@ export default async function BlogPage({
 
                                                 {/* Meta Info */}
                                                 <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground mb-3">
-                                                    {post.published_at && (
+                                                    {post.created_at && (
                                                         <div className="flex items-center gap-1">
                                                             <Calendar className="h-3 w-3" />
-                                                            <span>{formatDate(post.published_at)}</span>
+                                                            <span>{formatDate(post.created_at)}</span>
                                                         </div>
                                                     )}
-                                                    <div className="flex items-center gap-1">
-                                                        <Clock className="h-3 w-3" />
-                                                        <span>{calculateReadingTime(post.content)} min read</span>
-                                                    </div>
                                                 </div>
 
                                                 {/* Tags */}
@@ -154,7 +213,7 @@ export default async function BlogPage({
                                                         ))}
                                                         {post.post_tags.length > 3 && (
                                                             <Badge variant="outline" className="text-xs">
-                                                                +{post.post_tags.length - 3} more
+                                                                {t('moreTags', { count: post.post_tags.length - 3 })}
                                                             </Badge>
                                                         )}
                                                     </div>
@@ -168,11 +227,11 @@ export default async function BlogPage({
                     ) : (
                         <Card>
                             <CardHeader>
-                                <CardTitle>No Posts Found</CardTitle>
+                                <CardTitle>{t('noPosts')}</CardTitle>
                                 <CardDescription>
                                     {searchTag
-                                        ? `No posts found with tag "${searchTag}".`
-                                        : "Blog posts will appear here once published."}
+                                        ? t('noPostsWithTag', { tag: searchTag })
+                                        : t('emptyState')}
                                 </CardDescription>
                             </CardHeader>
                         </Card>

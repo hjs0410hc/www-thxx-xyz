@@ -17,7 +17,7 @@ export default async function AdminHobbiesPage() {
     const supabase = await createClient();
     const { data: hobbies } = await supabase
         .from('hobbies')
-        .select('*')
+        .select('*, hobby_translations(*)')
         .order('created_at', { ascending: true });
 
     return (
@@ -41,6 +41,7 @@ export default async function AdminHobbiesPage() {
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['name', 'description']}
             />
 
             <Card>
@@ -50,25 +51,33 @@ export default async function AdminHobbiesPage() {
                 <CardContent>
                     {hobbies && hobbies.length > 0 ? (
                         <div className="space-y-4">
-                            {hobbies.map((hobby) => (
-                                <div key={hobby.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/ko/profile/hobbies/${hobby.slug}`} className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="font-semibold hover:text-primary">{hobby.name}</h3>
-                                            <span className="text-xs text-muted-foreground">/{hobby.slug}</span>
-                                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                                        </div>
-                                        {hobby.description && (
-                                            <p className="text-sm text-muted-foreground line-clamp-2">{hobby.description}</p>
-                                        )}
-                                    </Link>
-                                    <form action={deleteHobby.bind(null, hobby.id)}>
-                                        <Button variant="ghost" size="icon" type="submit">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </form>
-                                </div>
-                            ))}
+                            {hobbies.map((hobby: any) => {
+                                // Prefer KO, then EN, then first
+                                const trans = hobby.hobby_translations?.find((t: any) => t.locale === 'ko')
+                                    || hobby.hobby_translations?.find((t: any) => t.locale === 'en')
+                                    || hobby.hobby_translations?.[0]
+                                    || {};
+
+                                return (
+                                    <div key={hobby.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                                        <Link href={`/admin/profile/hobbies/${hobby.id}/edit`} className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h3 className="font-semibold hover:text-primary">{trans.name || 'Untitled'}</h3>
+                                                <span className="text-xs text-muted-foreground">/{hobby.slug}</span>
+                                                <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                                            </div>
+                                            {trans.description && (
+                                                <p className="text-sm text-muted-foreground line-clamp-2">{trans.description}</p>
+                                            )}
+                                        </Link>
+                                        <form action={deleteHobby.bind(null, hobby.id)}>
+                                            <Button variant="ghost" size="icon" type="submit">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </form>
+                                    </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <p className="text-muted-foreground text-center py-4">No hobbies added yet</p>

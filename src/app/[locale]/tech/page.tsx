@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { TechSections } from '@/components/tech/tech-sections';
+import { getTranslations } from 'next-intl/server';
 
 export default async function TechSummaryPage({
     params,
@@ -10,25 +11,40 @@ export default async function TechSummaryPage({
     const supabase = await createClient();
 
     // Fetch featured or all projects
-    const { data: projects } = await supabase
+    const { data: projectsData } = await supabase
         .from('projects')
-        .select('*')
-        .eq('locale', locale)
+        .select('*, project_translations(*)')
         .order('created_at', { ascending: false });
 
     // Fetch all skills
-    const { data: skills } = await supabase
+    const { data: skillsData } = await supabase
         .from('skills')
-        .select('*')
-        .eq('locale', locale)
+        .select('*, skill_translations(*)')
         .order('display_order', { ascending: true });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any, translationsField: string) => {
+        if (!item) return null;
+        const translations = item[translationsField] || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const projects = (projectsData || []).map(p => getLocalized(p, 'project_translations'));
+    const skills = (skillsData || []).map(s => getLocalized(s, 'skill_translations'));
+
+    const t = await getTranslations({ locale });
 
     return (
         <div className="space-y-10">
             <div>
-                <h1 className="text-4xl font-bold">Summary</h1>
+                <h1 className="text-4xl font-bold">{t('tech.summary')}</h1>
                 <p className="text-muted-foreground mt-2 text-lg">
-                    Welcome to my technology portfolio. Explore my projects and technical skills.
+                    {t('tech.description')}
                 </p>
             </div>
 

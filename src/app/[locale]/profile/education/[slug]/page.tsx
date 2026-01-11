@@ -15,15 +15,29 @@ export default async function EducationDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: education } = await supabase
+    const { data: educationData } = await supabase
         .from('education')
-        .select('*')
+        .select('*, education_translations(*)')
         .eq('slug', slug)
         .single();
 
-    if (!education) {
+    if (!educationData) {
         notFound();
     }
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.education_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const education = getLocalized(educationData);
 
     return (
         <div className="container max-w-4xl py-8">
@@ -41,8 +55,11 @@ export default async function EducationDetailPage({
                     <div className="flex items-start gap-4">
                         <GraduationCap className="h-8 w-8 text-primary mt-1" />
                         <div className="flex-1">
-                            <CardTitle className="text-3xl">{education.degree} {education.field && `in ${education.field}`}</CardTitle>
-                            <p className="text-xl text-muted-foreground mt-2">{education.institution}</p>
+                            <CardTitle className="text-3xl">{education.institution}</CardTitle>
+                            <div className="mt-2 text-xl text-muted-foreground">
+                                <p>{education.degree}</p>
+                                {education.field && <p>{education.field}</p>}
+                            </div>
                             <p className="text-sm text-muted-foreground mt-1">
                                 {new Date(education.start_date).getFullYear()} - {education.end_date ? new Date(education.end_date).getFullYear() : 'Present'}
                             </p>

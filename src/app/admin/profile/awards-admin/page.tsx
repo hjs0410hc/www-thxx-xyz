@@ -16,7 +16,7 @@ export default async function AdminAwardsPage() {
     const supabase = await createClient();
     const { data: awards } = await supabase
         .from('awards')
-        .select('*')
+        .select('*, award_translations(*)')
         .order('date', { ascending: false });
 
     return (
@@ -31,21 +31,12 @@ export default async function AdminAwardsPage() {
                     { name: 'slug', label: 'Slug (URL)', required: true, placeholder: 'topcit-4th' },
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary...' },
                     { name: 'date', label: 'Date', type: 'date', required: true },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                 ]}
                 hasEditor={true}
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['title', 'issuer', 'description']}
             />
 
             <Card>
@@ -55,26 +46,33 @@ export default async function AdminAwardsPage() {
                 <CardContent>
                     {awards && awards.length > 0 ? (
                         <div className="space-y-4">
-                            {awards.map((award) => (
-                                <div key={award.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/ko/profile/awards/${award.slug}`} className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="font-semibold hover:text-primary">{award.title}</h3>
-                                            <span className="text-xs text-muted-foreground">/{award.slug}</span>
-                                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                                        </div>
-                                        <p className="text-sm text-muted-foreground mb-1">{award.issuer}</p>
-                                        {award.description && (
-                                            <p className="text-sm text-muted-foreground line-clamp-2">{award.description}</p>
-                                        )}
-                                    </Link>
-                                    <form action={deleteAward.bind(null, award.id)}>
-                                        <Button variant="ghost" size="icon" type="submit">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </form>
-                                </div>
-                            ))}
+                            {awards.map((award: any) => {
+                                const trans = award.award_translations?.find((t: any) => t.locale === 'ko')
+                                    || award.award_translations?.find((t: any) => t.locale === 'en')
+                                    || award.award_translations?.[0]
+                                    || {};
+
+                                return (
+                                    <div key={award.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                                        <Link href={`/admin/profile/awards-admin/${award.id}/edit`} className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h3 className="font-semibold hover:text-primary">{trans.title || 'Untitled'}</h3>
+                                                <span className="text-xs text-muted-foreground">/{award.slug}</span>
+                                                <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                                            </div>
+                                            <p className="text-sm text-muted-foreground mb-1">{trans.issuer}</p>
+                                            {trans.description && (
+                                                <p className="text-sm text-muted-foreground line-clamp-2">{trans.description}</p>
+                                            )}
+                                        </Link>
+                                        <form action={deleteAward.bind(null, award.id)}>
+                                            <Button variant="ghost" size="icon" type="submit">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </form>
+                                    </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <p className="text-muted-foreground text-center py-4">No awards added yet</p>

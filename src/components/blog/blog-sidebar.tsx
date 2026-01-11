@@ -6,6 +6,9 @@ import { Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SearchInput } from './search-input';
+
+import { useTranslations } from 'next-intl';
 
 interface BlogSidebarProps {
     tags: { name: string; count: number }[];
@@ -14,16 +17,20 @@ interface BlogSidebarProps {
 }
 
 export function BlogSidebar({ tags, currentTag, locale }: BlogSidebarProps) {
+    const t = useTranslations('common');
     return (
         <div className="space-y-6">
-            <Card className="border-none shadow-none bg-transparent">
+            <Card className="border-none shadow-none bg-transparent pt-1">
                 <CardHeader className="px-0 pt-0">
                     <CardTitle className="flex items-center gap-2 text-lg">
                         <Tag className="h-4 w-4" />
-                        Topics
+                        {t('topics')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="px-0">
+                    <div className="mb-6 px-1">
+                        <SearchInput />
+                    </div>
                     <div className="flex flex-col space-y-1">
                         <Link href={`/${locale}/blog`} className="w-full">
                             <Button
@@ -33,7 +40,7 @@ export function BlogSidebar({ tags, currentTag, locale }: BlogSidebarProps) {
                                     !currentTag ? "bg-muted font-medium text-primary" : "text-muted-foreground"
                                 )}
                             >
-                                <span>All Posts</span>
+                                <span>{t('allPosts')}</span>
                             </Button>
                         </Link>
                         {tags.map((tag) => (

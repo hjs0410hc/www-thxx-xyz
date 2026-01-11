@@ -2,37 +2,30 @@
 
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import type { Locale } from '@/i18n';
 import { User, Layers, Rocket, Home } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
 
 const navItems = [
-    { key: 'Summary', icon: Home, href: '' }, // /tech
-    { key: 'Projects', icon: Rocket, href: '/project' }, // /tech/project
-    { key: 'Skills', icon: Layers, href: '/skill' }, // /tech/skill
+    { key: 'home', icon: Home, href: '' },
+    { key: 'projects', icon: Rocket, href: '/project' },
+    { key: 'skills', icon: Layers, href: '/skill' },
 ];
 
-export function TechSidebar() {
+interface TechSidebarProps {
+    className?: string;
+    onLinkClick?: () => void;
+    hideProfileInfo?: boolean;
+}
+
+export function TechSidebar({ className, onLinkClick, hideProfileInfo = false, profile }: TechSidebarProps & { profile: any }) {
+    const t = useTranslations('tech.nav');
     const params = useParams();
     const pathname = usePathname();
     const locale = params.locale as Locale;
-    const [profile, setProfile] = useState<any>(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const supabase = createClient();
-            const { data: profileData } = await supabase.from('profiles').select('*').single();
-            setProfile(profileData);
-        };
-        fetchData();
-    }, []);
-
-    // Helper to determine if active. 
-    // Exact match for root '/tech', partial match for others? 
-    // Actually exact match for '' (tech home), prefix for others.
     const isActive = (itemHref: string) => {
         const fullHref = `/${locale}/tech${itemHref}`;
         if (itemHref === '') {
@@ -42,16 +35,18 @@ export function TechSidebar() {
     };
 
     return (
-        <aside className="hidden md:flex w-80 flex-col gap-6 border-r pr-8 h-fit sticky top-24">
+        <aside className={cn("flex flex-col gap-6", className)}>
             {/* Profile Avatar & Info - Simplified for Tech Context */}
-            <div className="flex flex-col items-center text-center pb-6 border-b">
-                <Avatar className="h-24 w-24 mb-4">
-                    <AvatarImage src={profile?.profile_image_url || ''} alt={profile?.name || ''} />
-                    <AvatarFallback className="text-xl">{profile?.name?.charAt(0) || 'U'}</AvatarFallback>
-                </Avatar>
-                <h2 className="text-xl font-bold">{profile?.name || 'Your Name'}</h2>
-                {/* <p className="text-sm text-muted-foreground mt-1">Tech Portfolio</p> */}
-            </div>
+            {!hideProfileInfo && (
+                <div className="flex flex-col items-center text-center pb-6 border-b">
+                    <Avatar className="h-24 w-24 mb-4">
+                        <AvatarImage src={profile?.profile_image_url || ''} alt={profile?.name || ''} />
+                        <AvatarFallback className="text-xl">{profile?.name?.charAt(0) || 'U'}</AvatarFallback>
+                    </Avatar>
+                    <h2 className="text-xl font-bold">{profile?.name || 'Your Name'}</h2>
+                    {/* <p className="text-sm text-muted-foreground mt-1">Tech Portfolio</p> */}
+                </div>
+            )}
 
             {/* Navigation */}
             <nav className="flex flex-col gap-1">
@@ -63,6 +58,7 @@ export function TechSidebar() {
                         <Link
                             key={item.key}
                             href={href}
+                            onClick={onLinkClick}
                             className={cn(
                                 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                                 isActive(item.href)
@@ -71,7 +67,7 @@ export function TechSidebar() {
                             )}
                         >
                             <Icon className="h-4 w-4" />
-                            {item.key}
+                            {t(item.key)}
                         </Link>
                     );
                 })}

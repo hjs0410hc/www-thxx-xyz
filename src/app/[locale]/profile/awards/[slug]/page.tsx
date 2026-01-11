@@ -15,15 +15,29 @@ export default async function AwardDetailPage({
     const { locale, slug } = await params;
     const supabase = await createClient();
 
-    const { data: award } = await supabase
+    const { data: awardData } = await supabase
         .from('awards')
-        .select('*')
+        .select('*, award_translations(*)')
         .eq('slug', slug)
         .single();
 
-    if (!award) {
+    if (!awardData) {
         notFound();
     }
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.award_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const award = getLocalized(awardData);
 
     return (
         <div className="container max-w-4xl py-8">

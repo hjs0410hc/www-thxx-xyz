@@ -13,15 +13,34 @@ export default async function HomePage({
 
     // Parallel data fetching for posts
     const [
-        { data: recentPosts }
+        { data: rawRecentPosts }
     ] = await Promise.all([
         supabase.from('posts')
-            .select('id, title, slug, excerpt, published_at, cover_image')
-            .eq('published', true)
-            .eq('locale', locale)
-            .order('published_at', { ascending: false })
+            .select('*, post_translations(*)')
+            .order('created_at', { ascending: false })
             .limit(3)
     ]);
+
+    const recentPosts = (rawRecentPosts || []).map((p: any) => {
+        const translations = p.post_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+
+        const LANGUAGE_ORDER = ['ko', 'en', 'ja'];
+        const locales = (translations.map((t: any) => t.locale) as string[]).sort((a, b) => {
+            return LANGUAGE_ORDER.indexOf(a) - LANGUAGE_ORDER.indexOf(b);
+        });
+
+        return {
+            ...p,
+            title: trans.title || p.title || '(No Title)',
+            excerpt: trans.excerpt || p.excerpt,
+            locales,
+        };
+    });
 
     return (
         <div className="flex flex-col min-h-screen">

@@ -9,10 +9,25 @@ import { DeletePostButton } from '@/components/admin/delete-post-button';
 export default async function AdminBlogPage() {
     const supabase = await createClient();
 
-    const { data: posts } = await supabase
+    const { data: postsData } = await supabase
         .from('posts')
-        .select('*, post_tags(*)')
+        .select('*, post_tags(*), post_translations(*)')
         .order('created_at', { ascending: false });
+
+    const posts = (postsData || []).map((p: any) => {
+        const translations = p.post_translations || [];
+        const trans = translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {}; // Default to empty if no translation (shouldn't happen if created correctly)
+
+        return {
+            ...p,
+            title: trans.title || '(No Title)',
+            excerpt: trans.excerpt,
+            locales: translations.map((t: any) => t.locale).sort(),
+        };
+    });
 
     return (
         <div className="container py-8">
@@ -40,12 +55,12 @@ export default async function AdminBlogPage() {
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-2">
                                             <h3 className="text-xl font-semibold">{post.title}</h3>
-                                            <Badge variant="outline">{post.locale}</Badge>
-                                            {post.published ? (
-                                                <Badge variant="default">Published</Badge>
-                                            ) : (
-                                                <Badge variant="secondary">Draft</Badge>
-                                            )}
+                                            <div className="flex gap-1">
+                                                {post.locales.map((locale: string) => (
+                                                    <Badge key={locale} variant="outline" className="text-xs uppercase">{locale}</Badge>
+                                                ))}
+                                            </div>
+
                                         </div>
 
                                         {post.excerpt && (

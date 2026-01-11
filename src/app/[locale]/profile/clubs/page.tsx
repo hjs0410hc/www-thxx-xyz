@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
 
 export default async function ClubsPage({
     params,
@@ -13,11 +14,25 @@ export default async function ClubsPage({
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+    const t = await getTranslations({ locale, namespace: 'profile.clubs' });
 
-    const { data: clubs } = await supabase
+    const { data: clubsData } = await supabase
         .from('clubs')
-        .select('*')
-        .order('start_date', { ascending: false });
+        .select('*, club_translations(*)').order('start_date', { ascending: false });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.club_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const clubs = (clubsData || []).map(getLocalized);
 
     const formatDate = (date: string | null) => {
         if (!date) return 'Present';
@@ -28,9 +43,9 @@ export default async function ClubsPage({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Clubs & Activities</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Organizations and activities I've been involved with
+                    {t('description')}
                 </p>
             </div>
 
@@ -77,9 +92,9 @@ export default async function ClubsPage({
                 ) : (
                     <Card className="col-span-full">
                         <CardHeader>
-                            <CardTitle>No Clubs & Activities Added</CardTitle>
+                            <CardTitle>{t('empty')}</CardTitle>
                             <p className="text-sm text-muted-foreground">
-                                Add your clubs and activities through the admin panel.
+                                {t('emptyDesc')}
                             </p>
                         </CardHeader>
                     </Card>

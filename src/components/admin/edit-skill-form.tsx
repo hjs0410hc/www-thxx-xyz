@@ -24,9 +24,28 @@ interface EditSkillFormProps {
 export function EditSkillForm({ skill, mode }: EditSkillFormProps) {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [content, setContent] = useState(skill?.contents);
-    const [imageUrl, setImageUrl] = useState<string | null>(skill?.cover_image || null);
     const [uploading, setUploading] = useState(false);
+    const [imageUrl, setImageUrl] = useState<string | null>(skill?.cover_image || null);
+
+    // Locale State
+    const [selectedLocale, setSelectedLocale] = useState('ko');
+
+    // Helper to extract translation
+    const getTranslation = (l: string) => skill?.skill_translations?.find(t => t.locale === l);
+    const initialTrans = getTranslation('ko');
+
+    // Localized Fields State
+    const [title, setTitle] = useState(initialTrans?.title || '');
+    const [description, setDescription] = useState(initialTrans?.description || '');
+    const [content, setContent] = useState(initialTrans?.contents || null);
+
+    const handleLocaleChange = (newLocale: string) => {
+        setSelectedLocale(newLocale);
+        const trans = getTranslation(newLocale);
+        setTitle(trans?.title || '');
+        setDescription(trans?.description || '');
+        setContent(trans?.contents || null);
+    };
 
     async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -55,6 +74,9 @@ export function EditSkillForm({ skill, mode }: EditSkillFormProps) {
         setLoading(true);
         setError(null);
 
+        // Append localized data from state (since we might need to override what's in the form if we were using controlled inputs strictly, but FormData picks up name attributes)
+        // BUT components might be using "value" which matches state.
+        // Also 'contents' is JSON so we need to inject it.
         if (content) {
             formData.set('contents', JSON.stringify(content));
         }
@@ -64,6 +86,9 @@ export function EditSkillForm({ skill, mode }: EditSkillFormProps) {
         } else if (skill?.cover_image && !imageUrl) {
             formData.set('cover_image', ''); // Explicitly clear if removed
         }
+
+        // Ensure the selected locale is sent
+        formData.set('locale', selectedLocale);
 
         let result;
         if (mode === 'edit' && skill) {
@@ -95,14 +120,34 @@ export function EditSkillForm({ skill, mode }: EditSkillFormProps) {
                         </Alert>
                     )}
 
+                    <div className="flex justify-end mb-4">
+                        <div className="w-[200px]">
+                            <Label htmlFor="locale-select" className="sr-only">Language</Label>
+                            <Select name="locale" value={selectedLocale} onValueChange={handleLocaleChange} disabled={loading}>
+                                <SelectTrigger id="locale-select">
+                                    <SelectValue placeholder="Select Language" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="ko">Korean (한국어)</SelectItem>
+                                    <SelectItem value="en">English</SelectItem>
+                                    <SelectItem value="ja">Japanese (日本語)</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <p className="text-[10px] text-muted-foreground mt-1 text-right">
+                                Switching changes the inputs below.
+                            </p>
+                        </div>
+                    </div>
+
                     <div className="grid gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
-                            <Label htmlFor="title">Title *</Label>
+                            <Label htmlFor="title">Title ({selectedLocale}) *</Label>
                             <Input
                                 id="title"
                                 name="title"
                                 required
-                                defaultValue={skill?.title}
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
                                 disabled={loading}
                             />
                         </div>
@@ -126,14 +171,16 @@ export function EditSkillForm({ skill, mode }: EditSkillFormProps) {
                                 list="categories"
                                 defaultValue={skill?.category || ''}
                                 disabled={loading}
-                                placeholder="e.g. Frontend, Backend, DevOps"
+                                placeholder="e.g. frontend, backend, devops"
                             />
                             <datalist id="categories">
-                                <option value="Frontend" />
-                                <option value="Backend" />
-                                <option value="DevOps" />
-                                <option value="Design" />
-                                <option value="Tools" />
+                                <option value="frontend" />
+                                <option value="backend" />
+                                <option value="database" />
+                                <option value="devops" />
+                                <option value="programming_language" />
+                                <option value="cloud" />
+                                <option value="other" />
                             </datalist>
                         </div>
 
@@ -153,20 +200,6 @@ export function EditSkillForm({ skill, mode }: EditSkillFormProps) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="locale">Language</Label>
-                            <Select name="locale" defaultValue={skill?.locale || 'ko'} disabled={loading}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select Language" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="ko">Korean</SelectItem>
-                                    <SelectItem value="en">English</SelectItem>
-                                    <SelectItem value="ja">Japanese</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-2">
                             <Label htmlFor="display_order">Display Order</Label>
                             <Input
                                 id="display_order"
@@ -179,12 +212,13 @@ export function EditSkillForm({ skill, mode }: EditSkillFormProps) {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="description">Short Description</Label>
+                        <Label htmlFor="description">Short Description ({selectedLocale})</Label>
                         <Textarea
                             id="description"
                             name="description"
                             rows={3}
-                            defaultValue={skill?.description || ''}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             disabled={loading}
                         />
                     </div>
@@ -237,7 +271,7 @@ export function EditSkillForm({ skill, mode }: EditSkillFormProps) {
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Content (Detail)</Label>
+                        <Label>Content (Detail) - {selectedLocale}</Label>
                         <div className="min-h-[300px] border rounded-md">
                             <TiptapEditor
                                 content={content}

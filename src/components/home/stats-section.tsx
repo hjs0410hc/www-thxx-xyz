@@ -1,38 +1,40 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Code, FileText, Layers, Trophy } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface StatsSectionProps {
     stats: {
         posts: number;
         projects: number;
         skills: number;
-        awards: number; // or another metric like 'years of experience' if we have it
+        awards: number;
     };
 }
 
 export function StatsSection({ stats }: StatsSectionProps) {
+    const t = useTranslations('home.stats');
+
     const items = [
         {
-            label: 'Blog Posts',
+            label: t('posts'),
             value: stats.posts,
             icon: FileText,
             color: 'text-blue-500',
         },
         {
-            label: 'Projects',
+            label: t('projects'),
             value: stats.projects,
             icon: Layers,
             color: 'text-purple-500',
         },
         {
-            label: 'Skills',
+            label: t('skills'),
             value: stats.skills,
             icon: Code,
             color: 'text-green-500',
         },
-        // We can use 'Awards' or 'Experience' here. Let's stick to Awards for now as it's a count.
         {
-            label: 'Awards',
+            label: t('awards'),
             value: stats.awards,
             icon: Trophy,
             color: 'text-yellow-500',

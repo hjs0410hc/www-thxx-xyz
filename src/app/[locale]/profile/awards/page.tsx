@@ -5,6 +5,7 @@ import { Trophy, ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
 
 export default async function AwardsPage({
     params,
@@ -13,11 +14,26 @@ export default async function AwardsPage({
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+    const t = await getTranslations({ locale, namespace: 'profile.awards' });
 
-    const { data: awards } = await supabase
+    const { data: awardsData } = await supabase
         .from('awards')
-        .select('*')
+        .select('*, award_translations(*)')
         .order('date', { ascending: false });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.award_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const awards = (awardsData || []).map(getLocalized);
 
     const formatDate = (date: string | null) => {
         if (!date) return '';
@@ -28,9 +44,9 @@ export default async function AwardsPage({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Awards & Recognition</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Achievements and awards received
+                    {t('description')}
                 </p>
             </div>
 
@@ -97,9 +113,9 @@ export default async function AwardsPage({
                         <CardContent className="p-6">
                             <div className="text-center py-8">
                                 <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                <h3 className="text-lg font-semibold mb-2">No Awards Added</h3>
+                                <h3 className="text-lg font-semibold mb-2">{t('empty')}</h3>
                                 <p className="text-sm text-muted-foreground">
-                                    Add your awards through the admin panel.
+                                    {t('emptyDesc')}
                                 </p>
                             </div>
                         </CardContent>

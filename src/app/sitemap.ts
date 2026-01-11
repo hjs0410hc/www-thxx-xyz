@@ -11,10 +11,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '',
         '/profile',
         '/profile/hobbies',
-        '/profile/timeline',
         '/profile/experiences',
         '/profile/certifications',
         '/profile/awards',
+        '/profile/clubs',
+        '/profile/work',
         '/tech',
         '/tech/project',
         '/tech/skill',
@@ -60,18 +61,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.7,
     }));
 
-    // Get all published blog posts
+    // Get all published blog posts with translations
     const { data: posts } = await supabase
         .from('posts')
-        .select('slug, locale, updated_at, published_at')
-        .eq('published', true);
+        .select('slug, updated_at, post_translations(locale)');
 
-    const postRoutes: MetadataRoute.Sitemap = (posts || []).map((post) => ({
-        url: `${baseUrl}/${post.locale}/blog/${post.slug}`,
-        lastModified: new Date(post.updated_at),
-        changeFrequency: 'monthly',
-        priority: 0.6,
-    }));
+    const postRoutes: MetadataRoute.Sitemap = [];
+
+    posts?.forEach((post: any) => {
+        const translations = post.post_translations || [];
+        translations.forEach((t: { locale: string }) => {
+            postRoutes.push({
+                url: `${baseUrl}/${t.locale}/blog/${post.slug}`,
+                lastModified: new Date(post.updated_at),
+                changeFrequency: 'monthly',
+                priority: 0.6,
+            });
+        });
+    });
 
     return [...staticRoutes, ...projectRoutes, ...skillRoutes, ...postRoutes];
 }

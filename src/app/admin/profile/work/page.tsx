@@ -16,7 +16,7 @@ export default async function AdminWorkPage() {
     const supabase = await createClient();
     const { data: work } = await supabase
         .from('work_experience')
-        .select('*')
+        .select('*, work_experience_translations(*)')
         .order('start_date', { ascending: false });
 
     return (
@@ -28,6 +28,7 @@ export default async function AdminWorkPage() {
                 fields={[
                     { name: 'company', label: 'Company', required: true, placeholder: 'Company Name' },
                     { name: 'position', label: 'Position', required: true, placeholder: 'Software Engineer' },
+                    { name: 'location', label: 'Location', placeholder: 'Seoul, Korea' },
                     {
                         name: 'type',
                         label: 'Type',
@@ -42,16 +43,6 @@ export default async function AdminWorkPage() {
                     },
                     { name: 'slug', label: 'Slug (URL)', required: true, placeholder: 'google-software-engineer' },
                     { name: 'description', label: 'Short Description', placeholder: 'Brief summary for list view...' },
-                    {
-                        name: 'locale',
-                        label: 'Language',
-                        type: 'select',
-                        options: [
-                            { value: 'ko', label: 'Korean' },
-                            { value: 'en', label: 'English' },
-                            { value: 'ja', label: 'Japanese' },
-                        ]
-                    },
                     { name: 'start_date', label: 'Start Date', type: 'date', required: true },
                     { name: 'end_date', label: 'End Date', type: 'date' },
                 ]}
@@ -59,6 +50,7 @@ export default async function AdminWorkPage() {
                 editorLabel="Content"
                 hasImageUpload={true}
                 imageFieldName="preview_image"
+                localizedFields={['company', 'position', 'location', 'description']}
             />
 
             <Card>
@@ -68,26 +60,33 @@ export default async function AdminWorkPage() {
                 <CardContent>
                     {work && work.length > 0 ? (
                         <div className="space-y-4">
-                            {work.map((job) => (
-                                <div key={job.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                                    <Link href={`/ko/profile/work/${job.slug}`} className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="font-semibold hover:text-primary">{job.company}</h3>
-                                            <span className="text-xs text-muted-foreground">/{job.slug}</span>
-                                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                                        </div>
-                                        <p className="text-sm text-muted-foreground mb-1">{job.position}</p>
-                                        {job.description && (
-                                            <p className="text-sm text-muted-foreground line-clamp-2">{job.description}</p>
-                                        )}
-                                    </Link>
-                                    <form action={deleteWorkExperience.bind(null, job.id)}>
-                                        <Button variant="ghost" size="icon" type="submit">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </form>
-                                </div>
-                            ))}
+                            {work.map((job: any) => {
+                                const trans = job.work_experience_translations?.find((t: any) => t.locale === 'ko')
+                                    || job.work_experience_translations?.find((t: any) => t.locale === 'en')
+                                    || job.work_experience_translations?.[0]
+                                    || {};
+
+                                return (
+                                    <div key={job.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                                        <Link href={`/admin/profile/work/${job.id}/edit`} className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h3 className="font-semibold hover:text-primary">{trans.company || 'Untitled'}</h3>
+                                                <span className="text-xs text-muted-foreground">/{job.slug}</span>
+                                                <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                                            </div>
+                                            <p className="text-sm text-muted-foreground mb-1">{trans.position}</p>
+                                            {trans.description && (
+                                                <p className="text-sm text-muted-foreground line-clamp-2">{trans.description}</p>
+                                            )}
+                                        </Link>
+                                        <form action={deleteWorkExperience.bind(null, job.id)}>
+                                            <Button variant="ghost" size="icon" type="submit">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </form>
+                                    </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <p className="text-muted-foreground text-center py-4">No work experience added yet</p>

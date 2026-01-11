@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import ReactCountryFlag from 'react-country-flag';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 interface ProfileSectionsProps {
     hobbies: any[];
@@ -62,6 +63,8 @@ export function ProfileSections({
 
     const params = useParams();
     const locale = params.locale;
+    const t = useTranslations('profile.nav');
+    const ct = useTranslations('common');
 
     const renderSectionHeader = (icon: React.ReactNode, title: string, count: number, sectionId: string, displayCount: number, link?: string) => {
         const hasMore = count > displayCount;
@@ -93,12 +96,12 @@ export function ProfileSections({
                             {isExpanded ? (
                                 <>
                                     <ChevronUp className="h-4 w-4" />
-                                    <span className="text-xs">Collapse</span>
+                                    <span className="text-xs">{ct('collapse')}</span>
                                 </>
                             ) : (
                                 <>
                                     <ChevronDown className="h-4 w-4" />
-                                    <span className="text-xs">Expand</span>
+                                    <span className="text-xs">{ct('expand')}</span>
                                 </>
                             )}
                         </Button>
@@ -111,7 +114,7 @@ export function ProfileSections({
     return (
         <div className="space-y-8">
             {/* Global Expand/Collapse All Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-start">
                 <Button
                     variant="outline"
                     size="sm"
@@ -121,12 +124,12 @@ export function ProfileSections({
                     {allExpanded ? (
                         <>
                             <ChevronUp className="h-4 w-4" />
-                            Collapse All
+                            {ct('collapseAll')}
                         </>
                     ) : (
                         <>
                             <ChevronDown className="h-4 w-4" />
-                            Expand All
+                            {ct('expandAll')}
                         </>
                     )}
                 </Button>
@@ -135,7 +138,7 @@ export function ProfileSections({
             {/* Hobbies & Interests */}
             {hobbies && hobbies.length > 0 && (
                 <section>
-                    {renderSectionHeader(<Heart className="h-5 w-5" />, "Hobbies & Interests", hobbies.length, "hobbies", 5, "/profile/hobbies")}
+                    {renderSectionHeader(<Heart className="h-5 w-5" />, t('hobbies'), hobbies.length, "hobbies", 5, "/profile/hobbies")}
                     <div className="flex flex-wrap gap-2">
                         {(expandedSections.hobbies ? hobbies : hobbies.slice(0, 5)).map((hobby) => (
                             <Badge key={hobby.id} variant="secondary" className="text-sm py-1.5 px-3">
@@ -150,14 +153,15 @@ export function ProfileSections({
             {/* Education */}
             {education && education.length > 0 && (
                 <section>
-                    {renderSectionHeader(<GraduationCap className="h-5 w-5" />, "Education", education.length, "education", 3, "/profile/education")}
+                    {renderSectionHeader(<GraduationCap className="h-5 w-5" />, t('education'), education.length, "education", 3, "/profile/education")}
                     <div className="space-y-4">
                         {(expandedSections.education ? education : education.slice(0, 3)).map((edu) => (
                             <div key={edu.id} className="border-l-2 border-primary pl-4">
-                                <h4 className="font-semibold">{edu.degree} {edu.field && `in ${edu.field}`}</h4>
-                                <p className="text-sm text-muted-foreground">{edu.institution}</p>
+                                <h4 className="font-semibold">{edu.institution}</h4>
+                                <p className="text-sm text-muted-foreground">{edu.degree}</p>
+                                {edu.field && <p className="text-sm text-muted-foreground">{edu.field}</p>}
                                 <p className="text-xs text-muted-foreground mt-1">
-                                    {new Date(edu.start_date).toISOString().slice(0, 7)} ~ {edu.end_date ? new Date(edu.end_date).toISOString().slice(0, 7) : 'Present'}
+                                    {new Date(edu.start_date).toISOString().slice(0, 7)} ~ {edu.end_date ? new Date(edu.end_date).toISOString().slice(0, 7) : ct('present')}
                                 </p>
                             </div>
                         ))}
@@ -168,14 +172,14 @@ export function ProfileSections({
             {/* Work Experience */}
             {workExperience && workExperience.length > 0 && (
                 <section>
-                    {renderSectionHeader(<Briefcase className="h-5 w-5" />, "Work Experience", workExperience.length, "work", 3, "/profile/work")}
+                    {renderSectionHeader(<Briefcase className="h-5 w-5" />, t('work'), workExperience.length, "work", 3, "/profile/work")}
                     <div className="space-y-4">
                         {(expandedSections.work ? workExperience : workExperience.slice(0, 3)).map((job) => (
                             <div key={job.id} className="border-l-2 border-primary pl-4">
                                 <h4 className="font-semibold">{job.position}</h4>
                                 <p className="text-sm text-muted-foreground">{job.company}</p>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                    {new Date(job.start_date).toISOString().slice(0, 7)} ~ {job.end_date ? new Date(job.end_date).toISOString().slice(0, 7) : 'Present'}
+                                    {new Date(job.start_date).toISOString().slice(0, 7)} ~ {job.end_date ? new Date(job.end_date).toISOString().slice(0, 7) : ct('present')}
                                 </p>
                             </div>
                         ))}
@@ -186,14 +190,14 @@ export function ProfileSections({
             {/* Clubs & Activities */}
             {clubs && clubs.length > 0 && (
                 <section>
-                    {renderSectionHeader(<Users className="h-5 w-5" />, "Clubs & Activities", clubs.length, "clubs", 3, "/profile/clubs")}
+                    {renderSectionHeader(<Users className="h-5 w-5" />, t('clubs'), clubs.length, "clubs", 3, "/profile/clubs")}
                     <div className="space-y-4">
                         {(expandedSections.clubs ? clubs : clubs.slice(0, 3)).map((club) => (
                             <div key={club.id} className="border-l-2 border-primary pl-4">
                                 <h4 className="font-semibold">{club.name}</h4>
                                 {club.role && <p className="text-sm text-muted-foreground">{club.role}</p>}
                                 <p className="text-xs text-muted-foreground mt-1">
-                                    {new Date(club.start_date).toISOString().slice(0, 7)} ~ {club.end_date ? new Date(club.end_date).toISOString().slice(0, 7) : 'Present'}
+                                    {new Date(club.start_date).toISOString().slice(0, 7)} ~ {club.end_date ? new Date(club.end_date).toISOString().slice(0, 7) : ct('present')}
                                 </p>
                             </div>
                         ))}
@@ -204,7 +208,7 @@ export function ProfileSections({
             {/* Awards */}
             {awards && awards.length > 0 && (
                 <section>
-                    {renderSectionHeader(<Trophy className="h-5 w-5" />, "Awards", awards.length, "awards", 5, "/profile/awards")}
+                    {renderSectionHeader(<Trophy className="h-5 w-5" />, t('awards'), awards.length, "awards", 5, "/profile/awards")}
                     <div className="space-y-4">
                         {(expandedSections.awards ? awards : awards.slice(0, 5)).map((award) => (
                             <div key={award.id} className="border-l-2 border-primary pl-4">
@@ -224,7 +228,7 @@ export function ProfileSections({
             {/* Certifications */}
             {certifications && certifications.length > 0 && (
                 <section>
-                    {renderSectionHeader(<Award className="h-5 w-5" />, "Certifications", certifications.length, "certifications", 3, "/profile/certifications")}
+                    {renderSectionHeader(<Award className="h-5 w-5" />, t('certifications'), certifications.length, "certifications", 3, "/profile/certifications")}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {(expandedSections.certifications ? certifications : certifications.slice(0, 3)).map((cert) => (
                             <Card key={cert.id} className="p-4 gap-1">
@@ -244,7 +248,7 @@ export function ProfileSections({
             {/* Other Experiences */}
             {experiences && experiences.length > 0 && (
                 <section>
-                    {renderSectionHeader(<Star className="h-5 w-5" />, "Other Experiences", experiences.length, "experiences", 3, "/profile/experiences")}
+                    {renderSectionHeader(<Star className="h-5 w-5" />, t('experiences'), experiences.length, "experiences", 3, "/profile/experiences")}
                     <div className="space-y-4">
                         {(expandedSections.experiences ? experiences : experiences.slice(0, 3)).map((exp) => (
                             <div key={exp.id} className="border-l-2 border-primary pl-4">
@@ -267,7 +271,7 @@ export function ProfileSections({
                     <div className="flex items-center gap-3 mb-4">
                         <div className="flex items-center gap-2">
                             <Languages className="h-5 w-5" />
-                            <h2 className="text-2xl font-bold">Languages</h2>
+                            <h2 className="text-2xl font-bold">{t('languages')}</h2>
                         </div>
                         <Badge variant="secondary" className="text-xs">
                             {languages.length}

@@ -1,16 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Rocket, Layers, Code, Database, Terminal, Wrench } from 'lucide-react';
+import { ChevronDown, ChevronUp, Rocket, Layers, Code, Database, Terminal, Wrench, FileCode, Cloud, Box } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Project, Skill } from '@/types/tech';
+import { ProjectWithDetails, SkillWithDetails } from '@/types/tech';
 import Image from 'next/image';
 
+import { useTranslations } from 'next-intl';
+
 interface TechSectionsProps {
-    projects: Project[];
-    skills: Skill[];
+    projects: ProjectWithDetails[];
+    skills: SkillWithDetails[];
     locale: string;
 }
 
@@ -19,6 +21,9 @@ export function TechSections({
     skills,
     locale,
 }: TechSectionsProps) {
+    const t = useTranslations('tech');
+    const ct = useTranslations('common');
+
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
         projects: true,
         skills: true,
@@ -76,12 +81,12 @@ export function TechSections({
                         {isExpanded ? (
                             <>
                                 <ChevronUp className="h-4 w-4" />
-                                <span className="text-xs">Collapse</span>
+                                <span className="text-xs">{ct('collapse')}</span>
                             </>
                         ) : (
                             <>
                                 <ChevronDown className="h-4 w-4" />
-                                <span className="text-xs">Expand</span>
+                                <span className="text-xs">{ct('expand')}</span>
                             </>
                         )}
                     </Button>
@@ -96,12 +101,12 @@ export function TechSections({
         if (!acc[category]) acc[category] = [];
         acc[category].push(skill);
         return acc;
-    }, {} as Record<string, Skill[]>);
+    }, {} as Record<string, SkillWithDetails[]>);
 
     return (
         <div className="space-y-8">
             {/* Global Expand/Collapse All Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-start">
                 <Button
                     variant="outline"
                     size="sm"
@@ -111,12 +116,12 @@ export function TechSections({
                     {allExpanded ? (
                         <>
                             <ChevronUp className="h-4 w-4" />
-                            Collapse All
+                            {ct('collapseAll')}
                         </>
                     ) : (
                         <>
                             <ChevronDown className="h-4 w-4" />
-                            Expand All
+                            {ct('expandAll')}
                         </>
                     )}
                 </Button>
@@ -127,40 +132,58 @@ export function TechSections({
                 <section>
                     {renderSectionHeader(
                         <Rocket className="h-5 w-5" />,
-                        "Featured Projects",
+                        t('sections.projects'),
                         projects.length,
                         "projects",
                         3,
                         `/${locale}/tech/project`
                     )}
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="flex flex-col gap-4">
                         {(expandedSections.projects ? projects : projects.slice(0, 3)).map((project) => (
                             <div key={project.id} className="border-l-2 border-primary pl-4 py-2 group">
-                                <Link href={`/${locale}/tech/project/${project.slug}`} className="block">
+                                <div className="flex gap-4 items-center">
                                     {project.cover_image && (
-                                        <div className="relative w-full aspect-video rounded-md overflow-hidden mb-3 hidden group-hover:block transition-all">
+                                        <Link href={`/${locale}/tech/project/${project.slug}`} className="relative w-28 shrink-0 aspect-square rounded-md overflow-hidden block transition-all hover:opacity-90">
                                             <Image
                                                 src={project.cover_image}
                                                 alt={project.title}
                                                 fill
                                                 className="object-cover"
                                             />
+                                        </Link>
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex justify-between gap-4 mb-1">
+                                            <Link href={`/${locale}/tech/project/${project.slug}`} className="block">
+                                                <h4 className="font-semibold text-base group-hover:text-primary transition-colors leading-tight">{project.title}</h4>
+                                            </Link>
+                                            <div className="text-right shrink-0 flex flex-col items-end gap-1">
+                                                {project.status && (
+                                                    <Badge variant={project.status === 'completed' ? 'default' : 'secondary'} className="text-xs px-2 py-0.5 h-5 capitalize border-transparent">
+                                                        {project.status.replace('_', ' ')}
+                                                    </Badge>
+                                                )}
+                                                <div className="text-xs text-muted-foreground font-medium">
+                                                    {project.start_date ? new Date(project.start_date).toISOString().slice(0, 7).replace('-', '.') : ''}
+                                                    {(project.start_date || project.end_date) && ' - '}
+                                                    {project.end_date ? new Date(project.end_date).toISOString().slice(0, 7).replace('-', '.') : ct('present')}
+                                                </div>
+                                            </div>
                                         </div>
-                                    )}
-                                    <h4 className="font-semibold text-lg group-hover:text-primary transition-colors">{project.title}</h4>
-                                </Link>
-                                <p className="text-sm text-muted-foreground line-clamp-2 my-1">
-                                    {project.description}
-                                </p>
-                                <div className="flex flex-wrap gap-1 mt-2">
-                                    {project.technologies?.slice(0, 3).map((tech) => (
-                                        <Badge key={tech} variant="outline" className="text-xs">
-                                            {tech}
-                                        </Badge>
-                                    ))}
-                                    {project.technologies && project.technologies.length > 3 && (
-                                        <span className="text-xs text-muted-foreground">+{project.technologies.length - 3}</span>
-                                    )}
+                                        <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                                            {project.description}
+                                        </p>
+                                        <div className="flex flex-wrap gap-1">
+                                            {project.technologies?.slice(0, 3).map((tech) => (
+                                                <Badge key={tech} variant="outline" className="text-[10px] px-1.5 py-0 h-5">
+                                                    {tech}
+                                                </Badge>
+                                            ))}
+                                            {project.technologies && project.technologies.length > 3 && (
+                                                <span className="text-[10px] text-muted-foreground flex items-center">+{project.technologies.length - 3}</span>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -173,7 +196,7 @@ export function TechSections({
                 <section>
                     {renderSectionHeader(
                         <Layers className="h-5 w-5" />,
-                        "Skills & Stack",
+                        t('sections.skills'),
                         skills.length,
                         "skills",
                         10,
@@ -185,11 +208,16 @@ export function TechSections({
                             {Object.entries(groupedSkills).map(([category, categorySkills]) => (
                                 <div key={category}>
                                     <h4 className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-2">
-                                        {category === 'Frontend' && <Code className="h-3 w-3" />}
-                                        {category === 'Backend' && <Terminal className="h-3 w-3" />}
-                                        {category === 'Database' && <Database className="h-3 w-3" />}
-                                        {category === 'DevOps' && <Wrench className="h-3 w-3" />}
-                                        {category}
+                                        {category.toLowerCase() === 'frontend' && <Code className="h-3 w-3" />}
+                                        {category.toLowerCase() === 'backend' && <Terminal className="h-3 w-3" />}
+                                        {category.toLowerCase() === 'database' && <Database className="h-3 w-3" />}
+                                        {category.toLowerCase() === 'devops' && <Wrench className="h-3 w-3" />}
+                                        {category.toLowerCase() === 'programming_language' && <FileCode className="h-3 w-3" />}
+                                        {category.toLowerCase() === 'cloud' && <Cloud className="h-3 w-3" />}
+                                        {category.toLowerCase() === 'other' && <Box className="h-3 w-3" />}
+                                        {['frontend', 'backend', 'database', 'devops', 'programming_language', 'cloud', 'other'].includes(category.toLowerCase())
+                                            ? t(`categories.${category.toLowerCase()}`, { defaultMessage: category })
+                                            : category}
                                     </h4>
                                     <div className="flex flex-wrap gap-2">
                                         {categorySkills.map((skill) => (

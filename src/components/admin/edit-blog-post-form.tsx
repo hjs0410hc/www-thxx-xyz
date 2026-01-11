@@ -13,6 +13,14 @@ import { TiptapEditor } from '@/components/admin/tiptap-editor';
 import { AlertCircle, Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { uploadImage } from '@/lib/actions/upload';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+// Define supported locales
+const SUPPORTED_LOCALES = [
+    { value: 'ko', label: 'Korean' },
+    { value: 'en', label: 'English' },
+    { value: 'ja', label: 'Japanese' },
+];
 
 interface EditBlogPostFormProps {
     post: any;
@@ -20,11 +28,33 @@ interface EditBlogPostFormProps {
 }
 
 export function EditBlogPostForm({ post, tags }: EditBlogPostFormProps) {
-    const [content, setContent] = useState(post.content);
+    // Initial state setup for translations
+    const initialTranslations = SUPPORTED_LOCALES.reduce((acc, locale) => {
+        // Find existing translation for this locale
+        const trans = post.post_translations?.find((t: any) => t.locale === locale.value) || {};
+        acc[locale.value] = {
+            title: trans.title || '',
+            excerpt: trans.excerpt || '',
+            content: trans.content || null
+        };
+        return acc;
+    }, {} as Record<string, any>);
+
+    const [translations, setTranslations] = useState<Record<string, any>>(initialTranslations);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(post.cover_image);
     const [uploading, setUploading] = useState(false);
+
+    const updateTranslation = (locale: string, field: string, value: any) => {
+        setTranslations(prev => ({
+            ...prev,
+            [locale]: {
+                ...prev[locale],
+                [field]: value
+            }
+        }));
+    };
 
     async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -53,18 +83,20 @@ export function EditBlogPostForm({ post, tags }: EditBlogPostFormProps) {
         setLoading(true);
         setError(null);
 
-        if (content) {
-            formData.append('content', JSON.stringify(content));
+        // Validation: Ensure at least one title is provided
+        const hasTitle = Object.values(translations).some(t => t.title && t.title.trim() !== '');
+        if (!hasTitle) {
+            setError('At least one language must have a title.');
+            setLoading(false);
+            return;
         }
+
+        // Add translations JSON to formData
+        formData.append('translations', JSON.stringify(translations));
 
         if (imageUrl) {
             formData.set('cover_image', imageUrl);
         } else {
-            // If imageUrl is null (removed), sending explicit empty string or handling in backend might be needed.
-            // For now, let's assume setting it to empty string removes it if the backend handles it.
-            // Or if we don't send it, it might stay as is?
-            // Actually, if we want to remove it, we should explicitly send empty string or null.
-            // Let's send empty string if it's explicitly nullified.
             if (post.cover_image && !imageUrl) {
                 formData.set('cover_image', '');
             }
@@ -76,7 +108,6 @@ export function EditBlogPostForm({ post, tags }: EditBlogPostFormProps) {
             setError(result.error);
             setLoading(false);
         }
-        // If successful, updatePost redirects
     }
 
     return (
@@ -84,7 +115,7 @@ export function EditBlogPostForm({ post, tags }: EditBlogPostFormProps) {
             <CardHeader>
                 <CardTitle>Edit Blog Post</CardTitle>
                 <CardDescription>
-                    Update post information
+                    Update post information and translations.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -96,18 +127,8 @@ export function EditBlogPostForm({ post, tags }: EditBlogPostFormProps) {
                         </Alert>
                     )}
 
+                    {/* Shared Fields */}
                     <div className="grid gap-4 sm:grid-cols-2">
-                        <div className="space-y-2">
-                            <Label htmlFor="title">Title *</Label>
-                            <Input
-                                id="title"
-                                name="title"
-                                required
-                                defaultValue={post.title}
-                                disabled={loading}
-                            />
-                        </div>
-
                         <div className="space-y-2">
                             <Label htmlFor="slug">Slug *</Label>
                             <Input
@@ -119,48 +140,7 @@ export function EditBlogPostForm({ post, tags }: EditBlogPostFormProps) {
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="locale">Language</Label>
-                            <select
-                                id="locale"
-                                name="locale"
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                                defaultValue={post.locale}
-                                disabled={loading}
-                            >
-                                <option value="ko">Korean</option>
-                                <option value="en">English</option>
-                                <option value="ja">Japanese</option>
-                            </select>
-                        </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="published">Published</Label>
-                            <div className="flex items-center space-x-2 h-10">
-                                <input
-                                    type="checkbox"
-                                    id="published"
-                                    name="published"
-                                    className="h-4 w-4"
-                                    defaultChecked={post.published}
-                                    disabled={loading}
-                                />
-                                <label htmlFor="published" className="text-sm">
-                                    Publish this post
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="excerpt">Excerpt</Label>
-                        <Textarea
-                            id="excerpt"
-                            name="excerpt"
-                            rows={3}
-                            defaultValue={post.excerpt || ''}
-                            disabled={loading}
-                        />
                     </div>
 
                     <div className="space-y-2">
@@ -219,9 +199,53 @@ export function EditBlogPostForm({ post, tags }: EditBlogPostFormProps) {
                         />
                     </div>
 
+                    {/* Localized Fields */}
                     <div className="space-y-2">
-                        <Label>Content *</Label>
-                        <TiptapEditor content={content} onChange={setContent} />
+                        <Label>Content & Translations</Label>
+                        <Tabs defaultValue="ko" className="w-full border rounded-lg p-4">
+                            <TabsList className="grid w-full grid-cols-3 mb-4">
+                                {SUPPORTED_LOCALES.map(locale => (
+                                    <TabsTrigger key={locale.value} value={locale.value}>
+                                        {locale.label}
+                                    </TabsTrigger>
+                                ))}
+                            </TabsList>
+
+                            {SUPPORTED_LOCALES.map(locale => (
+                                <TabsContent key={locale.value} value={locale.value} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`title-${locale.value}`}>Title ({locale.label})</Label>
+                                        <Input
+                                            id={`title-${locale.value}`}
+                                            value={translations[locale.value].title}
+                                            onChange={(e) => updateTranslation(locale.value, 'title', e.target.value)}
+                                            placeholder={`Post Title in ${locale.label}`}
+                                            disabled={loading}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`excerpt-${locale.value}`}>Excerpt ({locale.label})</Label>
+                                        <Textarea
+                                            id={`excerpt-${locale.value}`}
+                                            value={translations[locale.value].excerpt}
+                                            onChange={(e) => updateTranslation(locale.value, 'excerpt', e.target.value)}
+                                            rows={3}
+                                            placeholder={`Brief summary in ${locale.label}...`}
+                                            disabled={loading}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>Content ({locale.label})</Label>
+                                        <TiptapEditor
+                                            content={translations[locale.value].content}
+                                            onChange={(content) => updateTranslation(locale.value, 'content', content)}
+                                        />
+                                    </div>
+                                </TabsContent>
+                            ))}
+                        </Tabs>
                     </div>
 
                     <div className="flex gap-2">

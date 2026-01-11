@@ -1,10 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Briefcase, ImageIcon } from 'lucide-react';
+import { Briefcase } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
 
 export default async function WorkPage({
     params,
@@ -13,14 +14,28 @@ export default async function WorkPage({
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+    const t = await getTranslations({ locale, namespace: 'profile.work' });
 
-    const { data: workExperience } = await supabase
+    const { data: workData } = await supabase
         .from('work_experience')
-        .select('*')
-        .order('start_date', { ascending: false });
+        .select('*, work_experience_translations(*)').order('start_date', { ascending: false });
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.work_experience_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const workExperience = (workData || []).map(getLocalized);
 
     const formatDate = (date: string | null) => {
-        if (!date) return 'Present';
+        if (!date) return t('present');
         const d = new Date(date);
         return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
     };
@@ -28,9 +43,9 @@ export default async function WorkPage({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Work Experience</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    My professional journey and career history
+                    {t('description')}
                 </p>
             </div>
 
@@ -73,10 +88,10 @@ export default async function WorkPage({
                                                 <div className="flex flex-col items-start sm:items-end gap-1 flex-shrink-0">
                                                     {work.type && (
                                                         <Badge variant="secondary" className="text-xs px-2 py-0.5 font-medium">
-                                                            {work.type === 'internship' && 'Internship'}
-                                                            {work.type === 'part_time' && 'Part-time'}
-                                                            {work.type === 'full_time' && 'Full-time'}
-                                                            {work.type === 'military_service' && 'Military Service'}
+                                                            {work.type === 'internship' && t('internship')}
+                                                            {work.type === 'part_time' && t('part_time')}
+                                                            {work.type === 'full_time' && t('full_time')}
+                                                            {work.type === 'military_service' && t('military_service')}
                                                         </Badge>
                                                     )}
                                                     <span className="text-sm text-foreground font-medium whitespace-nowrap">
@@ -101,9 +116,9 @@ export default async function WorkPage({
                         <CardContent className="p-6">
                             <div className="text-center py-8">
                                 <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                <h3 className="text-lg font-semibold mb-2">No Work Experience Added</h3>
+                                <h3 className="text-lg font-semibold mb-2">{t('empty')}</h3>
                                 <p className="text-sm text-muted-foreground">
-                                    Add your work experience through the admin panel.
+                                    {t('emptyDesc')}
                                 </p>
                             </div>
                         </CardContent>

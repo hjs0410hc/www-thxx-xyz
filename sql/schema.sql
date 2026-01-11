@@ -3,7 +3,6 @@
 
 CREATE TABLE public.awards (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  profile_id uuid,
   title character varying NOT NULL,
   issuer character varying,
   date date,
@@ -13,12 +12,10 @@ CREATE TABLE public.awards (
   description text,
   slug character varying,
   preview_image text,
-  CONSTRAINT awards_pkey PRIMARY KEY (id),
-  CONSTRAINT awards_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
+  CONSTRAINT awards_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.certifications (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  profile_id uuid,
   name character varying NOT NULL,
   issuer character varying,
   issue_date date,
@@ -29,12 +26,10 @@ CREATE TABLE public.certifications (
   description text,
   slug character varying,
   preview_image text,
-  CONSTRAINT certifications_pkey PRIMARY KEY (id),
-  CONSTRAINT certifications_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
+  CONSTRAINT certifications_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.clubs (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  profile_id uuid,
   name character varying NOT NULL,
   role character varying,
   start_date date,
@@ -45,12 +40,10 @@ CREATE TABLE public.clubs (
   description text,
   slug character varying,
   preview_image text,
-  CONSTRAINT clubs_pkey PRIMARY KEY (id),
-  CONSTRAINT clubs_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
+  CONSTRAINT clubs_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.education (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  profile_id uuid,
   institution character varying NOT NULL,
   degree character varying,
   field character varying,
@@ -64,12 +57,10 @@ CREATE TABLE public.education (
   slug character varying,
   preview_image text,
   type text,
-  CONSTRAINT education_pkey PRIMARY KEY (id),
-  CONSTRAINT education_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
+  CONSTRAINT education_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.experiences (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  profile_id uuid,
   title character varying NOT NULL,
   type character varying,
   date date,
@@ -81,12 +72,10 @@ CREATE TABLE public.experiences (
   preview_image text,
   description text,
   slug character varying,
-  CONSTRAINT experiences_pkey PRIMARY KEY (id),
-  CONSTRAINT experiences_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
+  CONSTRAINT experiences_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.hobbies (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  profile_id uuid,
   name character varying NOT NULL,
   content jsonb,
   created_at timestamp with time zone DEFAULT now(),
@@ -94,18 +83,15 @@ CREATE TABLE public.hobbies (
   description text,
   slug character varying,
   preview_image text,
-  CONSTRAINT hobbies_pkey PRIMARY KEY (id),
-  CONSTRAINT hobbies_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
+  CONSTRAINT hobbies_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.languages (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  profile_id uuid,
   language character varying NOT NULL,
   proficiency_level character varying NOT NULL,
   created_at timestamp with time zone DEFAULT now(),
   nation character varying,
-  CONSTRAINT languages_pkey PRIMARY KEY (id),
-  CONSTRAINT languages_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
+  CONSTRAINT languages_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.post_tags (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -122,8 +108,6 @@ CREATE TABLE public.posts (
   content jsonb,
   excerpt text,
   cover_image text,
-  published boolean DEFAULT false,
-  published_at timestamp with time zone,
   locale character varying DEFAULT 'ko'::character varying,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
@@ -184,17 +168,14 @@ CREATE TABLE public.skills (
 );
 CREATE TABLE public.social_links (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  profile_id uuid,
   platform character varying NOT NULL,
   url text NOT NULL,
   display_order integer DEFAULT 0,
   created_at timestamp with time zone DEFAULT now(),
-  CONSTRAINT social_links_pkey PRIMARY KEY (id),
-  CONSTRAINT social_links_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
+  CONSTRAINT social_links_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.work_experience (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
-  profile_id uuid,
   company character varying NOT NULL,
   position character varying NOT NULL,
   employment_type character varying,
@@ -208,6 +189,5 @@ CREATE TABLE public.work_experience (
   slug character varying,
   preview_image text,
   type text,
-  CONSTRAINT work_experience_pkey PRIMARY KEY (id),
-  CONSTRAINT work_experience_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id)
+  CONSTRAINT work_experience_pkey PRIMARY KEY (id)
 );

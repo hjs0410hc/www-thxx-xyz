@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
 import type { Locale } from '@/i18n';
+import { getTranslations } from 'next-intl/server';
 
 export default async function HobbiesPage({
     params,
@@ -12,17 +13,32 @@ export default async function HobbiesPage({
 }) {
     const { locale } = await params;
     const supabase = await createClient();
+    const t = await getTranslations({ locale, namespace: 'profile.hobbies' });
 
-    const { data: hobbies } = await supabase
+    const { data: hobbiesData } = await supabase
         .from('hobbies')
-        .select('*');
+        .select('*, hobby_translations(*)');
+
+    // Helper to extract localized content
+    const getLocalized = (item: any) => {
+        if (!item) return null;
+        const translations = item.hobby_translations || [];
+        const trans = translations.find((t: any) => t.locale === locale)
+            || translations.find((t: any) => t.locale === 'ko')
+            || translations.find((t: any) => t.locale === 'en')
+            || translations[0]
+            || {};
+        return { ...item, ...trans };
+    };
+
+    const hobbies = (hobbiesData || []).map(getLocalized);
 
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Hobbies & Interests</h1>
+                <h1 className="text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    Things I enjoy doing in my free time
+                    {t('description')}
                 </p>
             </div>
 
@@ -63,9 +79,9 @@ export default async function HobbiesPage({
                 ) : (
                     <Card className="col-span-full">
                         <CardHeader>
-                            <CardTitle>No Hobbies Added</CardTitle>
+                            <CardTitle>{t('empty')}</CardTitle>
                             <CardDescription>
-                                Add your hobbies through the admin panel.
+                                {t('emptyDesc')}
                             </CardDescription>
                         </CardHeader>
                     </Card>
