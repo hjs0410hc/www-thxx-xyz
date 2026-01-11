@@ -176,10 +176,14 @@ export function ProjectForm({ project }: ProjectFormProps) {
                                     <SelectValue placeholder="Select Status" />
                                 </SelectTrigger>
                                 <SelectContent>
+                                    <SelectItem value="planned">Planned</SelectItem>
                                     <SelectItem value="in_progress">In Progress</SelectItem>
+                                    <SelectItem value="running">Running</SelectItem>
+                                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                                    <SelectItem value="on_hold">On Hold</SelectItem>
                                     <SelectItem value="completed">Completed</SelectItem>
-                                    <SelectItem value="discontinued">Discontinued</SelectItem>
                                     <SelectItem value="archived">Archived</SelectItem>
+                                    <SelectItem value="discontinued">Discontinued</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
