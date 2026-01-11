@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import type { Locale } from '@/i18n';
 import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
     const { locale, slug } = await params;
@@ -82,19 +83,36 @@ export default async function WorkDetailPage({
 
             <Card>
                 <CardHeader>
-                    <div className="flex items-start gap-4">
-                        <Briefcase className="h-8 w-8 text-primary mt-1" />
-                        <div className="flex-1">
-                            <CardTitle className="text-3xl">{work.position}</CardTitle>
-                            <p className="text-xl text-muted-foreground mt-2">{work.company}</p>
-                            <p className="text-sm text-muted-foreground mt-1">
-                                {new Date(work.start_date).toLocaleDateString()} - {work.end_date ? new Date(work.end_date).toLocaleDateString() : 'Present'}
-                                {work.location && ` \u2022 ${work.location}`}
-                            </p>
-                            {work.description && (
-                                <p className="text-muted-foreground mt-3">{work.description}</p>
-                            )}
+                    <div className="flex flex-col sm:flex-row gap-6">
+                        <div className="flex-1 space-y-2">
+                            <div className="flex items-start gap-4">
+                                <Briefcase className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
+                                <div className="flex-1">
+                                    <CardTitle className="text-3xl">{work.position}</CardTitle>
+                                    <p className="text-xl text-muted-foreground mt-2">{work.company}</p>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        {new Date(work.start_date).toLocaleDateString()} - {work.end_date ? new Date(work.end_date).toLocaleDateString() : 'Present'}
+                                        {work.location && ` \u2022 ${work.location}`}
+                                    </p>
+                                    {work.description && (
+                                        <p className="text-muted-foreground mt-3">{work.description}</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
+                        {work.preview_image && (
+                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                                <Image
+                                    src={work.preview_image}
+                                    alt={work.position}
+                                    width={0}
+                                    height={0}
+                                    sizes="100vw"
+                                    style={{ width: 'auto', height: '100%' }}
+                                    className="object-cover"
+                                />
+                            </div>
+                        )}
                     </div>
                 </CardHeader>
 

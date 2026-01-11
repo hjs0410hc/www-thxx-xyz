@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 // import { AspectRatio } from '@/components/ui/aspect-ratio';
-// import Image from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ExternalLink, Github, Calendar, ArrowLeft } from 'lucide-react';
@@ -121,47 +121,68 @@ export default async function ProjectDetailPage({
                 </Button>
 
                 <div className="space-y-6">
+
+
                     {/* Project Header */}
                     <div>
-                        <div className="flex justify-between items-start">
-                            <h1 className="text-4xl font-bold mb-4">{project.title}</h1>
-                            {project.status && (
-                                <Badge variant={project.status === 'completed' ? 'default' : 'secondary'} className="capitalize">
-                                    {t(`status.${project.status}`)}
-                                </Badge>
-                            )}
-                        </div>
+                        <div className="flex flex-col sm:flex-row gap-6 mb-6">
+                            <div className="flex-1 space-y-4">
+                                <div>
+                                    <div className="flex justify-between items-start">
+                                        <h1 className="text-4xl font-bold mb-2">{project.title}</h1>
+                                        {project.status && (
+                                            <Badge variant={project.status === 'completed' ? 'default' : 'secondary'} className="capitalize">
+                                                {t(`status.${project.status}`)}
+                                            </Badge>
+                                        )}
+                                    </div>
 
-                        {/* Meta Info */}
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
-                            {(project.start_date || project.end_date) && (
-                                <div className="flex items-center gap-2">
-                                    <Calendar className="h-4 w-4" />
-                                    <span>
-                                        {formatDate(project.start_date)}
-                                        {project.end_date ? ` ~ ${formatDate(project.end_date)}` : ` ~ ${t('present')}`}
-                                    </span>
+                                    {/* Meta Info */}
+                                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
+                                        {(project.start_date || project.end_date) && (
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="h-4 w-4" />
+                                                <span>
+                                                    {formatDate(project.start_date)}
+                                                    {project.end_date ? ` ~ ${formatDate(project.end_date)}` : ` ~ ${t('present')}`}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex gap-2">
+                                        {project.demo_url && (
+                                            <Button asChild>
+                                                <a href={project.demo_url} target="_blank" rel="noopener noreferrer">
+                                                    <ExternalLink className="h-4 w-4 mr-2" />
+                                                    {t('viewDemo')}
+                                                </a>
+                                            </Button>
+                                        )}
+                                        {project.github_url && (
+                                            <Button variant="outline" asChild>
+                                                <a href={project.github_url} target="_blank" rel="noopener noreferrer">
+                                                    <Github className="h-4 w-4 mr-2" />
+                                                    {t('viewCode')}
+                                                </a>
+                                            </Button>
+                                        )}
+                                    </div>
                                 </div>
-                            )}
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-2">
-                            {project.demo_url && (
-                                <Button asChild>
-                                    <a href={project.demo_url} target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="h-4 w-4 mr-2" />
-                                        {t('viewDemo')}
-                                    </a>
-                                </Button>
-                            )}
-                            {project.github_url && (
-                                <Button variant="outline" asChild>
-                                    <a href={project.github_url} target="_blank" rel="noopener noreferrer">
-                                        <Github className="h-4 w-4 mr-2" />
-                                        {t('viewCode')}
-                                    </a>
-                                </Button>
+                            </div>
+                            {project.cover_image && (
+                                <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                                    <Image
+                                        src={project.cover_image}
+                                        alt={project.title}
+                                        width={0}
+                                        height={0}
+                                        sizes="100vw"
+                                        style={{ width: 'auto', height: '100%' }}
+                                        className="object-cover"
+                                    />
+                                </div>
                             )}
                         </div>
                     </div>

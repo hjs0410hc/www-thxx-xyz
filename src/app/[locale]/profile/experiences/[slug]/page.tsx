@@ -75,32 +75,39 @@ export default async function ExperienceDetailPage({
             </div>
 
             <Card>
-                {experience.image_url && (
-                    <div className="relative w-full h-64 overflow-hidden rounded-t-lg">
-                        <Image
-                            src={experience.image_url}
-                            alt={experience.title}
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
-                )}
-
                 <CardHeader>
-                    <div className="flex items-start gap-4">
-                        <Star className="h-8 w-8 text-primary mt-1" />
-                        <div className="flex-1">
-                            <CardTitle className="text-3xl">{experience.title}</CardTitle>
-                            {experience.organization && (
-                                <p className="text-xl text-muted-foreground mt-2">{experience.organization}</p>
-                            )}
-                            <p className="text-sm text-muted-foreground mt-1">
-                                {new Date(experience.date).toLocaleDateString()}
-                            </p>
-                            {experience.description && (
-                                <p className="text-muted-foreground mt-3">{experience.description}</p>
-                            )}
+                    <div className="flex flex-col sm:flex-row gap-6">
+                        <div className="flex-1 space-y-2">
+                            <div className="flex items-start gap-4">
+                                <Star className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
+                                <div>
+                                    <CardTitle className="text-3xl">{experience.title}</CardTitle>
+                                    {experience.organization && (
+                                        <p className="text-xl text-muted-foreground mt-2">{experience.organization}</p>
+                                    )}
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        {new Date(experience.date).toLocaleDateString()}
+                                        {experience.end_date && ` ~ ${new Date(experience.end_date).toLocaleDateString()}`}
+                                    </p>
+                                    {experience.description && (
+                                        <p className="text-muted-foreground mt-3">{experience.description}</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
+                        {experience.preview_image && (
+                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                                <Image
+                                    src={experience.preview_image}
+                                    alt={experience.title}
+                                    width={0}
+                                    height={0}
+                                    sizes="100vw"
+                                    style={{ width: 'auto', height: '100%' }}
+                                    className="object-cover"
+                                />
+                            </div>
+                        )}
                     </div>
                 </CardHeader>
 

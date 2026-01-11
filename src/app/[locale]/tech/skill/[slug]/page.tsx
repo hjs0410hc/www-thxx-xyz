@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -87,21 +88,38 @@ export default async function SkillDetailPage({
             </Button>
 
             <div className="space-y-6">
+
+
                 {/* Header */}
-                <div className="flex flex-col gap-4">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <h1 className="text-4xl font-bold">{skill.title}</h1>
-                            {skill.category && (
-                                <p className="text-muted-foreground mt-1 text-lg">{skill.category}</p>
+                <div className="flex flex-col sm:flex-row gap-6">
+                    <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h1 className="text-4xl font-bold">{skill.title}</h1>
+                                {skill.category && (
+                                    <p className="text-muted-foreground mt-1 text-lg">{skill.category}</p>
+                                )}
+                            </div>
+                            {skill.level && (
+                                <Badge variant="outline" className="text-sm px-3 py-1">
+                                    {skill.level}
+                                </Badge>
                             )}
                         </div>
-                        {skill.level && (
-                            <Badge variant="outline" className="text-sm px-3 py-1">
-                                {skill.level}
-                            </Badge>
-                        )}
                     </div>
+                    {skill.cover_image && (
+                        <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                            <Image
+                                src={skill.cover_image}
+                                alt={skill.title}
+                                width={0}
+                                height={0}
+                                sizes="100vw"
+                                style={{ width: 'auto', height: '100%' }}
+                                className="object-cover"
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <Separator />

@@ -45,10 +45,16 @@ export default async function ExperiencesPage({
 
     const experiences = (experiencesData || []).map(getLocalized);
 
-    const formatDate = (date: string | null) => {
+    const formatDate = (date: string | null, endDate: string | null) => {
         if (!date) return '';
         const d = new Date(date);
-        return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+        const startStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+
+        if (!endDate) return startStr;
+
+        const e = new Date(endDate);
+        const endStr = `${e.getFullYear()}-${(e.getMonth() + 1).toString().padStart(2, '0')}`;
+        return `${startStr} ~ ${endStr}`;
     };
 
     return (
@@ -101,7 +107,7 @@ export default async function ExperiencesPage({
                                                 {exp.date && (
                                                     <div className="flex flex-col items-start sm:items-end gap-1 flex-shrink-0">
                                                         <span className="text-sm text-foreground font-medium whitespace-nowrap">
-                                                            {formatDate(exp.date)}
+                                                            {formatDate(exp.date, exp.end_date)}
                                                         </span>
                                                     </div>
                                                 )}

@@ -110,6 +110,7 @@ export interface Experience {
     id: string;
     slug: string;
     date: string;
+    end_date: string | null;
     preview_image: string | null;
     created_at: string;
     updated_at: string;

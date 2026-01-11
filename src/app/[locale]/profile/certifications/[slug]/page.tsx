@@ -2,13 +2,14 @@ import { createClient } from '@/lib/supabase/server';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import { ArrowLeft, Award } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import type { Locale } from '@/i18n';
 import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
     const { locale, slug } = await params;
@@ -71,7 +72,7 @@ export default async function CertificationDetailPage({
 
     const certification = getLocalized(certificationData);
 
-    const isExpired = certification.expiry_date && new Date(certification.expiry_date) < new Date();
+
 
     return (
         <div className="container max-w-4xl py-8">
@@ -86,34 +87,49 @@ export default async function CertificationDetailPage({
 
             <Card>
                 <CardHeader>
-                    <div className="flex items-start gap-4">
-                        <Award className="h-8 w-8 text-primary mt-1" />
-                        <div className="flex-1">
-                            <div className="flex items-start justify-between">
-                                <div>
-                                    <CardTitle className="text-3xl">{certification.name}</CardTitle>
-                                    <p className="text-xl text-muted-foreground mt-2">{certification.issuer}</p>
+                    <div className="flex flex-col sm:flex-row gap-6">
+                        <div className="flex-1 space-y-2">
+                            <div className="flex items-start gap-4">
+                                <Award className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
+                                <div className="flex-1">
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <CardTitle className="text-3xl">{certification.name}</CardTitle>
+                                            <p className="text-xl text-muted-foreground mt-2">{certification.issuer}</p>
+                                        </div>
+
+                                    </div>
+
+                                    <div className="mt-3 space-y-1">
+                                        <p className="text-sm text-muted-foreground">
+                                            Issued: {new Date(certification.issue_date).toLocaleDateString()}
+                                        </p>
+                                        {certification.expiry_date && (
+                                            <p className="text-sm text-muted-foreground">
+                                                Expires: {new Date(certification.expiry_date).toLocaleDateString()}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {certification.description && (
+                                        <p className="text-muted-foreground mt-4">{certification.description}</p>
+                                    )}
                                 </div>
-                                {isExpired && (
-                                    <Badge variant="destructive">Expired</Badge>
-                                )}
                             </div>
-
-                            <div className="mt-3 space-y-1">
-                                <p className="text-sm text-muted-foreground">
-                                    Issued: {new Date(certification.issue_date).toLocaleDateString()}
-                                </p>
-                                {certification.expiry_date && (
-                                    <p className="text-sm text-muted-foreground">
-                                        Expires: {new Date(certification.expiry_date).toLocaleDateString()}
-                                    </p>
-                                )}
-                            </div>
-
-                            {certification.description && (
-                                <p className="text-muted-foreground mt-4">{certification.description}</p>
-                            )}
                         </div>
+                        {certification.preview_image && (
+                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                                <Image
+                                    src={certification.preview_image}
+                                    alt={certification.name}
+                                    width={0}
+                                    height={0}
+                                    sizes="100vw"
+                                    style={{ width: 'auto', height: '100%' }}
+                                    className="object-cover"
+                                />
+                            </div>
+                        )}
                     </div>
                 </CardHeader>
 

@@ -9,6 +9,7 @@ import { notFound } from 'next/navigation';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import type { Locale } from '@/i18n';
 import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
     const { locale, slug } = await params;
@@ -83,18 +84,35 @@ export default async function ClubDetailPage({
 
             <Card>
                 <CardHeader>
-                    <div className="flex items-start gap-4">
-                        <Users className="h-8 w-8 text-primary mt-1" />
-                        <div className="flex-1">
-                            <CardTitle className="text-3xl">{club.name}</CardTitle>
-                            {club.role && <p className="text-xl text-muted-foreground mt-2">{club.role}</p>}
-                            <p className="text-sm text-muted-foreground mt-1">
-                                {new Date(club.start_date).toLocaleDateString()} - {club.end_date ? new Date(club.end_date).toLocaleDateString() : 'Present'}
-                            </p>
-                            {club.description && (
-                                <p className="text-muted-foreground mt-3">{club.description}</p>
-                            )}
+                    <div className="flex flex-col sm:flex-row gap-6">
+                        <div className="flex-1 space-y-2">
+                            <div className="flex items-start gap-4">
+                                <Users className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
+                                <div className="flex-1">
+                                    <CardTitle className="text-3xl">{club.name}</CardTitle>
+                                    {club.role && <p className="text-xl text-muted-foreground mt-2">{club.role}</p>}
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        {new Date(club.start_date).toLocaleDateString()} - {club.end_date ? new Date(club.end_date).toLocaleDateString() : 'Present'}
+                                    </p>
+                                    {club.description && (
+                                        <p className="text-muted-foreground mt-3">{club.description}</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
+                        {club.preview_image && (
+                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                                <Image
+                                    src={club.preview_image}
+                                    alt={club.name}
+                                    width={0}
+                                    height={0}
+                                    sizes="100vw"
+                                    style={{ width: 'auto', height: '100%' }}
+                                    className="object-cover"
+                                />
+                            </div>
+                        )}
                     </div>
                 </CardHeader>
 

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 import { ArrowLeft, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -84,21 +85,38 @@ export default async function EducationDetailPage({
 
             <Card>
                 <CardHeader>
-                    <div className="flex items-start gap-4">
-                        <GraduationCap className="h-8 w-8 text-primary mt-1" />
-                        <div className="flex-1">
-                            <CardTitle className="text-3xl">{education.institution}</CardTitle>
-                            <div className="mt-2 text-xl text-muted-foreground">
-                                <p>{education.degree}</p>
-                                {education.field && <p>{education.field}</p>}
+                    <div className="flex flex-col sm:flex-row gap-6">
+                        <div className="flex-1 space-y-2">
+                            <div className="flex items-start gap-4">
+                                <GraduationCap className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
+                                <div className="flex-1">
+                                    <CardTitle className="text-3xl">{education.institution}</CardTitle>
+                                    <div className="mt-2 text-xl text-muted-foreground">
+                                        <p>{education.degree}</p>
+                                        {education.field && <p>{education.field}</p>}
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        {new Date(education.start_date).toISOString().split('T')[0]} ~ {education.end_date ? new Date(education.end_date).toISOString().split('T')[0] : 'Present'}
+                                    </p>
+                                    {education.description && (
+                                        <p className="text-muted-foreground mt-3">{education.description}</p>
+                                    )}
+                                </div>
                             </div>
-                            <p className="text-sm text-muted-foreground mt-1">
-                                {new Date(education.start_date).getFullYear()} - {education.end_date ? new Date(education.end_date).getFullYear() : 'Present'}
-                            </p>
-                            {education.description && (
-                                <p className="text-muted-foreground mt-3">{education.description}</p>
-                            )}
                         </div>
+                        {education.preview_image && (
+                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                                <Image
+                                    src={education.preview_image}
+                                    alt={education.institution}
+                                    width={0}
+                                    height={0}
+                                    sizes="100vw"
+                                    style={{ width: 'auto', height: '100%' }}
+                                    className="object-cover"
+                                />
+                            </div>
+                        )}
                     </div>
                 </CardHeader>
 

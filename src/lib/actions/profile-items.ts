@@ -220,6 +220,7 @@ export async function addExperience(formData: FormData) {
         .insert({
             slug,
             date: formData.get('date') as string,
+            end_date: formData.get('end_date') as string || null,
             preview_image: formData.get('preview_image') as string || null,
         })
         .select()
@@ -569,6 +570,7 @@ export async function updateExperience(id: string, formData: FormData) {
         .update({
             slug: formData.get('slug') as string,
             date: formData.get('date') as string,
+            end_date: formData.get('end_date') as string || null,
             preview_image: formData.get('preview_image') as string || null,
         })
         .eq('id', id);
