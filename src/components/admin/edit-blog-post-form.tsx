@@ -140,22 +140,7 @@ export function EditBlogPostForm({ post, tags }: EditBlogPostFormProps) {
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="published">Published</Label>
-                            <div className="flex items-center space-x-2 h-10">
-                                <input
-                                    type="checkbox"
-                                    id="published"
-                                    name="published"
-                                    className="h-4 w-4"
-                                    defaultChecked={post.published}
-                                    disabled={loading}
-                                />
-                                <label htmlFor="published" className="text-sm">
-                                    Publish this post
-                                </label>
-                            </div>
-                        </div>
+
                     </div>
 
                     <div className="space-y-2">

@@ -15,7 +15,7 @@ export async function generateMetadata({
         .from('posts')
         .select('*, post_translations(*)')
         .eq('slug', slug)
-        .eq('published', true)
+
         .single();
 
     if (!post) {
@@ -36,7 +36,7 @@ export async function generateMetadata({
         locale,
         image: post.cover_image || undefined,
         type: 'article',
-        publishedTime: post.published_at,
+        publishedTime: post.created_at,
     });
 }
 
@@ -52,7 +52,7 @@ export default async function BlogPostPage({
         .from('posts')
         .select('*, post_tags(*), post_translations(*)')
         .eq('slug', slug)
-        .eq('published', true)
+
         .single();
 
     if (!post) {
@@ -68,7 +68,7 @@ export default async function BlogPostPage({
     const structuredData = generateArticleStructuredData({
         title: trans.title || post.title,
         description: trans.excerpt || trans.title,
-        publishedTime: post.published_at,
+        publishedTime: post.created_at,
         image: post.cover_image || undefined,
         tags: post.post_tags?.map((t: any) => t.tag),
     });

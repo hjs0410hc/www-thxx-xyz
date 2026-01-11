@@ -171,16 +171,16 @@
             "description": "Technologies, tools, and methodologies I work with",
             "empty": "No Skills Added",
             "emptyDesc": "Skills will appear here once added through the admin panel."
-        },
-        "blog": {
-            "title": "Blog",
-            "description": "Technical articles and thoughts",
-            "minRead": "{min} min read",
-            "moreTags": "+{count} more",
-            "noPosts": "No Posts Found",
-            "noPostsWithTag": "No posts found with tag \"{tag}\".",
-            "emptyState": "Blog posts will appear here once published.",
-            "readMore": "Read more"
         }
+    },
+    "blog": {
+        "title": "Blog",
+        "description": "Technical articles and thoughts",
+        "minRead": "{min} min read",
+        "moreTags": "+{count} more",
+        "noPosts": "No Posts Found",
+        "noPostsWithTag": "No posts found with tag \"{tag}\".",
+        "emptyState": "Blog posts will appear here once published.",
+        "readMore": "Read more"
     }
 }

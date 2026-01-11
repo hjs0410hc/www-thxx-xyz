@@ -11,8 +11,6 @@ export async function createPost(formData: FormData) {
     const postData = {
         slug: formData.get('slug') as string,
         cover_image: formData.get('cover_image') as string || null,
-        published: formData.get('published') === 'on',
-        published_at: formData.get('published') === 'on' ? new Date().toISOString() : null,
     };
 
     // 2. Insert into posts table (shared)
@@ -27,7 +25,6 @@ export async function createPost(formData: FormData) {
     }
 
     // 3. Handle Translations
-    // Check if we have multiple translations passed as JSON
     const translationsJson = formData.get('translations') as string;
 
     if (translationsJson) {
@@ -56,7 +53,7 @@ export async function createPost(formData: FormData) {
             return { error: 'Invalid translations data' };
         }
     } else {
-        // Fallback to single locale (legacy support)
+        // Fallback to single locale (legacy support for old form submissions if any)
         const locale = formData.get('locale') as string || 'ko';
         const translationData = {
             post_id: post.id,
@@ -91,55 +88,17 @@ export async function createPost(formData: FormData) {
     }
 
     revalidatePath('/admin/blog');
-    // We should revalidate all affected locales, basically all locales /blog
     revalidatePath('/[locale]/blog', 'page');
     redirect('/admin/blog');
 }
 
 export async function updatePost(id: string, formData: FormData) {
     const supabase = await createClient();
-    const locale = formData.get('locale') as string || 'ko';
 
     // 1. Update shared data
-    const postData = {
-        slug: formData.get('slug') as string,
-        cover_image: formData.get('cover_image') as string || null,
-        published: formData.get('published') === 'on',
-        // Update published_at only if it's being published now and wasn't before? 
-        // Or just allow user to reset it? For simplicity, we update it if provided/checked.
-        // Actually, logic usually is: if published is true, ensure published_at is set.
-        // If it was already published, keep original date? 
-        // The original code reset it on update if 'on'. Let's keep that behavior or refine it.
-        // Current behavior: if 'on', new date. If not 'on', null. 
-        // Better: Fetch current to check? Or just use what's passed. 
-        // Let's stick to update logic: if 'on' and existing is null -> set date. If 'on' and existing is set -> keep date?
-        // Simplest: If form has published='on', set date to NOW if it was null, or keep it? 
-        // The previous code: `published_at: formData.get('published') === 'on' ? new Date().toISOString() : null`. This RESETS date every update.
-        // We should fix this slightly to respect existing date if possible, but we don't fetch existing here easily without query. 
-        // Let's just follow previous logic for now to minimize logic change risk, or improve it.
-        // Let's use: if published is on, use passed published_at or new date. But formData doesn't have old date.
-        // Let's stick to the previous simple logic for now: Always new date on publish (update). 
-        // Wait, that's bad for blog posts.
-        // Let's fetch the post first to be safe about shared fields.
-    };
-
-    // Fetch current post to preserve published_at if needed
-    const { data: currentPost } = await supabase.from('posts').select('published_at').eq('id', id).single();
-
-    let published_at = currentPost?.published_at;
-    const isPublished = formData.get('published') === 'on';
-
-    if (isPublished && !published_at) {
-        published_at = new Date().toISOString();
-    } else if (!isPublished) {
-        published_at = null;
-    }
-
     const sharedUpdates = {
         slug: formData.get('slug') as string,
         cover_image: formData.get('cover_image') as string || null,
-        published: isPublished,
-        published_at: published_at,
     };
 
     const { error: postError } = await supabase
@@ -163,7 +122,7 @@ export async function updatePost(id: string, formData: FormData) {
                 title: data.title,
                 excerpt: data.excerpt || null,
                 content: data.content,
-            })).filter(t => t.title); // Only upsert if title exists
+            })).filter(t => t.title);
 
             if (translationUpserts.length > 0) {
                 const { error: transError } = await supabase
@@ -179,7 +138,8 @@ export async function updatePost(id: string, formData: FormData) {
             return { error: 'Invalid translations data' };
         }
     } else {
-        // Fallback to single locale
+        // Fallback for single locale updates
+        const locale = formData.get('locale') as string || 'ko';
         const translationData = {
             post_id: id,
             locale: locale,
@@ -198,8 +158,6 @@ export async function updatePost(id: string, formData: FormData) {
     }
 
     // 3. Update tags
-    // Tags are global (associated with post_id), not localized in this schema (post_tags -> post_id, tag string).
-    // So we just update them as before.
     await supabase.from('post_tags').delete().eq('post_id', id);
 
     const tags = formData.get('tags') as string;
@@ -216,7 +174,8 @@ export async function updatePost(id: string, formData: FormData) {
     }
 
     revalidatePath('/admin/blog');
-    revalidatePath(`/${locale}/blog`);
+    // Revalidate all locales
+    revalidatePath('/[locale]/blog', 'page');
     redirect('/admin/blog');
 }
 

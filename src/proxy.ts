@@ -14,5 +14,5 @@ export default createMiddleware({
 
 export const config = {
     // Match only internationalized pathnames, exclude admin routes and static files
-    matcher: ['/((?!admin|api|_next/static|_next/image|favicon.ico|logo.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+    matcher: ['/((?!admin|api|_next/static|_next/image|favicon.ico|logo.png|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };

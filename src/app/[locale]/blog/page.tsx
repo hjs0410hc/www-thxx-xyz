@@ -38,8 +38,7 @@ export default async function BlogPage({
     let query = supabase
         .from('posts')
         .select('*, post_tags(*), post_translations(*)')
-        .eq('published', true)
-        .order('published_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
     // Apply tag and search filter
     let postIds = new Set<string>();
@@ -97,7 +96,6 @@ export default async function BlogPage({
 
     const { data: rawPosts } = await query;
 
-    // Flatten and localize posts
     const posts = (rawPosts || []).map((p: any) => {
         const translations = p.post_translations || [];
         const trans = translations.find((t: any) => t.locale === locale)
@@ -106,11 +104,17 @@ export default async function BlogPage({
             || translations[0]
             || {};
 
+        const LANGUAGE_ORDER = ['ko', 'en', 'ja'];
+        const locales = (translations.map((t: any) => t.locale) as string[]).sort((a, b) => {
+            return LANGUAGE_ORDER.indexOf(a) - LANGUAGE_ORDER.indexOf(b);
+        });
+
         return {
             ...p,
-            title: trans.title || p.title || '(No Title)', // Fallback to p.title if legacy data exists and migration failed, or just safety
+            title: trans.title || p.title || '(No Title)',
             excerpt: trans.excerpt || p.excerpt,
             content: trans.content,
+            locales,
         };
     });
 
@@ -123,6 +127,12 @@ export default async function BlogPage({
         const hours = String(d.getHours()).padStart(2, '0');
         const minutes = String(d.getMinutes()).padStart(2, '0');
         return `${year}-${month}-${day} ${hours}:${minutes}`;
+    };
+
+    const LANGUAGE_LABELS: Record<string, string> = {
+        ko: '한국어',
+        en: 'English',
+        ja: '日本語',
     };
 
     const t = await getTranslations({ locale, namespace: 'blog' });
@@ -151,7 +161,14 @@ export default async function BlogPage({
                     {posts && posts.length > 0 ? (
                         posts.map((post) => (
                             <Link key={post.id} href={`/${locale}/blog/${post.slug}`}>
-                                <Card className="transition-all hover:shadow-md hover:scale-[1.01]">
+                                <Card className="transition-all hover:shadow-md hover:scale-[1.01] mb-4 relative">
+                                    <div className="absolute top-6 right-6 flex gap-1 z-10">
+                                        {post.locales.map((l: string) => (
+                                            <Badge key={l} variant="secondary" className="text-[15px] py-0.5 px-1.5 font-normal">
+                                                {LANGUAGE_LABELS[l] || l}
+                                            </Badge>
+                                        ))}
+                                    </div>
                                     <CardContent>
                                         <div className="flex flex-col md:flex-row gap-6">
                                             {/* Cover Image */}
@@ -168,7 +185,7 @@ export default async function BlogPage({
 
                                             {/* Content */}
                                             <div className="flex-1 min-w-0">
-                                                <h2 className="text-2xl font-semibold mb-2">{post.title}</h2>
+                                                <h2 className="text-2xl font-semibold mb-2 pr-20">{post.title}</h2>
 
                                                 {post.excerpt && (
                                                     <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
@@ -178,10 +195,10 @@ export default async function BlogPage({
 
                                                 {/* Meta Info */}
                                                 <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground mb-3">
-                                                    {post.published_at && (
+                                                    {post.created_at && (
                                                         <div className="flex items-center gap-1">
                                                             <Calendar className="h-3 w-3" />
-                                                            <span>{formatDate(post.published_at)}</span>
+                                                            <span>{formatDate(post.created_at)}</span>
                                                         </div>
                                                     )}
                                                 </div>

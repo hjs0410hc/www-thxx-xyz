@@ -11,8 +11,6 @@ export interface Post {
     id: string;
     slug: string;
     cover_image: string | null;
-    published: boolean;
-    published_at: string | null; // ISO Date string
     created_at: string;
     updated_at: string;
     post_translations?: PostTranslation[];

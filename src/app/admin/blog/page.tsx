@@ -25,7 +25,7 @@ export default async function AdminBlogPage() {
             ...p,
             title: trans.title || '(No Title)',
             excerpt: trans.excerpt,
-            locale: trans.locale || 'ko', // Show which locale we picked
+            locales: translations.map((t: any) => t.locale).sort(),
         };
     });
 
@@ -55,12 +55,12 @@ export default async function AdminBlogPage() {
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-2">
                                             <h3 className="text-xl font-semibold">{post.title}</h3>
-                                            <Badge variant="outline">{post.locale}</Badge>
-                                            {post.published ? (
-                                                <Badge variant="default">Published</Badge>
-                                            ) : (
-                                                <Badge variant="secondary">Draft</Badge>
-                                            )}
+                                            <div className="flex gap-1">
+                                                {post.locales.map((locale: string) => (
+                                                    <Badge key={locale} variant="outline" className="text-xs uppercase">{locale}</Badge>
+                                                ))}
+                                            </div>
+
                                         </div>
 
                                         {post.excerpt && (

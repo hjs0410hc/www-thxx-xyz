@@ -110,10 +110,10 @@ export function BlogPostViewer({ post, locale: initialLocale, backLink }: BlogPo
 
                     {/* Meta Info */}
                     <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
-                        {post.published_at && (
+                        {post.created_at && (
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4" />
-                                <span>{formatDate(post.published_at)}</span>
+                                <span>{formatDate(post.created_at)}</span>
                             </div>
                         )}
                     </div>

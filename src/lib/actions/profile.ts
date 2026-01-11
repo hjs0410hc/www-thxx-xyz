@@ -69,19 +69,9 @@ export async function updateProfile(formData: FormData) {
 export async function addSocialLink(formData: FormData) {
     const supabase = await createClient();
 
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .single();
-
-    if (!profile) {
-        return { error: 'Profile not found' };
-    }
-
     const { error } = await supabase
         .from('social_links')
         .insert([{
-            profile_id: profile.id,
             platform: formData.get('platform') as string,
             url: formData.get('url') as string,
             display_order: parseInt(formData.get('display_order') as string) || 0,
@@ -133,19 +123,9 @@ export async function updateSocialLink(id: string, formData: FormData) {
 export async function addLanguage(formData: FormData) {
     const supabase = await createClient();
 
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .single();
-
-    if (!profile) {
-        return { error: 'Profile not found' };
-    }
-
     const { error } = await supabase
         .from('languages')
         .insert([{
-            profile_id: profile.id,
             language: formData.get('language') as string,
             proficiency_level: formData.get('proficiency_level') as string,
         }]);

@@ -132,21 +132,7 @@ export default function NewBlogPostPage() {
                                 />
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="published">Published</Label>
-                                <div className="flex items-center space-x-2 h-10">
-                                    <input
-                                        type="checkbox"
-                                        id="published"
-                                        name="published"
-                                        className="h-4 w-4"
-                                        disabled={loading}
-                                    />
-                                    <label htmlFor="published" className="text-sm">
-                                        Publish immediately
-                                    </label>
-                                </div>
-                            </div>
+
                         </div>
 
                         <div className="space-y-2">

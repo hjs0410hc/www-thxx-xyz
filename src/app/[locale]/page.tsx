@@ -17,8 +17,7 @@ export default async function HomePage({
     ] = await Promise.all([
         supabase.from('posts')
             .select('*, post_translations(*)')
-            .eq('published', true)
-            .order('published_at', { ascending: false })
+            .order('created_at', { ascending: false })
             .limit(3)
     ]);
 
