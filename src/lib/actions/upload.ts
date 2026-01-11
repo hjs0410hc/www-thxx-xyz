@@ -16,8 +16,8 @@ export async function uploadImage(formData: FormData) {
     }
 
     // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-        return { error: 'File size must be less than 5MB' };
+    if (file.size > 10 * 1024 * 1024) {
+        return { error: 'File size must be less than 10MB' };
     }
 
     // Generate unique filename
