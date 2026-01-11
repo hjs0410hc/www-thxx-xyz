@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Briefcase } from 'lucide-react';
 import Link from 'next/link';
@@ -88,7 +89,14 @@ export default async function WorkDetailPage({
                             <div className="flex items-start gap-4">
                                 <Briefcase className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
                                 <div className="flex-1">
-                                    <CardTitle className="text-3xl">{work.position}</CardTitle>
+                                    <div className="flex items-center gap-3">
+                                        <CardTitle className="text-3xl">{work.position}</CardTitle>
+                                        {work.type && (
+                                            <Badge variant="secondary">
+                                                {t(work.type)}
+                                            </Badge>
+                                        )}
+                                    </div>
                                     <p className="text-xl text-muted-foreground mt-2">{work.company}</p>
                                     <p className="text-sm text-muted-foreground mt-1">
                                         {new Date(work.start_date).toLocaleDateString()} - {work.end_date ? new Date(work.end_date).toLocaleDateString() : 'Present'}
