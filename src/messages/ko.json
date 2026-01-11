@@ -65,6 +65,11 @@
     },
     "profile": {
         "about": "소개",
+        "gender": {
+            "male": "남성",
+            "female": "여성",
+            "other": "기타"
+        },
         "default": {
             "name": "이름",
             "bio": "소개를 입력하세요"

@@ -65,6 +65,11 @@
     },
     "profile": {
         "about": "About",
+        "gender": {
+            "male": "Male",
+            "female": "Female",
+            "other": "Other"
+        },
         "default": {
             "name": "Your Name",
             "bio": "Add your bio"
