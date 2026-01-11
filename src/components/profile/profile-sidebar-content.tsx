@@ -27,6 +27,7 @@ export function ProfileSidebarContent({
     hideNav = false,
 }: ProfileSidebarContentProps) {
     const t = useTranslations('profile.nav');
+    const pt = useTranslations('profile');
     const ct = useTranslations('common');
 
     const navItems = [
@@ -79,6 +80,12 @@ export function ProfileSidebarContent({
                             <div className="flex items-start gap-3">
                                 <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                                 <div className="text-sm">{new Date(profile.birth_date).toLocaleDateString()}</div>
+                            </div>
+                        )}
+                        {profile?.gender && (
+                            <div className="flex items-start gap-3">
+                                <User className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
+                                <div className="text-sm">{pt(`gender.${profile.gender}`)}</div>
                             </div>
                         )}
 
