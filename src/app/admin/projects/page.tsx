@@ -62,6 +62,11 @@ export default async function AdminProjectsPage() {
                                                     {project.status === 'completed' && 'Completed'}
                                                     {project.status === 'discontinued' && 'Discontinued'}
                                                     {project.status === 'archived' && 'Archived'}
+                                                    {project.status === 'on_hold' && 'On Hold'}
+                                                    {project.status === 'planned' && 'Planned'}
+                                                    {project.status === 'maintenance' && 'Maintenance'}
+                                                    {project.status === 'running' && 'Running'}
+
                                                     {!project.status && 'Unknown'}
                                                 </Badge>
                                                 {project.featured && (
