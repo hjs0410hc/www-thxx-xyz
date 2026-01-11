@@ -67,7 +67,7 @@ export async function addEducation(formData: FormData) {
             slug,
             type: formData.get('type') as string,
             start_date: formData.get('start_date') as string,
-            end_date: formData.get('end_date') as string || null,
+            end_date: (formData.get('end_date') as string) === 'null' ? null : (formData.get('end_date') as string || null),
             preview_image: formData.get('preview_image') as string || null,
         })
         .select()
@@ -119,7 +119,7 @@ export async function addWorkExperience(formData: FormData) {
             slug,
             type: formData.get('type') as string,
             start_date: formData.get('start_date') as string,
-            end_date: formData.get('end_date') as string || null,
+            end_date: (formData.get('end_date') as string) === 'null' ? null : (formData.get('end_date') as string || null),
             preview_image: formData.get('preview_image') as string || null,
         })
         .select()
@@ -170,7 +170,7 @@ export async function addClub(formData: FormData) {
         .insert({
             slug,
             start_date: formData.get('start_date') as string,
-            end_date: formData.get('end_date') as string || null,
+            end_date: (formData.get('end_date') as string) === 'null' ? null : (formData.get('end_date') as string || null),
             preview_image: formData.get('preview_image') as string || null,
         })
         .select()
@@ -220,7 +220,7 @@ export async function addExperience(formData: FormData) {
         .insert({
             slug,
             date: formData.get('date') as string,
-            end_date: formData.get('end_date') as string || null,
+            end_date: (formData.get('end_date') as string) === 'null' ? null : (formData.get('end_date') as string || null),
             preview_image: formData.get('preview_image') as string || null,
         })
         .select()
@@ -321,7 +321,7 @@ export async function addCertification(formData: FormData) {
         .insert({
             slug,
             issue_date: formData.get('issue_date') as string,
-            expiry_date: formData.get('expiry_date') as string || null,
+            expiry_date: (formData.get('expiry_date') as string) === 'null' ? null : (formData.get('expiry_date') as string || null),
             preview_image: formData.get('preview_image') as string || null,
         })
         .select()
@@ -359,7 +359,7 @@ export async function updateCertification(id: string, formData: FormData) {
         .update({
             slug: formData.get('slug') as string,
             issue_date: formData.get('issue_date') as string,
-            expiry_date: formData.get('expiry_date') as string || null,
+            expiry_date: (formData.get('expiry_date') as string) === 'null' ? null : (formData.get('expiry_date') as string || null),
             preview_image: formData.get('preview_image') as string || null,
         })
         .eq('id', id);
@@ -447,7 +447,7 @@ export async function updateEducation(id: string, formData: FormData) {
             slug: formData.get('slug') as string,
             type: formData.get('type') as string,
             start_date: formData.get('start_date') as string,
-            end_date: formData.get('end_date') as string || null,
+            end_date: (formData.get('end_date') as string) === 'null' ? null : (formData.get('end_date') as string || null),
             preview_image: formData.get('preview_image') as string || null,
         })
         .eq('id', id);
@@ -489,7 +489,7 @@ export async function updateWorkExperience(id: string, formData: FormData) {
             slug: formData.get('slug') as string,
             type: formData.get('type') as string,
             start_date: formData.get('start_date') as string,
-            end_date: formData.get('end_date') as string || null,
+            end_date: (formData.get('end_date') as string) === 'null' ? null : (formData.get('end_date') as string || null),
             preview_image: formData.get('preview_image') as string || null,
         })
         .eq('id', id);
@@ -530,7 +530,7 @@ export async function updateClub(id: string, formData: FormData) {
         .update({
             slug: formData.get('slug') as string,
             start_date: formData.get('start_date') as string,
-            end_date: formData.get('end_date') as string || null,
+            end_date: (formData.get('end_date') as string) === 'null' ? null : (formData.get('end_date') as string || null),
             preview_image: formData.get('preview_image') as string || null,
         })
         .eq('id', id);
@@ -570,7 +570,7 @@ export async function updateExperience(id: string, formData: FormData) {
         .update({
             slug: formData.get('slug') as string,
             date: formData.get('date') as string,
-            end_date: formData.get('end_date') as string || null,
+            end_date: (formData.get('end_date') as string) === 'null' ? null : (formData.get('end_date') as string || null),
             preview_image: formData.get('preview_image') as string || null,
         })
         .eq('id', id);
