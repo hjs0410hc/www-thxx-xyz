@@ -29,10 +29,16 @@ export default async function HomePage({
             || translations[0]
             || {};
 
+        const LANGUAGE_ORDER = ['ko', 'en', 'ja'];
+        const locales = (translations.map((t: any) => t.locale) as string[]).sort((a, b) => {
+            return LANGUAGE_ORDER.indexOf(a) - LANGUAGE_ORDER.indexOf(b);
+        });
+
         return {
             ...p,
             title: trans.title || p.title || '(No Title)',
             excerpt: trans.excerpt || p.excerpt,
+            locales,
         };
     });
 

@@ -7,8 +7,6 @@ import { cn } from '@/lib/utils';
 import type { Locale } from '@/i18n';
 import { User, Layers, Rocket, Home } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
 
 const navItems = [
     { key: 'home', icon: Home, href: '' },
@@ -22,28 +20,12 @@ interface TechSidebarProps {
     hideProfileInfo?: boolean;
 }
 
-export function TechSidebar({ className, onLinkClick, hideProfileInfo = false }: TechSidebarProps) {
+export function TechSidebar({ className, onLinkClick, hideProfileInfo = false, profile }: TechSidebarProps & { profile: any }) {
     const t = useTranslations('tech.nav');
     const params = useParams();
     const pathname = usePathname();
     const locale = params.locale as Locale;
-    const [profile, setProfile] = useState<any>(null);
-    useEffect(() => {
-        const fetchData = async () => {
-            const supabase = createClient();
-            const { data: profileData } = await supabase.from('profiles').select('*, profile_translations(*)').single();
-            if (profileData) {
-                const translations = profileData.profile_translations || [];
-                const trans = translations.find((t: any) => t.locale === locale)
-                    || translations.find((t: any) => t.locale === 'ko')
-                    || translations.find((t: any) => t.locale === 'en')
-                    || translations[0]
-                    || {};
-                setProfile({ ...profileData, ...trans });
-            }
-        };
-        fetchData();
-    }, [locale]);
+
     const isActive = (itemHref: string) => {
         const fullHref = `/${locale}/tech${itemHref}`;
         if (itemHref === '') {

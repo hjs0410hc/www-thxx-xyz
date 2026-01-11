@@ -11,14 +11,21 @@ interface Post {
     title: string;
     slug: string;
     excerpt: string | null;
-    published_at: string | null;
+    created_at: string | null;
     cover_image: string | null;
+    locales: string[];
 }
 
 interface RecentPostsSectionProps {
     posts: Post[];
     locale: string;
 }
+
+const LANGUAGE_LABELS: Record<string, string> = {
+    ko: '한국어',
+    en: 'English',
+    ja: '日本語',
+};
 
 export function RecentPostsSection({ posts, locale }: RecentPostsSectionProps) {
     const t = useTranslations('home.recentPosts');
@@ -44,7 +51,15 @@ export function RecentPostsSection({ posts, locale }: RecentPostsSectionProps) {
             <div className="grid gap-6 md:grid-cols-3">
                 {posts.map((post) => (
                     <Link key={post.id} href={`/${locale}/blog/${post.slug}`} className="group">
-                        <Card className="h-full overflow-hidden border-none shadow-md transition-all hover:shadow-xl hover:-translate-y-1 pt-0 gap-0 pb-0">
+                        <Card className="h-full overflow-hidden border-none shadow-md transition-all hover:shadow-xl hover:-translate-y-1 pt-0 gap-0 pb-0 relative">
+                            {/* Language Badges */}
+                            <div className="absolute top-3 right-3 flex gap-1 z-10">
+                                {post.locales && post.locales.map((l: string) => (
+                                    <Badge key={l} variant="secondary" className="text-[15px] py-0.5 px-1.5 font-normal bg-background/80 backdrop-blur-sm shadow-sm">
+                                        {LANGUAGE_LABELS[l] || l}
+                                    </Badge>
+                                ))}
+                            </div>
                             <div className="relative aspect-video w-full overflow-hidden bg-muted">
                                 {post.cover_image ? (
                                     <Image
@@ -63,8 +78,8 @@ export function RecentPostsSection({ posts, locale }: RecentPostsSectionProps) {
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
                                     <Calendar className="h-3 w-3" />
                                     <span>
-                                        {post.published_at
-                                            ? new Date(post.published_at).toISOString().split('T')[0]
+                                        {post.created_at
+                                            ? new Date(post.created_at).toISOString().split('T')[0]
                                             : ''}
                                     </span>
                                 </div>

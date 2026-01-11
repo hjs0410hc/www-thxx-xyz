@@ -13,7 +13,7 @@ import {
 import { Menu } from 'lucide-react';
 import { TechSidebar } from './tech-sidebar';
 
-export function MobileTechSidebar() {
+export function MobileTechSidebar({ profile }: { profile: any }) {
     const [open, setOpen] = useState(false);
     const t = useTranslations('profile.nav'); // Reusing 'profile' label key if strictly needed, or maybe 'tech.nav' has a menu key? 
     // Actually user asked to modify button translation to "Menu" which is now in 'profile.nav.profile'.
@@ -34,7 +34,7 @@ export function MobileTechSidebar() {
                     <SheetHeader className="text-left mb-6">
                         <SheetTitle className="text-left">{t('profile')}</SheetTitle>
                     </SheetHeader>
-                    <TechSidebar onLinkClick={() => setOpen(false)} hideProfileInfo={true} />
+                    <TechSidebar onLinkClick={() => setOpen(false)} hideProfileInfo={true} profile={profile} />
                 </SheetContent>
             </Sheet>
         </div>
