@@ -194,7 +194,10 @@
                 "completed": "Completed",
                 "on_hold": "On Hold",
                 "planned": "Planned",
-                "maintenance": "Maintenance"
+                "maintenance": "Maintenance",
+                "running": "Running",
+                "archived": "Archived",
+                "discontinued": "Discontinued"
             }
         },
         "skills": {

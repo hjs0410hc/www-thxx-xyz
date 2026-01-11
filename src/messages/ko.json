@@ -194,7 +194,10 @@
                 "completed": "완료",
                 "on_hold": "보류",
                 "planned": "계획됨",
-                "maintenance": "유지보수"
+                "maintenance": "유지보수",
+                "running": "운영중",
+                "archived": "종료됨",
+                "discontinued": "중단됨"
             }
         },
         "skills": {
