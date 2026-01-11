@@ -194,7 +194,10 @@
                 "completed": "完了",
                 "on_hold": "保留",
                 "planned": "計画中",
-                "maintenance": "メンテナンス"
+                "maintenance": "メンテナンス",
+                "running": "運営中",
+                "archived": "アーカイブ済み",
+                "discontinued": "中断"
             }
         },
         "skills": {
