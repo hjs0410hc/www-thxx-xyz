@@ -2,6 +2,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { ArrowLeft, GraduationCap } from 'lucide-react';
@@ -90,7 +91,14 @@ export default async function EducationDetailPage({
                             <div className="flex items-start gap-4">
                                 <GraduationCap className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
                                 <div className="flex-1">
-                                    <CardTitle className="text-3xl">{education.institution}</CardTitle>
+                                    <div className="flex items-center gap-3">
+                                        <CardTitle className="text-3xl">{education.institution}</CardTitle>
+                                        {education.type && (
+                                            <Badge variant="secondary">
+                                                {t(education.type)}
+                                            </Badge>
+                                        )}
+                                    </div>
                                     <div className="mt-2 text-xl text-muted-foreground">
                                         <p>{education.degree}</p>
                                         {education.field && <p>{education.field}</p>}

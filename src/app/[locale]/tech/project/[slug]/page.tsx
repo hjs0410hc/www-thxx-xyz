@@ -92,7 +92,8 @@ export default async function ProjectDetailPage({
         const d = new Date(date);
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');
-        return `${year}-${month}`;
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     };
 
     // Generate structured data
@@ -128,7 +129,7 @@ export default async function ProjectDetailPage({
                         <div className="flex flex-col sm:flex-row gap-6 mb-6">
                             <div className="flex-1 space-y-4">
                                 <div>
-                                    <div className="flex justify-between items-start">
+                                    <div className="flex gap-5 items-center">
                                         <h1 className="text-4xl font-bold mb-2">{project.title}</h1>
                                         {project.status && (
                                             <Badge variant={project.status === 'completed' ? 'default' : 'secondary'} className="capitalize">
