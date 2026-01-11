@@ -58,23 +58,28 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
 
         setUploading(true);
 
-        const formData = new FormData();
-        formData.append('file', file);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
 
-        const result = await uploadImage(formData);
+            const result = await uploadImage(formData);
 
-        if (result.error) {
-            alert(`Upload failed: ${result.error}`);
-        } else if (result.url) {
-            // Insert image into editor
-            editor.chain().focus().setImage({ src: result.url }).run();
-        }
+            if (result.error) {
+                alert(`Upload failed: ${result.error}`);
+            } else if (result.url) {
+                // Insert image into editor
+                editor.chain().focus().setImage({ src: result.url }).run();
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('An unexpected error occurred while uploading the image');
+        } finally {
+            setUploading(false);
 
-        setUploading(false);
-
-        // Reset file input
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
+            // Reset file input
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         }
     }
 
