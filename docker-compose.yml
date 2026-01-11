@@ -1,0 +1,12 @@
+services:
+  app:
+    container_name: www-thxx-xyz
+    image: ghcr.io/hjs0410hc/www-thxx-xyz:latest
+    ports:
+      - "5575:5575"
+    env_file:
+      - .env
+    restart: always
+    # If you need to access host services (like a local database), uncomment the following:
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
