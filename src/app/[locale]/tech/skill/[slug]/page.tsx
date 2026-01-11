@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Code, Terminal, Database, Wrench, FileCode, Cloud, Box } from 'lucide-react';
 import { TiptapRenderer } from '@/components/blog/tiptap-renderer';
 import { SkillWithDetails } from '@/types/tech';
 import { getTranslations } from 'next-intl/server';
@@ -30,7 +30,7 @@ export async function generateMetadata({
         return {};
     }
 
-    const t = await getTranslations({ locale, namespace: 'tech.skills' });
+    const t = await getTranslations({ locale, namespace: 'tech' });
     const translations = skillData.skill_translations || [];
     const trans = translations.find((t: any) => t.locale === locale)
         || translations.find((t: any) => t.locale === 'ko')
@@ -41,7 +41,7 @@ export async function generateMetadata({
     const skill = { ...skillData, ...trans } as SkillWithDetails;
 
     return generateSEOMetadata({
-        title: t('detailTitle', { title: skill.title }),
+        title: t('skills.detailTitle', { title: skill.title }),
         description: skill.description || skill.title,
         path: `/${locale}/tech/skill/${slug}`,
         locale,
@@ -67,7 +67,7 @@ export default async function SkillDetailPage({
         notFound();
     }
 
-    const t = await getTranslations({ locale, namespace: 'tech.skills' });
+    const t = await getTranslations({ locale, namespace: 'tech' });
     const translations = skillData.skill_translations || [];
     const trans = translations.find((t: any) => t.locale === locale)
         || translations.find((t: any) => t.locale === 'ko')
@@ -77,13 +77,28 @@ export default async function SkillDetailPage({
 
     const skill = { ...skillData, ...trans } as SkillWithDetails;
 
+    const categoryIconMap: Record<string, any> = {
+        frontend: Code,
+        backend: Terminal,
+        database: Database,
+        devops: Wrench,
+        programming_language: FileCode,
+        cloud: Cloud,
+        other: Box,
+    };
+
+    const normalizedCategory = skill.category ? skill.category.toLowerCase() : 'other';
+    const Icon = categoryIconMap[normalizedCategory] || Box;
+    const isKnownCategory = ['frontend', 'backend', 'database', 'devops', 'programming_language', 'cloud', 'other'].includes(normalizedCategory);
+    const displayCategory = skill.category ? (isKnownCategory ? t(`categories.${normalizedCategory}`) : skill.category) : '';
+
     return (
         <div className="max-w-4xl">
             {/* Back Button */}
             <Button variant="ghost" asChild className="mb-6">
                 <Link href={`/${locale}/tech/skill`}>
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    {t('back')}
+                    {t('skills.back')}
                 </Link>
             </Button>
 
@@ -97,7 +112,10 @@ export default async function SkillDetailPage({
                             <div>
                                 <h1 className="text-4xl font-bold">{skill.title}</h1>
                                 {skill.category && (
-                                    <p className="text-muted-foreground mt-1 text-lg">{skill.category}</p>
+                                    <div className="flex items-center gap-2 text-muted-foreground mt-1 text-lg">
+                                        <Icon className="h-5 w-5" />
+                                        <p>{displayCategory}</p>
+                                    </div>
                                 )}
                             </div>
                             {skill.level && (
@@ -144,7 +162,7 @@ export default async function SkillDetailPage({
                 {skill.technologies && skill.technologies.length > 0 && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>{t('relatedTechnologies')}</CardTitle>
+                            <CardTitle>{t('skills.relatedTechnologies')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="flex flex-wrap gap-2">

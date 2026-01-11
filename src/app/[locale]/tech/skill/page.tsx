@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { SkillWithDetails } from '@/types/tech';
 import Image from 'next/image';
+import { Code, Terminal, Database, Wrench, FileCode, Cloud, Box } from 'lucide-react';
 
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/i18n';
@@ -24,7 +25,16 @@ export default async function SkillsPage({
 
     const { locale } = await params;
     const supabase = await createClient();
-    const t = await getTranslations({ locale, namespace: 'tech.skills' });
+    const t = await getTranslations({ locale, namespace: 'tech' });
+    const categoryIconMap: Record<string, any> = {
+        frontend: Code,
+        backend: Terminal,
+        database: Database,
+        devops: Wrench,
+        programming_language: FileCode,
+        cloud: Cloud,
+        other: Box,
+    };
 
     const { data: skillsData } = await supabase
         .from('skills')
@@ -64,76 +74,90 @@ export default async function SkillsPage({
     return (
         <div className="space-y-8">
             <div>
-                <h1 className="text-3xl font-bold">{t('title')}</h1>
+                <h1 className="text-3xl font-bold">{t('skills.title')}</h1>
                 <p className="text-muted-foreground mt-2">
-                    {t('description')}
+                    {t('skills.description')}
                 </p>
             </div>
 
             {categories.length > 0 ? (
-                categories.map((category) => (
-                    <div key={category} className="space-y-4">
-                        <h2 className="text-2xl font-semibold capitalize">{category}</h2>
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {groupedSkills[category].map((skill: SkillWithDetails) => (
-                                <Link key={skill.id} href={`/${locale}/tech/skill/${skill.slug}`} className="block h-full">
-                                    <Card className="h-full flex flex-col hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer overflow-hidden gap-1">
-                                        <CardHeader className="pb-3 flex flex-row items-center gap-4 space-y-0">
-                                            {skill.cover_image && (
-                                                <div className="relative h-12 w-12 shrink-0 rounded-md overflow-hidden bg-muted">
-                                                    <Image
-                                                        src={skill.cover_image}
-                                                        alt={skill.title}
-                                                        fill
-                                                        className="object-contain p-2"
-                                                    />
+                categories.map((category) => {
+                    const normalizedCategory = category.toLowerCase();
+                    const Icon = categoryIconMap[normalizedCategory] || Box;
+                    // Check if it's one of the known categories to translate, otherwise show original
+                    // We check if the key exists in the 'categories' object in messages, but here we just try to translate
+                    // For safety, we can check if it matches known keys or just fallback to category name
+                    const isKnownCategory = ['frontend', 'backend', 'database', 'devops', 'programming_language', 'cloud', 'other'].includes(normalizedCategory);
+                    const displayCategory = isKnownCategory ? t(`categories.${normalizedCategory}`) : category;
+
+                    return (
+                        <div key={category} className="space-y-4">
+                            <h2 className="text-2xl font-semibold capitalize flex items-center gap-2">
+                                <Icon className="h-6 w-6" />
+                                {displayCategory}
+                            </h2>
+                            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                {groupedSkills[category].map((skill: SkillWithDetails) => (
+                                    <Link key={skill.id} href={`/${locale}/tech/skill/${skill.slug}`} className="block h-full">
+                                        <Card className="h-full flex flex-col hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer overflow-hidden gap-1">
+                                            <CardHeader className="pb-3 flex flex-row items-center gap-4 space-y-0">
+                                                {skill.cover_image && (
+                                                    <div className="relative h-12 w-12 shrink-0 rounded-md overflow-hidden bg-muted">
+                                                        <Image
+                                                            src={skill.cover_image}
+                                                            alt={skill.title}
+                                                            fill
+                                                            className="object-contain p-2"
+                                                        />
+                                                    </div>
+                                                )}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-start gap-2">
+                                                        <CardTitle className="text-lg truncate">
+                                                            {skill.title}
+                                                        </CardTitle>
+                                                        {skill.level && (
+                                                            <Badge variant="outline" className="text-xs shrink-0">
+                                                                {skill.level}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            )}
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex justify-between items-start gap-2">
-                                                    <CardTitle className="text-lg truncate">
-                                                        {skill.title}
-                                                    </CardTitle>
-                                                    {skill.level && (
-                                                        <Badge variant="outline" className="text-xs shrink-0">
-                                                            {skill.level}
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </CardHeader>
-                                        <CardContent className="flex-grow pt-0">
-                                            {skill.description && (
-                                                <CardDescription className="line-clamp-2 mb-3">
-                                                    {skill.description}
-                                                </CardDescription>
-                                            )}
-                                            {skill.technologies && skill.technologies.length > 0 && (
-                                                <div className="flex flex-wrap gap-1">
-                                                    {skill.technologies.slice(0, 3).map((t) => (
-                                                        <Badge key={t} variant="secondary" className="text-[10px] px-1.5 h-5">
-                                                            {t}
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </CardContent>
-                                    </Card>
-                                </Link>
-                            ))}
+                                            </CardHeader>
+                                            <CardContent className="flex-grow pt-0">
+                                                {skill.description && (
+                                                    <CardDescription className="line-clamp-2 mb-3">
+                                                        {skill.description}
+                                                    </CardDescription>
+                                                )}
+                                                {skill.technologies && skill.technologies.length > 0 && (
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {skill.technologies.slice(0, 3).map((t) => (
+                                                            <Badge key={t} variant="secondary" className="text-[10px] px-1.5 h-5">
+                                                                {t}
+                                                            </Badge>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    </Link>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))
+                    );
+                })
             ) : (
                 <Card>
                     <CardHeader>
-                        <CardTitle>{t('empty')}</CardTitle>
+                        <CardTitle>{t('skills.empty')}</CardTitle>
                         <CardDescription>
-                            {t('emptyDesc')}
+                            {t('skills.emptyDesc')}
                         </CardDescription>
                     </CardHeader>
                 </Card>
-            )}
+            )
+            }
         </div>
     );
 }
