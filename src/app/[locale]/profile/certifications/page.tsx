@@ -58,9 +58,9 @@ export default async function CertificationsPage({
                 {certifications && certifications.length > 0 ? (
                     certifications.map((cert) => (
                         <Link key={cert.id} href={`/${locale}/profile/certifications/${cert.slug}`}>
-                            <Card className="h-full transition-all hover:shadow-md hover:scale-[1.01] cursor-pointer overflow-hidden pt-0">
+                            <Card className="h-full transition-all hover:shadow-md hover:scale-[1.01] cursor-pointer overflow-hidden pt-0 gap-0">
                                 {/* Preview Image */}
-                                <div className="relative w-full h-48 bg-muted">
+                                <div className="relative w-full h-48 bg-muted mb-6">
                                     {cert.preview_image ? (
                                         <Image
                                             src={cert.preview_image}
@@ -74,9 +74,9 @@ export default async function CertificationsPage({
                                         </div>
                                     )}
                                 </div>
-                                <CardHeader>
+                                <CardHeader className='mb-2'>
                                     <div>
-                                        <CardTitle>{cert.name}</CardTitle>
+                                        <CardTitle className='mb-2'>{cert.name}</CardTitle>
                                         <CardDescription>{cert.issuer}</CardDescription>
                                     </div>
                                 </CardHeader>
