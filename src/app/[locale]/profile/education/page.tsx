@@ -93,7 +93,7 @@ export default async function EducationPage({
                                                     </h3>
                                                     <div className="text-base font-medium text-muted-foreground">
                                                         <p>{edu.degree}</p>
-                                                        {edu.field && <p>{edu.field}</p>}
+                                                        <p>{edu.field ? edu.field : '-'}</p>
                                                     </div>
                                                 </div>
 
