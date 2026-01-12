@@ -96,7 +96,7 @@ export default async function ExperienceDetailPage({
                             </div>
                         </div>
                         {experience.preview_image && (
-                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden w-fit mx-auto sm:mx-0">
                                 <Image
                                     src={experience.preview_image}
                                     alt={experience.title}

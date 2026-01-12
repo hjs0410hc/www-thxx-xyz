@@ -173,7 +173,7 @@ export default async function ProjectDetailPage({
                                 </div>
                             </div>
                             {project.cover_image && (
-                                <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                                <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden w-fit mx-auto sm:mx-0">
                                     <Image
                                         src={project.cover_image}
                                         alt={project.title}

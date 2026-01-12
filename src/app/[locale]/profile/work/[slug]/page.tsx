@@ -109,7 +109,7 @@ export default async function WorkDetailPage({
                             </div>
                         </div>
                         {work.preview_image && (
-                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden w-fit mx-auto sm:mx-0">
                                 <Image
                                     src={work.preview_image}
                                     alt={work.position}

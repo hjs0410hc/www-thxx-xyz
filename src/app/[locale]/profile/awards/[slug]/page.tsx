@@ -93,7 +93,7 @@ export default async function AwardDetailPage({
                             </div>
                         </div>
                         {award.preview_image && (
-                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden w-fit mx-auto sm:mx-0">
                                 <Image
                                     src={award.preview_image}
                                     alt={award.title}
