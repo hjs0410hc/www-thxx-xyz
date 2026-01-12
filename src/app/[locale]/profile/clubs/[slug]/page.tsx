@@ -101,7 +101,7 @@ export default async function ClubDetailPage({
                             </div>
                         </div>
                         {club.preview_image && (
-                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden">
+                            <div className="h-32 flex-shrink-0 border rounded-md overflow-hidden w-fit mx-auto sm:mx-0">
                                 <Image
                                     src={club.preview_image}
                                     alt={club.name}
