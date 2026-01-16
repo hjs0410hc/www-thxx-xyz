@@ -218,6 +218,8 @@
         "noPostsWithTag": "\"{tag}\" 태그가 포함된 글이 없습니다.",
         "emptyState": "발행된 글이 없습니다.",
         "readMore": "더 읽기",
-        "postTitle": "블로그 - {title}"
+        "postTitle": "블로그 - {title}",
+        "backToBlog": "블로그로 돌아가기",
+        "noTranslation": "이 언어로 된 번역이 없습니다."
     }
 }

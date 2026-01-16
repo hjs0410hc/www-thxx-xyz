@@ -218,6 +218,8 @@
         "noPostsWithTag": "タグ \"{tag}\" の投稿は見つかりませんでした。",
         "emptyState": "投稿はまだありません。",
         "readMore": "続きを読む",
-        "postTitle": "ブログ - {title}"
+        "postTitle": "ブログ - {title}",
+        "backToBlog": "ブログに戻る",
+        "noTranslation": "この言語での翻訳はありません。"
     }
 }
