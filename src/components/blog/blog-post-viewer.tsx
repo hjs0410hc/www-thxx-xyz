@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -18,6 +19,7 @@ interface BlogPostViewerProps {
 }
 
 export function BlogPostViewer({ post, locale: initialLocale, backLink }: BlogPostViewerProps) {
+    const t = useTranslations();
     const [currentLocale, setCurrentLocale] = useState(initialLocale);
 
     // Find translation for current locale
@@ -66,7 +68,7 @@ export function BlogPostViewer({ post, locale: initialLocale, backLink }: BlogPo
                 <Button variant="ghost" asChild>
                     <Link href={backLink}>
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Blog
+                        {t('blog.backToBlog')}
                     </Link>
                 </Button>
 
@@ -146,7 +148,7 @@ export function BlogPostViewer({ post, locale: initialLocale, backLink }: BlogPo
                         </div>
                     ) : (
                         <div className="mt-6 p-8 text-center text-muted-foreground bg-muted/50 rounded-lg">
-                            No translation available for this language.
+                            {t('blog.noTranslation')}
                         </div>
                     )}
                 </div>

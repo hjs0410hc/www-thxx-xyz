@@ -218,6 +218,8 @@
         "noPostsWithTag": "No posts found with tag \"{tag}\".",
         "emptyState": "Blog posts will appear here once published.",
         "readMore": "Read more",
-        "postTitle": "Blog - {title}"
+        "postTitle": "Blog - {title}",
+        "backToBlog": "Back to Blog",
+        "noTranslation": "No translation available for this language."
     }
 }
