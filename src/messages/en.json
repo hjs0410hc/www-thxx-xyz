@@ -34,9 +34,8 @@
     },
     "home": {
         "hero": {
-            "greeting": "Hi, I'm",
-            "name": "a Developer",
-            "tagline": "Full-stack Developer & Creator",
+            "greeting": "THXX for coming in.",
+            "tagline": "Take your time to look around.",
             "cta": {
                 "profile": "View Profile",
                 "projects": "View Projects"
