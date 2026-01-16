@@ -21,10 +21,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
                 {/* Text Content: Left Side */}
                 <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
                     <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl animate-in fade-in slide-in-from-left-4 duration-500 text-left">
-                        {t('home.hero.greeting')}{' '}
-                        <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                            {t('home.hero.name')}
-                        </span>
+                        {t('home.hero.greeting')}
                     </h1>
 
                     <p className="max-w-[600px] text-lg text-muted-foreground sm:text-xl animate-in fade-in slide-in-from-left-5 duration-700 delay-150 text-left">
